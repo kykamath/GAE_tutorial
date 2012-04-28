@@ -8,10 +8,24 @@ from google.appengine.api import users
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext.webapp import template
+import json
 
-class Person(db.Model):
-    name = db.StringProperty()
-    age = db.IntegerProperty()
+from google.appengine.api import memcache
+class MemecacheObject(object):
+    def load(self, json_object):
+        self.__dict__ = json.loads(json_object)
+    def dump(self):
+        return json.dumps(self.__dict__)
+    def printo(self):
+        print self.__dict__
+class Person(MemecacheObject):
+    def __init__(self):
+        self.name = None
+        self.age = None
+        
+#class Person(db.Model):
+#    name = db.StringProperty()
+#    age = db.IntegerProperty()
 
 class MainPage(webapp.RequestHandler):
     def get(self):
@@ -59,4 +73,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+#    main()
+    p = Person()
+    p.name = 'ssd'
+    p.age = 12
+    print p.dump()
