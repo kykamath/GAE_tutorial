@@ -1,0 +1,19 @@
+<html>
+	<head>
+    	<link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+  	</head>
+  <body>
+  	From template <br/>
+    {% for person in persons %}
+      {{person.name}} {{person.age}} <br/>
+    {% endfor %}
+
+<br/><br/><br/>
+<form action="/add" method="post">
+                <div><textarea name="name" rows="1" cols="60"></textarea></div>
+                <div><textarea name="age" rows="1" cols="60"></textarea></div>
+                <div><input type="submit" value="Add user"></div>
+    </form>
+
+  </body>
+</html>
