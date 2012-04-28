@@ -41,7 +41,7 @@ class MainPage(webapp.RequestHandler):
             'persons': persons,
         }
 
-        path = os.path.join(os.path.dirname(__file__), 'index.html')
+        path = os.path.join(os.path.dirname(__file__), 'templates/index.html')
         self.response.out.write(template.render(path, template_values))
         
 #        for person in persons:
@@ -67,11 +67,17 @@ class Guestbook(webapp.RequestHandler):
         memcache_client = memcache.Client()
         memcache_client.set(key="current_person", value=person.dump(), time=3600)
         self.redirect('/')
+        
+class Map(webapp.RequestHandler):
+    def get(self):
+        path = os.path.join(os.path.dirname(__file__), 'templates/map.html')
+        self.response.out.write(template.render(path, {}))
 
 
 application = webapp.WSGIApplication([
   ('/', MainPage),
-  ('/add', Guestbook)
+  ('/add', Guestbook),
+  ('/map', Map)
 ], debug=True)
 
 
