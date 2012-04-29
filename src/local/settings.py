@@ -13,5 +13,6 @@ f_hashtags_geo_distribution = '/data/chevron/kykamath/data/geo/hashtags_geo_dist
 
 # UI related settings.
 NO_OF_HASHTAGS_TO_SHOW = 10 
+BLOCKED_HASHTAGS = ['rt', 'np']
 
 

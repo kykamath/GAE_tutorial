@@ -7,7 +7,7 @@ import urllib, urllib2, cjson, time, os
 from datetime import datetime, timedelta
 from settings import INTERVAL_IN_MINUTES,\
         HASHTAG_OBSERVING_WINDOW_IN_MINUTES, \
-        NO_OF_HASHTAGS_TO_SHOW
+        NO_OF_HASHTAGS_TO_SHOW, BLOCKED_HASHTAGS
 from twitter_stream_parser import GetOutputFile
 from library.file_io import FileIO
 from library.twitter import getDateTimeObjectFromTweetTimestamp
@@ -51,7 +51,8 @@ class TweetStreamDataProcessing:
                 for checkin in FileIO.iterateJsonFromFile(f_input):
                     for hashtag, point_and_occurrence_time in \
                             TweetStreamDataProcessing._ParseHashtagObjects(checkin):
-                        mf_hashtag_to_ltuo_point_and_occurrence_time[hashtag].append(point_and_occurrence_time)
+                        if hashtag not in BLOCKED_HASHTAGS:
+                            mf_hashtag_to_ltuo_point_and_occurrence_time[hashtag].append(point_and_occurrence_time)
             dt_next_time+=td_interval
         return mf_hashtag_to_ltuo_point_and_occurrence_time
     
