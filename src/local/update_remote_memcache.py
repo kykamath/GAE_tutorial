@@ -23,13 +23,11 @@ UPDATE_FREQUENCY_IN_SECONDS = 60*1
 class TweetStreamDataProcessing:
     @staticmethod
     def get_current_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, no_of_hashtags):
-#        current_timestamp = datetime.fromtimestamp(time.time())
-#        time_id = '%s_%s_%s'%(current_timestamp.day, current_timestamp.hour, current_timestamp.minute)
-#        return ['hashtag_%s_%s'%(i, time_id)for i in range(10)]
         return zip(*sorted(
                       mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems(), 
-                      key=lambda (hashtag, ltuo_point_and_occurrence_time): len(ltuo_point_and_occurrence_time)
-                      )[-no_of_hashtags:]
+                      key=lambda (hashtag, ltuo_point_and_occurrence_time): len(ltuo_point_and_occurrence_time),
+                      reverse=True
+                      )[:no_of_hashtags]
                    )[0]
     @staticmethod
     def _ParseHashtagObjects(checkin):
