@@ -14,4 +14,4 @@ handlers:
   static_dir: images
 
 - url: /.*
-  script: helloworld.py
+  script: requests.py

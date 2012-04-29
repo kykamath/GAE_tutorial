@@ -13,10 +13,12 @@
 	</head>
 
 	<body>
+<!-- 		<span>{{hashtags}}</span> -->
 		<form action="#">
 			<select name="speedAa" id="speedAa">
-				<option value="Slower">Slower</option>
-				<option value="Slow">Slow</option>
+				{% for hashtag in hashtags %}
+					<option value={{hashtag}}>{{hashtag}}</option>
+				{% endfor %}
 			</select>
 	</form>
 		<div id="tabs">
