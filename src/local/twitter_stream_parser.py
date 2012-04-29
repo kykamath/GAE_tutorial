@@ -41,8 +41,7 @@ def parse_stream():
                     checkin_object = GetCheckinObject(tweet)
                     checkin_object['h'] = hashtags
                     checkin_object[geo[0]] = geo[1]
-                    print checkin_object, GetOutputFile(tweet)
-#                    FileIO.writeToFileAsJson(checkin_object, GetOutputFile(tweet))
+                    FileIO.writeToFileAsJson(checkin_object, GetOutputFile(tweet))
         except Exception as e: print e
 
 if __name__ == '__main__':
