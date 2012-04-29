@@ -26,12 +26,11 @@ class TweetStreamDataProcessing:
         time_id = '%s_%s_%s'%(current_timestamp.day, current_timestamp.hour, current_timestamp.minute)
         return ['hashtag_%s_%s'%(i, time_id)for i in range(10)]
     @staticmethod
-    def _ParseHashtagObjects(json_checkin):
-        data = cjson.decode(json_checkin)
-        if 'geo' in data: point = data['geo']
-        else: point = data['bb']
-        t = time.mktime(getDateTimeObjectFromTweetTimestamp(data['t']).timetuple())
-        for h in data['h']: yield h.lower(), [point, t]
+    def _ParseHashtagObjects(checkin):
+        if 'geo' in checkin: point = checkin['geo']
+        else: point = checkin['bb']
+        t = time.mktime(getDateTimeObjectFromTweetTimestamp(checkin['t']).timetuple())
+        for h in checkin['h']: yield h.lower(), [point, t]
     @staticmethod
     def LoadDataStructures():
         TweetStreamDataProcessing.mf_hashtag_to_ltuo_point_and_occurrence_time = defaultdict(list)
@@ -43,9 +42,9 @@ class TweetStreamDataProcessing:
             f_input = GetOutputFile(dt_next_time)
             if os.path.exists(f_input):
                 print 'Processing:', f_input
-                for json_checkin in FileIO.iterateJsonFromFile(f_input):
+                for checkin in FileIO.iterateJsonFromFile(f_input):
                     for hashtag, point_and_occurrence_time in \
-                            TweetStreamDataProcessing._ParseHashtagObjects(json_checkin):
+                            TweetStreamDataProcessing._ParseHashtagObjects(checkin):
                         TweetStreamDataProcessing.mf_hashtag_to_ltuo_point_and_occurrence_time[hashtag].append(point_and_occurrence_time)
             dt_next_time+=td_interval
         print TweetStreamDataProcessing.mf_hashtag_to_ltuo_point_and_occurrence_time.keys()
