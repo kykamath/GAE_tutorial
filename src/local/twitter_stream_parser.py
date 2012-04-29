@@ -28,7 +28,7 @@ def GetCheckinObject(data):
     return checkin
 def GetOutputFile(tweet):
     t = getDateTimeObjectFromTweetTimestamp(tweet['created_at'])
-    return f_hashtags_geo_distribution%(t.year, t.month, t.day, t.hour, t.minute)
+    return f_hashtags_geo_distribution%(t.year, t.month, t.day, t.hour, t.minute%5)
 
 def parse_stream():    
     stream = tweetstream.FilterStream(USER_NAME, PASSWORD, locations=LOCATIONS) 
