@@ -10,6 +10,25 @@ $(document).ready(function(){
 		// $(this).hide(300);
 	// });
 	
+// Init buttons
+	$( "#rerun" )
+			.button()
+			.click(function() {
+				alert( "Running the last action" );
+			})
+			.next()
+				.button( {
+					text: false,
+					icons: {
+						primary: "ui-icon-triangle-1-s"
+					}
+				})
+				.click(function() {
+					alert( "Could display a menu to select an action" );
+				})
+				.parent()
+					.buttonset();
+	
 // 	Init tabs
 	$('#tabs').tabs();
 	
