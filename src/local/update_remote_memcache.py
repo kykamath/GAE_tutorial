@@ -42,6 +42,7 @@ class TweetStreamDataProcessing:
         while dt_next_time<dt_current_time:
             f_input = GetOutputFile(dt_next_time)
             if os.path.exists(f_input):
+                print 'Processing:', f_input
                 for json_checkin in FileIO.iterateJsonFromFile(f_input):
                     for hashtag, point_and_occurrence_time in \
                             TweetStreamDataProcessing._ParseHashtagObjects(json_checkin):
