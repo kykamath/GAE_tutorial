@@ -13,6 +13,7 @@ from library.file_io import FileIO
 USER_NAME = 'worldw_crawler'
 PASSWORD = 'krishna'
 LOCATIONS = ['-180.0,-90.0', '180.0,90.0']
+OUTPUT_FILE_ACCURACY_IN_MINUTES = 5
 
 def ParseGeoData(data):
     if 'geo' in data and data['geo']!=None: return ('geo', data['geo']['coordinates'])
@@ -28,7 +29,7 @@ def GetCheckinObject(data):
     return checkin
 def GetOutputFile(tweet):
     t = getDateTimeObjectFromTweetTimestamp(tweet['created_at'])
-    return f_hashtags_geo_distribution%(t.year, t.month, t.day, t.hour, t.minute%5)
+    return f_hashtags_geo_distribution%(t.year, t.month, t.day, t.hour, (int(t.minute)/OUTPUT_FILE_ACCURACY_IN_MINUTES)*OUTPUT_FILE_ACCURACY_IN_MINUTES)
 
 def parse_stream():    
     stream = tweetstream.FilterStream(USER_NAME, PASSWORD, locations=LOCATIONS) 
