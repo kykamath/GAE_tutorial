@@ -78,27 +78,44 @@ class Map(webapp.RequestHandler):
         self.memcache_client.set(key="hashtags", value=json.dumps(hashtags), time=3600)
     def _GetObjectFromMemcache(self, key):
         json_object = self.memcache_client.get(key)
-        return json.loads(json_object)
+        if json_object: return json.loads(json_object)
     def get(self):
         # Initializing memcache for development. Remove in production.
-        self._InitMemcache()
+#        self._InitMemcache()
         template_variables = ['hashtags']
         mf_template_variable_to_value = dict([(template_variable, self._GetObjectFromMemcache(template_variable))
                                               for template_variable in template_variables])
         path = os.path.join(os.path.dirname(__file__), fld_templates+'map.html')
         self.response.out.write(template.render(path, mf_template_variable_to_value))
+
+#class PostMemcache(webapp.RequestHandler):
+#    def get(self):
+#        self.response.out.write("""
+##              <form action="/update_memcache" method="post">
+##                <div><textarea name="name" rows="1" cols="60"></textarea></div>
+##                <div><textarea name="age" rows="1" cols="60"></textarea></div>
+##                <div><input type="submit" value="Add user"></div>
+##              </form>
+##              <hr>
+##
+##            </body>
+##          </html>""" )
         
 class UpdateMemcache(webapp.RequestHandler):
     def __init__(self):
         self.memcache_client = memcache.Client()
-    def get(self, key, value):
+    def post(self):
+        key = self.request.get('key')
+        value = self.request.get('value')
         self.memcache_client.set(key=key, value=value, time=3600)
 
 application = webapp.WSGIApplication([
 #  ('/', MainPage),
 #  ('/add', Guestbook),
   ('/', Map),
-  ('/update_memcache/(\w+)/(\w+)', UpdateMemcache)
+#  ('/temp', PostMemcache),
+  ('/update_memcache', UpdateMemcache),
+#  ('/update_memcache/(\w+)/(\w+)', UpdateMemcache),
 ], debug=True)
 
 

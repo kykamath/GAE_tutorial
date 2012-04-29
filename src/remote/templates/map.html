@@ -16,9 +16,13 @@
 <!-- 		<span>{{hashtags}}</span> -->
 		<form action="#">
 			<select name="speedAa" id="speedAa">
-				{% for hashtag in hashtags %}
-					<option value={{hashtag}}>{{hashtag}}</option>
-				{% endfor %}
+				{% if hashtags %}
+					{% for hashtag in hashtags %}
+						<option value={{hashtag}}>{{hashtag}}</option>
+					{% endfor %}
+				{% else %}
+					<option value="None">No hashtags</option>
+				{% endif %}
 			</select>
 	</form>
 		<div id="tabs">
