@@ -64,8 +64,6 @@ def update_memcache(key, value):
 
 def update_remote_data():
     mf_hashtag_to_ltuo_point_and_occurrence_time = TweetStreamDataProcessing.load_mf_hashtag_to_ltuo_point_and_occurrence_time()
-    print TweetStreamDataProcessing.get_current_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, NO_OF_HASHTAGS_TO_SHOW)
-    exit()
     mf_memcache_key_to_value = dict([
                                  ('hashtags', TweetStreamDataProcessing.get_current_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, NO_OF_HASHTAGS_TO_SHOW))
                                  ]) 
