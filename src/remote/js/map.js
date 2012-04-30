@@ -46,11 +46,13 @@ $(document).ready(function(){
 	} else {
 		// a workaround for a flaw in the demo system (http://dev.jqueryui.com/ticket/4375), ignore!
 		$( "#dialog:ui-dialog" ).dialog( "destroy" );
+		$( "#dialog-message" ).css('visibility', 'visible');
 		$( "#dialog-message" ).dialog({
 			modal: true,
 			buttons: {
 				Ok: function() {
 					$( this ).dialog( "close" );
+					$( "#dialog-message" ).css('visibility', 'hidden');
 				}
 			}
 		});
