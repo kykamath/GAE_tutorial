@@ -7,9 +7,16 @@ function PlotOnMap(hashtag_id){
 		   $('#map_canvas')
      			.gmap(
 	     			'addMarker', 
-	     			{'position': location, 'bounds': true, 'icon': '/images/blu-blank.png'}
+	     			// {'position': location, 'bounds': true, 'icon': '/images/blu-blank.png'}
+	     			{'position': location, 'bounds': true}
      			)
 	 });
+	 $('#map_canvas')
+	 	.gmap(
+	 		'set', 
+	 		'MarkerClusterer', 
+	 		new MarkerClusterer($('#map_canvas').gmap('get', 'map'), $('#map_canvas').gmap('get', 'markers'))
+ 		);
 }
 
 $(document).ready(function(){
@@ -25,12 +32,6 @@ $(document).ready(function(){
 // 	Init tabs
 	$('#tabs').tabs();
 // 	Init map
-	var markers1 = [
-				'37.509726,-113.291016',
-				'45.089036,-102.041016',
-				'33.358062,-91.230469',
-				'40.713956,-76.025391'
-			]
 	$('#map_canvas').gmap();
 	var hashtag_id = $('select#hashtags').val();
 	if(hashtag_id!="None"){

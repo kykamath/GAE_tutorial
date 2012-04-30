@@ -74,6 +74,10 @@ def update_memcache(key, value):
 
 def update_remote_data():
     if MACHINE_NAME=='kykamath.cs.tamu.edu':
+        if APPLICATION_URL=='http://localhost:8080/': 
+            print 'Wrong application url: ', APPLICATION_URL
+            print 'Remote memcache not updated. Program exiting.'
+            exit()
         mf_hashtag_to_ltuo_point_and_occurrence_time = TweetStreamDataProcessing.load_mf_hashtag_to_ltuo_point_and_occurrence_time()
     else: mf_hashtag_to_ltuo_point_and_occurrence_time = dummy_mf_hashtag_to_ltuo_point_and_occurrence_time
     hashtags = TweetStreamDataProcessing.get_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, NO_OF_HASHTAGS_TO_SHOW)
