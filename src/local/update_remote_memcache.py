@@ -5,25 +5,74 @@ Created on Apr 29, 2012
 '''
 import urllib, urllib2, cjson, time, os
 from datetime import datetime, timedelta
-from settings import INTERVAL_IN_MINUTES,\
+from settings import INTERVAL_IN_MINUTES, \
         HASHTAG_OBSERVING_WINDOW_IN_MINUTES, \
         NO_OF_HASHTAGS_TO_SHOW, BLOCKED_HASHTAGS, \
         f_hashtags_geo_distribution, MACHINE_NAME, \
-        UPDATE_FREQUENCY_IN_MINUTES, APPLICATION_URL
+        UPDATE_FREQUENCY_IN_MINUTES, APPLICATION_URL, \
+        LATTICE_ACCURACY
 from library.file_io import FileIO
 from library.twitter import getDateTimeObjectFromTweetTimestamp
 from collections import defaultdict
 from operator import itemgetter
+from itertools import groupby
+import numpy as np
+from library.geo import getLattice
 
 dummy_mf_hashtag_to_ltuo_point_and_occurrence_time = {
-                                                      'ht1': [([40.245992, -114.082031], 1), ([42.032974,-99.052734], 3)],
-                                                      'ht2': [([24.20689,18.28125], 1), ([24.20689,18.28125], 4), ([56.944974,-115.664062], 4)],
-                                                      'ht3': [([-10.833306,-54.84375], 3), ([40.178873,-2.8125], 4)],
-                                                      'ht4': [([37.509726,-113.291016],1), ([45.089036,-102.041016],4), ([33.358062,-91.230469],5), ([40.713956,-76.025391],6)]
+                                                      'ht1': [([40.245992, -114.082031], 1), ([42.032974, -99.052734], 3)],
+                                                      'ht2': [([24.20689, 18.28125], 1), ([24.20689, 18.28125], 4), ([56.944974, -115.664062], 4)],
+                                                      'ht3': [([-10.833306, -54.84375], 3), ([40.178873, -2.8125], 4)],
+                                                      'ht4': [([37.509726, -113.291016], 1), ([45.089036, -102.041016], 4), ([33.358062, -91.230469], 5), ([40.713956, -76.025391], 6)]
                                                       }
 
 def GetOutputFile(t):
-    return f_hashtags_geo_distribution%(t.year, t.month, t.day, t.hour, (int(t.minute)/INTERVAL_IN_MINUTES)*INTERVAL_IN_MINUTES)
+    return f_hashtags_geo_distribution % (t.year, t.month, t.day, t.hour, (int(t.minute) / INTERVAL_IN_MINUTES) * INTERVAL_IN_MINUTES)
+
+class DetermineHashtagInfluenceSpread():
+    @staticmethod
+    def _get_occurrences_stats(occurrences1, occurrences2):
+        no_of_occurrences_after_appearing_in_location, no_of_occurrences_before_appearing_in_location = 0., 0.
+        occurrences1=sorted(occurrences1)
+        occurrences2=sorted(occurrences2)
+        no_of_total_occurrences_between_location_pair = len(occurrences1)*len(occurrences2)*1.
+        for occurrence1 in occurrences1:
+            for occurrence2 in occurrences2:
+                if occurrence1<occurrence2: no_of_occurrences_after_appearing_in_location+=1
+                elif occurrence1>occurrence2: no_of_occurrences_before_appearing_in_location+=1
+        return no_of_occurrences_after_appearing_in_location, no_of_occurrences_before_appearing_in_location, no_of_total_occurrences_between_location_pair
+    @staticmethod
+    def _weighted_aggregate_occurrence(location_occurrences, neighbor_location_occurrences):
+        (no_of_occurrences_after_appearing_in_location, \
+         no_of_occurrences_before_appearing_in_location, \
+         no_of_total_occurrences_between_location_pair) =\
+            DetermineHashtagInfluenceSpread._get_occurrences_stats(location_occurrences, neighbor_location_occurrences)
+        total_nof_occurrences = float(len(location_occurrences) + len(neighbor_location_occurrences))
+        ratio_of_occurrences_in_location = len(location_occurrences)/total_nof_occurrences
+        ratio_of_occurrences_in_neighbor_location = len(neighbor_location_occurrences)/total_nof_occurrences
+        return (
+                ratio_of_occurrences_in_location*no_of_occurrences_after_appearing_in_location \
+                - ratio_of_occurrences_in_neighbor_location*no_of_occurrences_before_appearing_in_location
+                ) / no_of_total_occurrences_between_location_pair
+    @staticmethod
+    def GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time):
+        ltuo_location_and_occurrence_time = [[getLattice(point, LATTICE_ACCURACY), occurrence_time]for point, occurrence_time in ltuo_point_and_occurrence_time]
+        ltuo_location_and_occurrence_times = [(location, sorted(zip(*ito_location_and_occurrence_time)[1]))
+                                                for location, ito_location_and_occurrence_time in
+                                                    groupby(
+                                                            sorted(ltuo_location_and_occurrence_time, key=itemgetter(0)),
+                                                            key=itemgetter(0)
+                                                    )
+                                            ] 
+        ltuo_location_and_pure_influence_score = []
+        for location, location_occurrence_times in ltuo_location_and_occurrence_times:
+            pure_influence_scores = []
+            for neighbor_location, neighbor_location_occurrence_times in ltuo_location_and_occurrence_times:
+                if location != neighbor_location:
+                    pure_influence_score = DetermineHashtagInfluenceSpread._weighted_aggregate_occurrence(neighbor_location_occurrence_times, location_occurrence_times)
+                    pure_influence_scores.append(pure_influence_score)
+            ltuo_location_and_pure_influence_score.append([location, np.mean(pure_influence_scores)])
+        return zip(*sorted(ltuo_location_and_pure_influence_score, key=itemgetter(1)))[0]
 
 class TweetStreamDataProcessing:
     @staticmethod
@@ -36,10 +85,10 @@ class TweetStreamDataProcessing:
     def load_mf_hashtag_to_ltuo_point_and_occurrence_time():
         mf_hashtag_to_ltuo_point_and_occurrence_time = defaultdict(list)
         dt_current_time = datetime.fromtimestamp(time.mktime(time.gmtime(time.time())))
-        td_interval = timedelta(seconds = INTERVAL_IN_MINUTES*60)
-        td_window = timedelta(seconds = HASHTAG_OBSERVING_WINDOW_IN_MINUTES*60)
-        dt_next_time = dt_current_time-td_window
-        while dt_next_time<dt_current_time:
+        td_interval = timedelta(seconds=INTERVAL_IN_MINUTES * 60)
+        td_window = timedelta(seconds=HASHTAG_OBSERVING_WINDOW_IN_MINUTES * 60)
+        dt_next_time = dt_current_time - td_window
+        while dt_next_time < dt_current_time:
             f_input = GetOutputFile(dt_next_time)
             if os.path.exists(f_input):
                 print 'Processing:', f_input
@@ -48,14 +97,14 @@ class TweetStreamDataProcessing:
                             TweetStreamDataProcessing._ParseHashtagObjects(checkin):
                         if hashtag not in BLOCKED_HASHTAGS:
                             mf_hashtag_to_ltuo_point_and_occurrence_time[hashtag].append(point_and_occurrence_time)
-            dt_next_time+=td_interval
+            dt_next_time += td_interval
         return mf_hashtag_to_ltuo_point_and_occurrence_time
     @staticmethod
     def get_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, no_of_hashtags):
-        return [ '%s (%s)'%(hashtag, len(ltuo_point_and_occurrence_time))
+        return [ '%s (%s)' % (hashtag, len(ltuo_point_and_occurrence_time))
                     for hashtag, ltuo_point_and_occurrence_time in 
                        sorted(
-                          mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems(), 
+                          mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems(),
                           key=lambda (hashtag, ltuo_point_and_occurrence_time): len(ltuo_point_and_occurrence_time),
                           reverse=True
                           )[:no_of_hashtags]
@@ -63,10 +112,19 @@ class TweetStreamDataProcessing:
     @staticmethod
     def get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
         return [
-                ['%s,%s'%tuple(point) for point, _ in mf_hashtag_to_ltuo_point_and_occurrence_time[top_hashtag.split()[0]]]
+                ['%s,%s' % tuple(point) for point, _ in mf_hashtag_to_ltuo_point_and_occurrence_time[top_hashtag.split()[0]]]
                 for top_hashtag in top_hashtags
                 ]
-
+    @staticmethod
+    def get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
+        locations_in_order_of_influence_spread = []
+        for top_hashtag in top_hashtags:
+            ltuo_point_and_occurrence_time = mf_hashtag_to_ltuo_point_and_occurrence_time[top_hashtag.split()[0]]
+            locations_in_order_of_influence_spread.append(
+                  DetermineHashtagInfluenceSpread.GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time)
+            )
+        return locations_in_order_of_influence_spread
+        
 def update_memcache(key, value):
     value = cjson.encode(value)
     url = APPLICATION_URL + 'update_memcache'
@@ -75,7 +133,7 @@ def update_memcache(key, value):
     return urllib2.urlopen(req)
 
 def update_remote_data():
-    if MACHINE_NAME=='kykamath.cs.tamu.edu':
+    if MACHINE_NAME == 'kykamath.cs.tamu.edu':
 #        if APPLICATION_URL=='http://localhost:8080/': 
 #            print 'Wrong remote application url: ', APPLICATION_URL
 #            print 'Remote memcache not updated. Change remote application url. Program exiting.'
@@ -84,18 +142,20 @@ def update_remote_data():
     else: mf_hashtag_to_ltuo_point_and_occurrence_time = dummy_mf_hashtag_to_ltuo_point_and_occurrence_time
     hashtags = TweetStreamDataProcessing.get_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, NO_OF_HASHTAGS_TO_SHOW)
     locations = TweetStreamDataProcessing.get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, hashtags)
+    locations_in_order_of_influence_spread = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, hashtags)
     mf_memcache_key_to_value = dict([
                                  ('hashtags', hashtags),
-                                 ('locations', locations)
+                                 ('locations', locations),
+                                 ('locations_in_order_of_influence_spread', locations_in_order_of_influence_spread),
                                  ]) 
     for memcache_key, value in \
             mf_memcache_key_to_value.iteritems():
         update_memcache(key=memcache_key, value=value)
-    print '%s Updated remote cache at %s from %s'%(datetime.fromtimestamp(time.time()), APPLICATION_URL, MACHINE_NAME)
+    print '%s Updated remote cache at %s from %s' % (datetime.fromtimestamp(time.time()), APPLICATION_URL, MACHINE_NAME)
     
 if __name__ == '__main__':
     while True:
         update_remote_data()
-#        exit()
-        time.sleep(UPDATE_FREQUENCY_IN_MINUTES*60)
+        exit()
+        time.sleep(UPDATE_FREQUENCY_IN_MINUTES * 60)
         

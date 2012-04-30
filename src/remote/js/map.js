@@ -1,4 +1,6 @@
 var locations = null;
+var locations_in_order_of_influence_spread = null;
+var intervals_for_marker_on_spread_path = [];
 
 function PlotGlobalSpreadOnMap(hashtag_id) {
 	locations_for_hashtag = locations[hashtag_id];
@@ -25,55 +27,82 @@ function GetLatLngFromLatLngStr(str_lat_lon) {
 	return result_of_split
 }
 
-function PlotSpreadPathOnMap(hashtag_id) {
-	path_for_hashtag = ['37.509726,-113.291016', '45.089036,-102.041016', '33.358062,-91.230469', '40.713956,-76.025391']
+function PlotSpreadPathOnMap() {
+	var hashtag_id = $('select#hashtags').val();
+	path_for_hashtag = locations_in_order_of_influence_spread[hashtag_id];
 	var iteration_counter = 0;
-	$.each(path_for_hashtag, function(index, location) {
-		var co_ordinates = GetLatLngFromLatLngStr(location);
+	var spread_path_queue = $('#queue');
+	$('#map_path').gmap3({
+		action : 'clear'
+	});
+	intervals_for_marker_on_spread_path = [];
+	$.each(path_for_hashtag, function(index, co_ordinates) {
+		spread_path_queue.queue(function() {
+			intervals_for_marker_on_spread_path.push(setTimeout(function() {
+				$('#map_path').gmap3({
+					action : 'addMarker',
+					latLng : [co_ordinates[0], co_ordinates[1]],
+					options : {
+						animation : google.maps.Animation.DROP
+					},
+					callback : function(marker) {
+						$('#map_path').gmap3({
+							action : 'panTo',
+							args : [marker.position]
+						});
+					},
+				});
+			}, iteration_counter * 1000));
+			iteration_counter += 1
+			// next();
+			$(this).dequeue();
+		});
+	});
+	// spread_path_queue.dequeue();
+}
 
-		setTimeout(function() {
-			$('#map_path').gmap3({
-				action : 'addMarker',
-				latLng : [co_ordinates[0], co_ordinates[1]],
-				options : {
-					// draggable : true,
-					animation : google.maps.Animation.DROP
-				},
-				callback : function(marker) {
-					$('#map_path').gmap3({
-						action : 'panTo',
-						args : [marker.position]
-					});
-				},
-			});
-		}, iteration_counter * 2000); 
-
-
-		iteration_counter += 1
+function StopPlotSpreadPathOnMap() {
+	$.each(intervals_for_marker_on_spread_path, function(index, interval) {
+		clearTimeout(interval);
+	});
+	intervals_for_marker_on_spread_path = []
+	$('#map_path').gmap3({
+		action : 'clear'
 	});
 }
 
-$(document).ready(function() {
-	// Init dropdown menu
+function InitDropDown() {
 	$('select#hashtags').selectmenu({
 		maxHeight : 150,
 		style : 'dropdown'
 	}).change(function() {
-		// $('select#hashtags').text('sada');
+		StopPlotSpreadPathOnMap();
 		PlotGlobalSpreadOnMap(this.value);
 	});
-	// 	Init tabs
+}
+
+function InitTabs() {
 	$('#tabs').tabs();
 	$('#tabs2').tabs();
-	// 	Init spread map
+}
+
+function InitSpreadMap() {
 	$('#map_canvas').gmap();
 	var hashtag_id = $('select#hashtags').val();
 	if(hashtag_id != "None") {
+		// Memcache has valid data as hashtags are loaded in menu. Now load data structures.
+		// Load locations from memcache.
 		$.getJSON("/locations", {}, function(data) {
 			locations = data;
 			PlotGlobalSpreadOnMap(hashtag_id);
 		});
+		// Load locations_in_order_of_influence_spread from memcache.
+		$.getJSON("/locations_in_order_of_influence_spread", {}, function(data) {
+			locations_in_order_of_influence_spread = data;
+		});
 	} else {
+		// Memcache doesn't have valid data as hashtags are not loaded in menu.
+		// Show a dialog displaying the issue.
 		$("#dialog:ui-dialog").dialog("destroy");
 		$("#dialog-message").css('visibility', 'visible');
 		$("#dialog-message").dialog({
@@ -86,28 +115,57 @@ $(document).ready(function() {
 			}
 		});
 	}
+}
 
-	// Init button
-	$("#draw_spread_path_button").button({
-		icons : {
-			primary : "ui-icon-play"
-		},
-	}).click(function() {
-		$('#map_path').gmap3({
-			action : 'clear'
+function InitButtons() {
+	function InitPlayButton() {
+		$("#draw_spread_path_button").button({
+			icons : {
+				primary : "ui-icon-play"
+			},
+		}).click(function() {
+			PlotSpreadPathOnMap();
 		});
-		// $('#map_path').gmap3({
-		// action : 'destroy'
-		// });
-		PlotSpreadPathOnMap(null);
-	});
+	}
 
-	// 	Init path map
+	function InitStopButton() {
+		$("#stop_spread_path_button").button({
+			icons : {
+				primary : "ui-icon-stop"
+			},
+		}).click(function() {
+			StopPlotSpreadPathOnMap()
+		});
+	}
+
+	InitPlayButton();
+	InitStopButton();
+}
+
+function InitSpreadPathMap() {
 	$('#map_path').gmap3({
 		action : 'init',
 		options : {
 			zoom : 3
 		},
 	});
+}
 
+
+$(document).ready(function() {
+	// Init dropdown menu
+	InitDropDown();
+
+	// 	Init tabs
+	InitTabs();
+
+	// 	Init spread map
+	InitSpreadMap();
+
+	// Init buttons
+	InitButtons();
+
+	// 	Init path map
+	InitSpreadPathMap();
 });
+

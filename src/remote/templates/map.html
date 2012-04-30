@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<title>App to analyze global social media propagation</title>
 		<link type="text/css" href="/stylesheets/jquery-ui/eggplant/jquery-ui-1.8.19.custom.css" rel="stylesheet" />
 		<link type="text/css" href="/stylesheets/main.css" rel="stylesheet" />
 		<link rel="Stylesheet" href="/stylesheets/menu/ui.selectmenu.css" type="text/css" />
@@ -41,7 +42,10 @@
 		<br/>
 		<div>
 			<button  id="draw_spread_path_button">
-				Draw Probable Influence Spread Path
+				View Estimated Influence Spread Path
+			</button>
+			<button  id="stop_spread_path_button">
+				Stop Spread Path
 			</button>
 		</div>
 		<br/>
@@ -61,6 +65,8 @@
 				Looks like app is down. No hashtags were loaded.
 			</p>
 		</div>
+		
+		<div id="queue"></div>
 
 	</body>
 
