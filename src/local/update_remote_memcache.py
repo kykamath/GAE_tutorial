@@ -85,11 +85,10 @@ def update_remote_data():
     for memcache_key, value in \
             mf_memcache_key_to_value.iteritems():
         update_memcache(key=memcache_key, value=value)
-    
+    print '%s Updated remote cache at %s from %s'%(datetime.fromtimestamp(time.time()), APPLICATION_URL, MACHINE_NAME)
     
 if __name__ == '__main__':
     while True:
-        print '%s Updating remote cache at %s from %s'%(datetime.fromtimestamp(time.time()), APPLICATION_URL, MACHINE_NAME)
         update_remote_data()
 #        exit()
         time.sleep(UPDATE_FREQUENCY_IN_MINUTES*60)
