@@ -27,14 +27,11 @@ function GetLatLngFromLatLngStr(str_lat_lon) {
 	return result_of_split
 }
 
-function PlotSpreadPathOnMap() {
+function StartPlotSpreadPathOnMap() {
 	var hashtag_id = $('select#hashtags').val();
 	path_for_hashtag = locations_in_order_of_influence_spread[hashtag_id];
 	var iteration_counter = 0;
 	var spread_path_queue = $('#queue');
-	$('#map_path').gmap3({
-		action : 'clear'
-	});
 	intervals_for_marker_on_spread_path = [];
 	$.each(path_for_hashtag, function(index, co_ordinates) {
 		spread_path_queue.queue(function() {
@@ -118,13 +115,45 @@ function InitSpreadMap() {
 }
 
 function InitButtons() {
+
+	function TogglePlayPauseActivation() {
+		var disabled = $("#draw_spread_path_button").button("option", "disabled");
+		// Stop button can always be used except immediately after it is clicked.
+		// Play and pause toggle.
+		$("#stop_spread_path_button").button("option", "disabled", false);
+		if(disabled) {
+			$("#draw_spread_path_button").button("option", "disabled", false);
+			$("#pause_spread_path_button").button("option", "disabled", true);
+		} else {
+			$("#draw_spread_path_button").button("option", "disabled", true);
+			$("#pause_spread_path_button").button("option", "disabled", false);
+		}
+	}
+
 	function InitPlayButton() {
 		$("#draw_spread_path_button").button({
 			icons : {
 				primary : "ui-icon-play"
 			},
+			disabled : false,
 		}).click(function() {
-			PlotSpreadPathOnMap();
+			$('#map_path').gmap3({
+				action : 'clear'
+			});
+			$("#draw_spread_path_button").button("option", "label", 'Re-start');
+			TogglePlayPauseActivation();
+			StartPlotSpreadPathOnMap();
+		});
+	}
+
+	function InitPauseButton() {
+		$("#pause_spread_path_button").button({
+			icons : {
+				primary : "ui-icon-pause"
+			},
+			disabled : true,
+		}).click(function() {
+			TogglePlayPauseActivation();
 		});
 	}
 
@@ -133,12 +162,18 @@ function InitButtons() {
 			icons : {
 				primary : "ui-icon-stop"
 			},
+			disabled : true,
 		}).click(function() {
+			$("#stop_spread_path_button").button("option", "disabled", true);
+			$("#draw_spread_path_button").button("option", "disabled", false);
+			$("#pause_spread_path_button").button("option", "disabled", true);
+			$("#draw_spread_path_button").button("option", "label", 'Start');
 			StopPlotSpreadPathOnMap()
 		});
 	}
 
 	InitPlayButton();
+	InitPauseButton();
 	InitStopButton();
 }
 
