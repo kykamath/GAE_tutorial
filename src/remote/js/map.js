@@ -11,7 +11,7 @@ function PlotOnMap(hashtag_id){
 		   $('#map_canvas')
      			.gmap(
 	     			'addMarker', 
-	     			// {'position': location, 'bounds': true, 'icon': '/images/blu-blank.png'}
+	     			// {'position': location, 'bounds': true, 'icon': 'http://maps.google.com/mapfiles/kml/paddle/pink-blank.png'}
 	     			{'position': location, 'bounds': true}
      			)
 	 });
