@@ -38,7 +38,7 @@ $(document).ready(function() {
 		$.getJSON("/locations", {}, function(data) {
 			locations = data;
 			PlotOnMap(hashtag_id);
-			$('#map_path').gmap3();
+			// $('#map_path').gmap3();
 		});
 	} else {
 		// a workaround for a flaw in the demo system (http://dev.jqueryui.com/ticket/4375), ignore!
@@ -55,18 +55,17 @@ $(document).ready(function() {
 		});
 	}
 	// 	Init path map
-	// $('#map_path').gmap();
-	// $('#map_path').gmap3({
-		// action : 'init',
-		// options : {
-			// center : [57.8, 14.0],
-			// zoom : 6
-		// },
-		// callback : function() {
-			// // $('#dropMarkers').click(dropMarkers);
-			// // $('#startDance').click(startDance);
-			// // $('#stopDance').click(stopDance);
-		// }
-	// });
+	$('#map_path').gmap3({
+		action : 'init',
+		options : {
+			center : [57.8, 14.0],
+			zoom : 6
+		},
+		callback : function() {
+			// $('#dropMarkers').click(dropMarkers);
+			// $('#startDance').click(startDance);
+			// $('#stopDance').click(stopDance);
+		}
+	});
 
 });
