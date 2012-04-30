@@ -28,7 +28,6 @@ def GetCheckinObject(data):
     return checkin
 def GetOutputFile(t):
     return f_hashtags_geo_distribution%(t.year, t.month, t.day, t.hour, (int(t.minute)/INTERVAL_IN_MINUTES)*INTERVAL_IN_MINUTES)
-
 def parse_stream():    
     stream = tweetstream.FilterStream(USER_NAME, PASSWORD, locations=LOCATIONS) 
     for tweet in stream:

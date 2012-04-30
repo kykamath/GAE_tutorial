@@ -13,19 +13,19 @@ from google.appengine.api import memcache
 
 fld_templates = 'templates/'
 
-class MemecacheObject(object):
-    def load(self, json_object):
-        self.__dict__ = json.loads(json_object)
-        return self
-    def dump(self):
-        return json.dumps(self.__dict__)
-    def printo(self):
-        print self.__dict__
-
-class Person(MemecacheObject):
-    def __init__(self):
-        self.name = None
-        self.age = None
+#class MemecacheObject(object):
+#    def load(self, json_object):
+#        self.__dict__ = json.loads(json_object)
+#        return self
+#    def dump(self):
+#        return json.dumps(self.__dict__)
+#    def printo(self):
+#        print self.__dict__
+#
+#class Person(MemecacheObject):
+#    def __init__(self):
+#        self.name = None
+#        self.age = None
         
 #class Person(db.Model):
 #    name = db.StringProperty()
@@ -69,24 +69,23 @@ class Person(MemecacheObject):
 #        memcache_client = memcache.Client()
 #        memcache_client.set(key="current_person", value=person.dump(), time=3600)
 #        self.redirect('/')
-        
+
+memcache_client = memcache.Client()        
+
+def GetObjectFromMemcache(key):
+    json_object = memcache_client.get(key)
+    if json_object: return json.loads(json_object)
+
 class Map(webapp.RequestHandler):
-    def __init__(self):
-        self.memcache_client = memcache.Client()
-    def _InitMemcache(self):
-        hashtags = ['hashtag1', 'hashtag2', 'hashtag3']
-        self.memcache_client.set(key="hashtags", value=json.dumps(hashtags), time=3600)
-    def _GetObjectFromMemcache(self, key):
-        json_object = self.memcache_client.get(key)
-        if json_object: return json.loads(json_object)
     def get(self):
-        # Initializing memcache for development. Remove in production.
-#        self._InitMemcache()
-        template_variables = ['hashtags']
-        mf_template_variable_to_value = dict([(template_variable, self._GetObjectFromMemcache(template_variable))
-                                              for template_variable in template_variables])
         path = os.path.join(os.path.dirname(__file__), fld_templates+'map.html')
-        self.response.out.write(template.render(path, mf_template_variable_to_value))
+        self.response.out.write(template.render(path, {'hashtags': GetObjectFromMemcache('hashtags')}))
+
+class Locations(webapp.RequestHandler):
+    def get(self):
+        path = os.path.join(os.path.dirname(__file__), fld_templates+'map.html')
+        locations = memcache_client.get('locations')
+        self.response.out.write(locations)
 
 #class PostMemcache(webapp.RequestHandler):
 #    def get(self):
@@ -115,6 +114,7 @@ application = webapp.WSGIApplication([
   ('/', Map),
 #  ('/temp', PostMemcache),
   ('/update_memcache', UpdateMemcache),
+  ('/locations',Locations),
 #  ('/update_memcache/(\w+)/(\w+)', UpdateMemcache),
 ], debug=True)
 
