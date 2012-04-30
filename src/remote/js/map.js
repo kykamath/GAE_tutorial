@@ -75,7 +75,7 @@ function InitDropDown() {
 		maxHeight : 150,
 		style : 'dropdown'
 	}).change(function() {
-		StopPlotSpreadPathOnMap();
+		PlotSpreadPathOnMap.Stop();
 		PlotGlobalSpreadOnMap(this.value);
 	});
 }
