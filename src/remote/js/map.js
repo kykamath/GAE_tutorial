@@ -3,6 +3,10 @@ var locations = null;
 function PlotOnMap(hashtag_id){
 	locations_for_hashtag = locations[hashtag_id];
 	$('#map_canvas').gmap('clear', 'markers');
+	var mark_clusterter = $('#map_canvas').gmap('get', 'MarkerClusterer');
+	if(mark_clusterter!=null){
+		mark_clusterter.clearMarkers();
+	}
 	$.each(locations_for_hashtag, function(index, location) {
 		   $('#map_canvas')
      			.gmap(

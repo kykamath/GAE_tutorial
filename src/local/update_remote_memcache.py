@@ -52,16 +52,18 @@ class TweetStreamDataProcessing:
         return mf_hashtag_to_ltuo_point_and_occurrence_time
     @staticmethod
     def get_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, no_of_hashtags):
-        return zip(*sorted(
-                      mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems(), 
-                      key=lambda (hashtag, ltuo_point_and_occurrence_time): len(ltuo_point_and_occurrence_time),
-                      reverse=True
-                      )[:no_of_hashtags]
-                   )[0]
+        return [ '%s (%s)'%(hashtag, len(ltuo_point_and_occurrence_time))
+                    for hashtag, ltuo_point_and_occurrence_time in 
+                       sorted(
+                          mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems(), 
+                          key=lambda (hashtag, ltuo_point_and_occurrence_time): len(ltuo_point_and_occurrence_time),
+                          reverse=True
+                          )[:no_of_hashtags]
+                ]
     @staticmethod
     def get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
         return [
-                ['%s,%s'%tuple(point) for point, _ in mf_hashtag_to_ltuo_point_and_occurrence_time[top_hashtag]]
+                ['%s,%s'%tuple(point) for point, _ in mf_hashtag_to_ltuo_point_and_occurrence_time[top_hashtag.split()[0]]]
                 for top_hashtag in top_hashtags
                 ]
 
