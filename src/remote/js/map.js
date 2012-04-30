@@ -31,6 +31,7 @@ $(document).ready(function(){
 				style:'dropdown'
 				})
 			.change(function(){
+				// $('select#hashtags').text('sada');
 				PlotOnMap(this.value);
     		});
 // 	Init tabs

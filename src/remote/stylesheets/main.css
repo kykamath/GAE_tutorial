@@ -1,4 +1,2 @@
-body {
-  font-family: Verdana, Helvetica, sans-serif;
-  background-color: #DDDDDD;
-}
+body{ font: 75.5% "Trebuchet MS", sans-serif; margin: 1%;}
+#map_canvas {width:100%;height:86%}
