@@ -1,6 +1,5 @@
 var locations = null;
 var locations_in_order_of_influence_spread = null;
-var intervals_for_marker_on_spread_path = [];
 
 function PlotGlobalSpreadOnMap(hashtag_id) {
 	locations_for_hashtag = locations[hashtag_id];
@@ -27,45 +26,48 @@ function GetLatLngFromLatLngStr(str_lat_lon) {
 	return result_of_split
 }
 
-function StartPlotSpreadPathOnMap() {
-	var hashtag_id = $('select#hashtags').val();
-	path_for_hashtag = locations_in_order_of_influence_spread[hashtag_id];
-	var iteration_counter = 0;
-	var spread_path_queue = $('#queue');
-	intervals_for_marker_on_spread_path = [];
-	$.each(path_for_hashtag, function(index, co_ordinates) {
-		spread_path_queue.queue(function() {
-			intervals_for_marker_on_spread_path.push(setTimeout(function() {
-				$('#map_path').gmap3({
-					action : 'addMarker',
-					latLng : [co_ordinates[0], co_ordinates[1]],
-					options : {
-						animation : google.maps.Animation.DROP
-					},
-					callback : function(marker) {
-						$('#map_path').gmap3({
-							action : 'panTo',
-							args : [marker.position]
-						});
-					},
-				});
-			}, iteration_counter * 1000));
-			iteration_counter += 1
-			// next();
-			$(this).dequeue();
+var PlotSpreadPathOnMap = {
+	intervals_for_marker_on_spread_path : [],
+	Start : function() {
+		var hashtag_id = $('select#hashtags').val();
+		path_for_hashtag = locations_in_order_of_influence_spread[hashtag_id];
+		var iteration_counter = 0;
+		var spread_path_queue = $('#queue');
+		$('#map_path').gmap3({
+			action : 'clear'
 		});
-	});
-	// spread_path_queue.dequeue();
-}
-
-function StopPlotSpreadPathOnMap() {
-	$.each(intervals_for_marker_on_spread_path, function(index, interval) {
-		clearTimeout(interval);
-	});
-	intervals_for_marker_on_spread_path = []
-	$('#map_path').gmap3({
-		action : 'clear'
-	});
+		PlotSpreadPathOnMap.intervals_for_marker_on_spread_path = [];
+		$.each(path_for_hashtag, function(index, co_ordinates) {
+			spread_path_queue.queue(function() {
+				PlotSpreadPathOnMap.intervals_for_marker_on_spread_path.push(setTimeout(function() {
+					$('#map_path').gmap3({
+						action : 'addMarker',
+						latLng : [co_ordinates[0], co_ordinates[1]],
+						options : {
+							animation : google.maps.Animation.DROP
+						},
+						callback : function(marker) {
+							$('#map_path').gmap3({
+								action : 'panTo',
+								args : [marker.position]
+							});
+						},
+					});
+				}, iteration_counter * 1000));
+				iteration_counter += 1
+				$(this).dequeue();
+			});
+		});
+	},
+	Stop : function() {
+		$.each(PlotSpreadPathOnMap.intervals_for_marker_on_spread_path, function(index, interval) {
+			clearTimeout(interval);
+		});
+		PlotSpreadPathOnMap.intervals_for_marker_on_spread_path = []
+		$('#map_path').gmap3({
+			action : 'clear'
+		});
+	}
 }
 
 function InitDropDown() {
@@ -137,12 +139,9 @@ function InitButtons() {
 			},
 			disabled : false,
 		}).click(function() {
-			$('#map_path').gmap3({
-				action : 'clear'
-			});
 			$("#draw_spread_path_button").button("option", "label", 'Re-start');
 			TogglePlayPauseActivation();
-			StartPlotSpreadPathOnMap();
+			PlotSpreadPathOnMap.Start();
 		});
 	}
 
@@ -168,7 +167,7 @@ function InitButtons() {
 			$("#draw_spread_path_button").button("option", "disabled", false);
 			$("#pause_spread_path_button").button("option", "disabled", true);
 			$("#draw_spread_path_button").button("option", "label", 'Start');
-			StopPlotSpreadPathOnMap()
+			PlotSpreadPathOnMap.Stop();
 		});
 	}
 
