@@ -215,6 +215,10 @@ var SpreadPath = {
 				$(this).dequeue();
 			});
 		});
+		spread_path_queue.queue(function() {
+			SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(SpreadPath.StopPlot, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
+			$(this).dequeue();
+		});
 	},
 	ReStartPlot : function() {
 		var intervals_for_marker_on_spread_path = [];
@@ -247,7 +251,7 @@ var SpreadPath = {
 		$("#stop_spread_path_button").button("option", "disabled", true);
 		$("#draw_spread_path_button").button("option", "label", 'Start');
 		$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
-			if($.isArray(interval)==false) {
+			if($.isArray(interval) == false) {
 				interval.clear();
 			}
 		});
