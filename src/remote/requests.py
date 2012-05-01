@@ -17,6 +17,11 @@ class Map(webapp.RequestHandler):
     def get(self):
         path = os.path.join(os.path.dirname(__file__), fld_templates+'map.html')
         self.response.out.write(template.render(path, {'hashtags': GetObjectFromMemcache('hashtags')}))
+        
+class Temp(webapp.RequestHandler):
+    def get(self):
+        path = os.path.join(os.path.dirname(__file__), fld_templates+'temp.html')
+        self.response.out.write(template.render(path, {}))
 
 class Locations(webapp.RequestHandler):
     def get(self):
@@ -28,6 +33,11 @@ class LocationsInOrderOfInfluenceSpread(webapp.RequestHandler):
         locations_in_order_of_influence_spread = memcache_client.get('locations_in_order_of_influence_spread')
         self.response.out.write(locations_in_order_of_influence_spread)
 
+class ChartsData(webapp.RequestHandler):
+    def get(self):
+        charts_data = memcache_client.get('charts_data')
+        self.response.out.write(charts_data)
+
 class UpdateMemcache(webapp.RequestHandler):
     def __init__(self):
         self.memcache_client = memcache.Client()
@@ -38,10 +48,12 @@ class UpdateMemcache(webapp.RequestHandler):
 
 application = webapp.WSGIApplication([
   ('/', Map),
+  ('/temp', Temp),
   ('/update_memcache', UpdateMemcache),
   ('/locations', Locations),
   ('/locations_in_order_of_influence_spread', LocationsInOrderOfInfluenceSpread),
-], debug=True)
+  ('/charts_data', ChartsData),
+], debug=False)
 
 
 def main():
