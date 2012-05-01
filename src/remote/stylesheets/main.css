@@ -12,11 +12,13 @@ body {
 }
 .chart {
 	width: 50%;
-/*	height: 37%;
-	left:0px;*/
+	margin-left: auto;
+	margin-right: auto;
+	/*	height: 37%;
+	 left:0px;*/
 }
 
 .tabdiv {
 	background-color: #40B5E2;
-	margin: 1%;	
+	margin: 1%;
 }

@@ -12,9 +12,9 @@
 		<script type="text/javascript" src="/js/jquery-ui-map/markerclustererplus-2.0.6/markerclusterer.min.js"></script>
 		<script type="text/javascript" src="/js/menu/ui.selectmenu.js"></script>
 		<script type="text/javascript" src="/js/jquery-gmap3-4.1/gmap3.min.js"></script>
-		<script src="/js/map.js"></script>
 		<script src="/js/highcharts/highcharts.js"></script>
-		<script src="/js/charts.js"></script>
+		<script src="/js/map.js"></script>
+		<!-- 		<script src="/js/charts.js"></script> -->
 	</head>
 
 	<body>
@@ -69,12 +69,10 @@
 			<div id="tabs-3">
 				<br/>
 				<span id="radioset">
-					<input type="radio" id="SpreadViralityChart" name="chart" checked="checked" />
-					<label for="SpreadViralityChart">Chart 1</label>
-					<input type="radio" id="chart_2" name="chart" />
-					<label for="chart_2">Chart 2</label>
-					<input type="radio" id="chart_3" name="chart" />
-					<label for="chart_3">Chart 3</label> </span>
+					<input type="radio" id="TemporalDistribution" name="chart" checked="checked"/>
+					<label for="TemporalDistribution">Temporal Distribution</label>
+					<input type="radio" id="SpreadViralityChart" name="chart" />
+					<label for="SpreadViralityChart">Spread Virality</label> </span>
 				<br/>
 				<br/>
 				<div id="chart" class='chart'></div>

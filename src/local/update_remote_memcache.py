@@ -85,7 +85,8 @@ class TweetStreamDataProcessing:
     def _ParseHashtagObjects(checkin):
         if 'geo' in checkin: point = checkin['geo']
         else: point = checkin['bb']
-        t = time.mktime(getDateTimeObjectFromTweetTimestamp(checkin['t']).timetuple())
+        # Adding 30 minutes because stream appears to be delayed by 30 minutes
+        t = time.mktime(getDateTimeObjectFromTweetTimestamp(checkin['t']).timetuple()) + 1800.
         for h in checkin['h']: yield h.lower(), [point, t]
     @staticmethod
     def get_tuo_hashtag_and_ltuo_occurrence_time_and_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
@@ -112,7 +113,8 @@ class TweetStreamDataProcessing:
     @staticmethod
     def load_mf_hashtag_to_ltuo_point_and_occurrence_time():
         mf_hashtag_to_ltuo_point_and_occurrence_time = defaultdict(list)
-        dt_current_time = datetime.fromtimestamp(time.mktime(time.gmtime(time.time())))
+        # Subtracting because stream appears to be delayed by an hour
+        dt_current_time = datetime.fromtimestamp(time.mktime(time.gmtime(time.time()))) - timedelta(hours=1)
         td_interval = timedelta(seconds=INTERVAL_IN_MINUTES * 60)
         td_window = timedelta(seconds=HASHTAG_OBSERVING_WINDOW_IN_MINUTES * 60)
         dt_next_time = dt_current_time - td_window
@@ -154,6 +156,11 @@ class TweetStreamDataProcessing:
         return locations_in_order_of_influence_spread
 class Charts:
     ID_SPREAD_VIRALITY_CHART = 'SpreadViralityChart'
+    ID_TEMPORAL_DISTRIBUTION_CHART = 'TemporalDistribution'
+    @staticmethod
+    def getTimeTuple(t):
+        t_struct = time.localtime(t - 19800)
+        return (t_struct.tm_year, t_struct.tm_mon, t_struct.tm_mday, t_struct.tm_hour, t_struct.tm_min, t_struct.tm_sec)
     @staticmethod
     def _SpreadViralityChart(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
         '''
@@ -162,20 +169,47 @@ class Charts:
             data : [[Date.UTC(1970, 9, 27), 0], [Date.UTC(1970, 10, 10), 0.6]]
         }]
         '''
-        def getTimeTuple(t):
-            t_struct = time.localtime(t)
-            return (t_struct.tm_year, t_struct.tm_mon, t_struct.tm_mday, t_struct.tm_hour, t_struct.tm_min, t_struct.tm_sec)
         tuo_hashtag_and_ltuo_occurrence_time_and_locations = \
             TweetStreamDataProcessing.get_tuo_hashtag_and_ltuo_occurrence_time_and_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
         char_data = []
         for hashtag, ltuo_occurrence_time_and_locations in tuo_hashtag_and_ltuo_occurrence_time_and_locations:
-            ltuo_occurrence_time_and_no_of_unique_locations =  [(getTimeTuple(occurrence_time), len(set(locations))) for occurrence_time, locations in ltuo_occurrence_time_and_locations]
-            char_data.append({'name': hashtag, 'data': ltuo_occurrence_time_and_no_of_unique_locations})
+            ltuo_occurrence_time_and_no_of_unique_locations = [(Charts.getTimeTuple(occurrence_time), len(set(locations))) for occurrence_time, locations in ltuo_occurrence_time_and_locations]
+            char_data.append({
+                                  'name': hashtag, 
+                                  'data': ltuo_occurrence_time_and_no_of_unique_locations, 
+#                                  'showInLegend': False
+                              })
         return char_data
+    @staticmethod
+    def _TemporalDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
+        tuo_hashtag_and_ltuo_occurrence_time_and_no_of_occurrences = []
+        mf_occurrence_time_to_no_of_occurrences = defaultdict(float)
+        for hashtag in top_hashtags:
+            hashtag = hashtag.split()[0]
+            ltuo_point_and_occurrence_time = mf_hashtag_to_ltuo_point_and_occurrence_time[hashtag]
+            for _, occurrence_time in ltuo_point_and_occurrence_time:
+                mf_occurrence_time_to_no_of_occurrences[GeneralMethods.approximateEpoch(occurrence_time, UNIT_TIME_UNIT_IN_SECONDS)] += 1
+            tuo_hashtag_and_ltuo_occurrence_time_and_no_of_occurrences.append([
+                                      hashtag,
+                                      sorted(
+                                             mf_occurrence_time_to_no_of_occurrences.iteritems(),
+                                             key=itemgetter(0)
+                                             )
+                            ])
+        chart_data = []
+        for hashtag, ltuo_occurrence_time_and_no_of_occurrences in \
+                tuo_hashtag_and_ltuo_occurrence_time_and_no_of_occurrences:
+            chart_data.append({
+                               'name': hashtag,
+                               'data': [ (Charts.getTimeTuple(occurrence_time), no_of_occurrences) for occurrence_time, no_of_occurrences in ltuo_occurrence_time_and_no_of_occurrences],
+#                               'showInLegend': False
+                               })
+        return chart_data
     @staticmethod
     def get_charts_data(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
         return {
                 Charts.ID_SPREAD_VIRALITY_CHART: Charts._SpreadViralityChart(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags),
+                Charts.ID_TEMPORAL_DISTRIBUTION_CHART: Charts._TemporalDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags),
                 }
 def update_memcache(key, value):
     value = cjson.encode(value)
@@ -211,6 +245,6 @@ def update_remote_data():
 if __name__ == '__main__':
     while True:
         update_remote_data()
-        exit()
+#        exit()
         time.sleep(UPDATE_FREQUENCY_IN_MINUTES * 60)
         
