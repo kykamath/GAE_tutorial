@@ -28,6 +28,7 @@ var HashtagsMenu = {
 		}).change(function() {
 			SpreadPath.StopPlot();
 			GlobalSpread.Plot(this.value);
+			$('select#hashtags').hide(3000);
 		});
 	}
 }
@@ -77,8 +78,41 @@ var GlobalSpread = {
 		$('#map_canvas').gmap('set', 'MarkerClusterer', new MarkerClusterer($('#map_canvas').gmap('get', 'map'), $('#map_canvas').gmap('get', 'markers')));
 	}
 }
+// Modified a wrapper for setTimeout written by user
+// Reid (http://stackoverflow.com/users/236139/reid)
+// or stackoverflow (http://stackoverflow.com/questions/5226578/check-if-a-timeout-has-been-cleared).
+// function Timeout(fn, interval) {
+// var id = setTimeout(fn, interval);
+// this.cleared = false;
+// this.fn = fn;
+// this.interval = interval;
+// this.clear = function() {
+// this.cleared = true;
+// clearTimeout(id);
+// };
+// }
+function Timeout(fn, interval, scope, args) {
+	scope = scope || window;
+	this.fn = fn;
+	this.interval = interval;
+	var self = this;
+	var wrap = function() {
+		self.clear();
+		fn.apply(scope, args || arguments);
+	}
+	this.id = setTimeout(wrap, interval);
+}
+
+Timeout.prototype.id = null
+Timeout.prototype.cleared = false;
+Timeout.prototype.clear = function() {
+	clearTimeout(this.id);
+	this.cleared = true;
+	this.id = null;
+};
 
 var SpreadPath = {
+	MARKER_DROP_TIME_LAG : 1000,
 	intervals_for_marker_on_spread_path : [],
 	Buttons : {
 		TogglePlayPauseButtons : function() {
@@ -102,9 +136,15 @@ var SpreadPath = {
 				},
 				disabled : false,
 			}).click(function() {
-				$("#draw_spread_path_button").button("option", "label", 'Re-start');
+				var restart_label = 'Re-start';
 				SpreadPath.Buttons.TogglePlayPauseButtons();
-				SpreadPath.StartPlot();
+				var current_label = $("#draw_spread_path_button").button("option", "label");
+				if(current_label == restart_label) {
+					SpreadPath.ReStartPlot();
+				} else {
+					$("#draw_spread_path_button").button("option", "label", restart_label);
+					SpreadPath.StartPlot();
+				}
 			});
 		},
 
@@ -116,6 +156,7 @@ var SpreadPath = {
 				disabled : true,
 			}).click(function() {
 				SpreadPath.Buttons.TogglePlayPauseButtons();
+				SpreadPath.PausePlot();
 			});
 		},
 
@@ -156,7 +197,7 @@ var SpreadPath = {
 		SpreadPath.intervals_for_marker_on_spread_path = [];
 		$.each(path_for_hashtag, function(index, co_ordinates) {
 			spread_path_queue.queue(function() {
-				SpreadPath.intervals_for_marker_on_spread_path.push(setTimeout(function() {
+				SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(function() {
 					$('#map_path').gmap3({
 						action : 'addMarker',
 						latLng : [co_ordinates[0], co_ordinates[1]],
@@ -170,31 +211,58 @@ var SpreadPath = {
 							});
 						},
 					});
-				}, iteration_counter * 1000));
+				}, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
 				iteration_counter += 1
 				$(this).dequeue();
 			});
 		});
 	},
-	StopPlot : function() {
+	ReStartPlot : function() {
+		var intervals_for_marker_on_spread_path = [];
+		$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, tuo_fn_and_interval) {
+			intervals_for_marker_on_spread_path.push(new Timeout(tuo_fn_and_interval[0], tuo_fn_and_interval[1]));
+		})
+		SpreadPath.intervals_for_marker_on_spread_path = intervals_for_marker_on_spread_path;
+	},
+	PausePlot : function() {
+		var uncleared_intervals_for_marker_on_spread_path = []
+		var no_of_cleared = 0;
+		// console.log('before ' + SpreadPath.intervals_for_marker_on_spread_path.length);
 		$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
-			clearTimeout(interval);
+			if(interval.cleared == false) {
+				var tuo_fn_and_interval = [interval.fn, interval.interval - (no_of_cleared * SpreadPath.MARKER_DROP_TIME_LAG)];
+				uncleared_intervals_for_marker_on_spread_path.push(tuo_fn_and_interval);
+			} else {
+				no_of_cleared += 1;
+			}
+			interval.clear();
+		});
+		SpreadPath.intervals_for_marker_on_spread_path = uncleared_intervals_for_marker_on_spread_path;
+		// console.log('after ' + SpreadPath.intervals_for_marker_on_spread_path.length);
+		// console.log('difference ' + count);
+		// console.log();
+	},
+	StopPlot : function() {
+		$("#draw_spread_path_button").button("option", "disabled", false);
+		$("#pause_spread_path_button").button("option", "disabled", true);
+		$("#stop_spread_path_button").button("option", "disabled", true);
+		$("#draw_spread_path_button").button("option", "label", 'Start');
+		$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
+			if($.isArray(interval)==false) {
+				interval.clear();
+			}
 		});
 		SpreadPath.intervals_for_marker_on_spread_path = []
 		$('#map_path').gmap3({
 			action : 'clear'
 		});
-		$("#stop_spread_path_button").button("option", "disabled", true);
-		$("#draw_spread_path_button").button("option", "disabled", false);
-		$("#pause_spread_path_button").button("option", "disabled", true);
-		$("#draw_spread_path_button").button("option", "label", 'Start');
 	},
 }
 
 $(document).ready(function() {
 	// Init hashtags menu
 	HashtagsMenu.Init();
-	
+
 	// 	Init global spread map
 	GlobalSpread.Init();
 
