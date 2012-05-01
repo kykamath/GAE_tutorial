@@ -1,3 +1,22 @@
-body{ font: 75.5% "Trebuchet MS", sans-serif; margin: 1%;}
-#map_canvas {width:100%;height:37%}
-#map_path {width:100%;height:37%}
+body {
+	font: 75.5% "Trebuchet MS", sans-serif;
+	margin: 1%;
+}
+#map_canvas {
+	width: 100%;
+	height: 37%
+}
+#map_path {
+	width: 100%;
+	height: 37%
+}
+.chart {
+	width: 75%;
+	height: 37%;
+	left:0px;
+}
+
+.tabdiv {
+	background-color: #40B5E2;
+	margin: 1%;	
+}

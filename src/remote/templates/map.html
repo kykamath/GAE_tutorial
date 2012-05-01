@@ -13,7 +13,8 @@
 		<script type="text/javascript" src="/js/menu/ui.selectmenu.js"></script>
 		<script type="text/javascript" src="/js/jquery-gmap3-4.1/gmap3.min.js"></script>
 		<script src="/js/map.js"></script>
-
+		<script src="/js/highcharts/highcharts.js"></script>
+		<script src="/js/charts.js"></script>
 	</head>
 
 	<body>
@@ -40,32 +41,53 @@
 		</div>
 		<br/>
 		<br/>
-		<div>
-			<button  id="draw_spread_path_button">
-				Start
-			</button>
-			<button  id="pause_spread_path_button">
-				Pause
-			</button>
-			<button  id="stop_spread_path_button">
-				Stop
-			</button>
-		</div>
-		<br/>
 		<div id="tabs2">
 			<ul>
 				<li>
-					<a href="#tabs-2">Estimated Influence Spread Path</a>
+					<a href="#tabs-2">Global Spread Route</a>
 				</li>
 				<li>
-					<a href="#tabs-3">Estimated Influence Spread Path</a>
+					<a href="#tabs-3">Stats</a>
 				</li>
 			</ul>
 			<div id="tabs-2">
+				<br/>
+				<div>
+					<button  id="draw_spread_path_button">
+						Start
+					</button>
+					<button  id="pause_spread_path_button">
+						Pause
+					</button>
+					<button  id="stop_spread_path_button">
+						Stop
+					</button>
+				</div>
+				<br/>
 				<div id="map_path"></div>
 			</div>
 			<div id="tabs-3">
-				xcvcxvcxvc
+				<br/>
+				<!-- <div>
+				<button  id="chart_1">
+				Chart 1
+				</button>
+				<button  id="chart_2">
+				Chart 2
+				</button>
+				<button  id="chart_3">
+				Chart 3
+				</button>
+				</div> -->
+				<span id="radioset">
+					<input type="radio" id="chart_1" name="chart" checked="checked" />
+					<label for="chart_1">Chart 1</label>
+					<input type="radio" id="chart_2" name="chart" />
+					<label for="chart_2">Chart 2</label>
+					<input type="radio" id="chart_3" name="chart" />
+					<label for="chart_3">Chart 3</label> </span>
+				<br/><br/>
+				<div id="container" class='chart'></div>
 			</div>
 		</div>
 		<div id="dialog-message" title="App Down!!" style="visibility:hidden;">

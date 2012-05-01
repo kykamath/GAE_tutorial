@@ -26,7 +26,7 @@ var HashtagsMenu = {
 			maxHeight : 150,
 			style : 'dropdown'
 		}).change(function() {
-			SpreadPath.StopPlot();
+			PropagationAnalysis.SpreadPath.StopPlot();
 			GlobalSpread.Plot(this.value);
 		});
 	}
@@ -77,19 +77,7 @@ var GlobalSpread = {
 		$('#map_canvas').gmap('set', 'MarkerClusterer', new MarkerClusterer($('#map_canvas').gmap('get', 'map'), $('#map_canvas').gmap('get', 'markers')));
 	}
 }
-// Modified a wrapper for setTimeout written by user
-// Reid (http://stackoverflow.com/users/236139/reid)
-// or stackoverflow (http://stackoverflow.com/questions/5226578/check-if-a-timeout-has-been-cleared).
-// function Timeout(fn, interval) {
-// var id = setTimeout(fn, interval);
-// this.cleared = false;
-// this.fn = fn;
-// this.interval = interval;
-// this.clear = function() {
-// this.cleared = true;
-// clearTimeout(id);
-// };
-// }
+
 function Timeout(fn, interval, scope, args) {
 	scope = scope || window;
 	this.fn = fn;
@@ -111,12 +99,24 @@ Timeout.prototype.clear = function() {
 };
 
 var PropagationAnalysis = {
-	tabs_load_index: [SpreadPath.],
 	loaded_tabs : [],
 	Init : function() {
 		$('#tabs2').tabs({
 			show : function(event, ui) {
-				// loaded_tabs
+				if($.inArray(ui.index, PropagationAnalysis.loaded_tabs) == -1) {
+					PropagationAnalysis.loaded_tabs.push(ui.index);
+					switch (ui.index) {
+						case 0:
+							PropagationAnalysis.loaded_tabs.push(ui.index);
+							PropagationAnalysis.SpreadPath.Init();
+							break;
+						case 1:
+							// alert('loading ' + ui.index);
+							break;
+						default:
+							console.log();
+					}
+				}
 			}
 		});
 	},
@@ -124,18 +124,13 @@ var PropagationAnalysis = {
 		MARKER_DROP_TIME_LAG : 1000,
 		intervals_for_marker_on_spread_path : [],
 		Init : function() {
-			$('#tabs2').tabs({
-				show : function(event, ui) {
-					// loaded_tabs
-				}
-			});
 			$('#map_path').gmap3({
 				action : 'init',
 				options : {
 					zoom : 3
 				},
 			});
-			SpreadPath.Buttons.Init();
+			PropagationAnalysis.SpreadPath.Buttons.Init();
 		},
 		Buttons : {
 			TogglePlayPauseButtons : function() {
@@ -151,7 +146,9 @@ var PropagationAnalysis = {
 					$("#pause_spread_path_button").button("option", "disabled", false);
 				}
 			},
-
+			Hide : function() {
+				alert('hide buttons');
+			},
 			InitPlayButton : function() {
 				$("#draw_spread_path_button").button({
 					icons : {
@@ -160,13 +157,13 @@ var PropagationAnalysis = {
 					disabled : false,
 				}).click(function() {
 					var restart_label = 'Re-start';
-					SpreadPath.Buttons.TogglePlayPauseButtons();
+					PropagationAnalysis.SpreadPath.Buttons.TogglePlayPauseButtons();
 					var current_label = $("#draw_spread_path_button").button("option", "label");
 					if(current_label == restart_label) {
-						SpreadPath.ReStartPlot();
+						PropagationAnalysis.SpreadPath.ReStartPlot();
 					} else {
 						$("#draw_spread_path_button").button("option", "label", restart_label);
-						SpreadPath.StartPlot();
+						PropagationAnalysis.SpreadPath.StartPlot();
 					}
 				});
 			},
@@ -178,8 +175,8 @@ var PropagationAnalysis = {
 					},
 					disabled : true,
 				}).click(function() {
-					SpreadPath.Buttons.TogglePlayPauseButtons();
-					SpreadPath.PausePlot();
+					PropagationAnalysis.SpreadPath.Buttons.TogglePlayPauseButtons();
+					PropagationAnalysis.SpreadPath.PausePlot();
 				});
 			},
 
@@ -190,13 +187,19 @@ var PropagationAnalysis = {
 					},
 					disabled : true,
 				}).click(function() {
-					SpreadPath.StopPlot();
+					PropagationAnalysis.SpreadPath.StopPlot();
 				});
 			},
 			Init : function() {
 				this.InitPlayButton();
 				this.InitPauseButton();
 				this.InitStopButton();
+			},
+			EndState : function() {
+				$("#draw_spread_path_button").button("option", "disabled", false);
+				$("#pause_spread_path_button").button("option", "disabled", true);
+				$("#stop_spread_path_button").button("option", "disabled", true);
+				$("#draw_spread_path_button").button("option", "label", 'Start');
 			}
 		},
 		StartPlot : function() {
@@ -207,10 +210,10 @@ var PropagationAnalysis = {
 			$('#map_path').gmap3({
 				action : 'clear'
 			});
-			SpreadPath.intervals_for_marker_on_spread_path = [];
+			PropagationAnalysis.SpreadPath.intervals_for_marker_on_spread_path = [];
 			$.each(path_for_hashtag, function(index, co_ordinates) {
 				spread_path_queue.queue(function() {
-					SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(function() {
+					PropagationAnalysis.SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(function() {
 						$('#map_path').gmap3({
 							action : 'addMarker',
 							latLng : [co_ordinates[0], co_ordinates[1]],
@@ -224,58 +227,53 @@ var PropagationAnalysis = {
 								});
 							},
 						});
-					}, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
+					}, iteration_counter * PropagationAnalysis.SpreadPath.MARKER_DROP_TIME_LAG));
 					iteration_counter += 1
 					$(this).dequeue();
 				});
 			});
 			spread_path_queue.queue(function() {
-				SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(SpreadPath.StopPlot, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
+				PropagationAnalysis.SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(
+					PropagationAnalysis.SpreadPath.Buttons.EndState, 
+					iteration_counter * PropagationAnalysis.SpreadPath.MARKER_DROP_TIME_LAG
+					));
 				$(this).dequeue();
 			});
 		},
 		ReStartPlot : function() {
 			var intervals_for_marker_on_spread_path = [];
-			$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, tuo_fn_and_interval) {
+			$.each(PropagationAnalysis.SpreadPath.intervals_for_marker_on_spread_path, function(index, tuo_fn_and_interval) {
 				intervals_for_marker_on_spread_path.push(new Timeout(tuo_fn_and_interval[0], tuo_fn_and_interval[1]));
 			})
-			SpreadPath.intervals_for_marker_on_spread_path = intervals_for_marker_on_spread_path;
+			PropagationAnalysis.SpreadPath.intervals_for_marker_on_spread_path = intervals_for_marker_on_spread_path;
 		},
 		PausePlot : function() {
 			var uncleared_intervals_for_marker_on_spread_path = []
 			var no_of_cleared = 0;
-			// console.log('before ' + SpreadPath.intervals_for_marker_on_spread_path.length);
-			$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
+			$.each(PropagationAnalysis.SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
 				if(interval.cleared == false) {
-					var tuo_fn_and_interval = [interval.fn, interval.interval - (no_of_cleared * SpreadPath.MARKER_DROP_TIME_LAG)];
+					var tuo_fn_and_interval = [interval.fn, interval.interval - (no_of_cleared * PropagationAnalysis.SpreadPath.MARKER_DROP_TIME_LAG)];
 					uncleared_intervals_for_marker_on_spread_path.push(tuo_fn_and_interval);
 				} else {
 					no_of_cleared += 1;
 				}
 				interval.clear();
 			});
-			SpreadPath.intervals_for_marker_on_spread_path = uncleared_intervals_for_marker_on_spread_path;
-			// console.log('after ' + SpreadPath.intervals_for_marker_on_spread_path.length);
-			// console.log('difference ' + count);
-			// console.log();
+			PropagationAnalysis.SpreadPath.intervals_for_marker_on_spread_path = uncleared_intervals_for_marker_on_spread_path;
 		},
 		StopPlot : function() {
-			$("#draw_spread_path_button").button("option", "disabled", false);
-			$("#pause_spread_path_button").button("option", "disabled", true);
-			$("#stop_spread_path_button").button("option", "disabled", true);
-			$("#draw_spread_path_button").button("option", "label", 'Start');
-			$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
+			PropagationAnalysis.SpreadPath.Buttons.EndState();
+			$.each(PropagationAnalysis.SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
 				if($.isArray(interval) == false) {
 					interval.clear();
 				}
 			});
-			SpreadPath.intervals_for_marker_on_spread_path = []
+			PropagationAnalysis.SpreadPath.intervals_for_marker_on_spread_path = []
 			$('#map_path').gmap3({
 				action : 'clear'
 			});
 		},
-	}
-
+	},
 }
 
 $(document).ready(function() {
@@ -286,6 +284,6 @@ $(document).ready(function() {
 	GlobalSpread.Init();
 
 	// 	Init spread path map
-	SpreadPath.Init();
+	PropagationAnalysis.Init();
 });
 
