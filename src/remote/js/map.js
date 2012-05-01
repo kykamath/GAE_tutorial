@@ -1,8 +1,27 @@
-var locations = null;
-var locations_in_order_of_influence_spread = null;
+var ObjectsFromMemcache = {
+	locations : null,
+	locations_in_order_of_influence_spread: null,
+	LoadLocations : function(callback_function, parameter) {
+		$.getJSON("/locations", {}, function(data) {
+			ObjectsFromMemcache.locations = data;
+			callback_function(parameter);
+		});
+	},
+	LoadLocationsInOrderOfInfluenceSpread : function() {
+		$.getJSON("/locations_in_order_of_influence_spread", {}, function(data) {
+			ObjectsFromMemcache.locations_in_order_of_influence_spread = data;
+		});
+	},
+	GetLocations: function(hashtag_id){
+		return this.locations[hashtag_id];
+	},
+	GetLocationsInOrderOfInfluenceSpread: function(hashtag_id){
+		return this.locations_in_order_of_influence_spread[hashtag_id];
+	}
+}
 
 function PlotGlobalSpreadOnMap(hashtag_id) {
-	locations_for_hashtag = locations[hashtag_id];
+	locations_for_hashtag = ObjectsFromMemcache.GetLocations(hashtag_id);
 	$('#map_canvas').gmap('clear', 'markers');
 	var mark_clusterter = $('#map_canvas').gmap('get', 'MarkerClusterer');
 	if(mark_clusterter != null) {
@@ -19,18 +38,11 @@ function PlotGlobalSpreadOnMap(hashtag_id) {
 	$('#map_canvas').gmap('set', 'MarkerClusterer', new MarkerClusterer($('#map_canvas').gmap('get', 'map'), $('#map_canvas').gmap('get', 'markers')));
 }
 
-function GetLatLngFromLatLngStr(str_lat_lon) {
-	var result_of_split = str_lat_lon.split(',');
-	result_of_split[0] = parseFloat(result_of_split[0]);
-	result_of_split[1] = parseFloat(result_of_split[1]);
-	return result_of_split
-}
-
 var PlotSpreadPathOnMap = {
 	intervals_for_marker_on_spread_path : [],
 	Start : function() {
 		var hashtag_id = $('select#hashtags').val();
-		path_for_hashtag = locations_in_order_of_influence_spread[hashtag_id];
+		path_for_hashtag = ObjectsFromMemcache.GetLocationsInOrderOfInfluenceSpread(hashtag_id);
 		var iteration_counter = 0;
 		var spread_path_queue = $('#queue');
 		$('#map_path').gmap3({
@@ -91,14 +103,9 @@ function InitSpreadMap() {
 	if(hashtag_id != "None") {
 		// Memcache has valid data as hashtags are loaded in menu. Now load data structures.
 		// Load locations from memcache.
-		$.getJSON("/locations", {}, function(data) {
-			locations = data;
-			PlotGlobalSpreadOnMap(hashtag_id);
-		});
+		ObjectsFromMemcache.LoadLocations(PlotGlobalSpreadOnMap, hashtag_id)
 		// Load locations_in_order_of_influence_spread from memcache.
-		$.getJSON("/locations_in_order_of_influence_spread", {}, function(data) {
-			locations_in_order_of_influence_spread = data;
-		});
+		ObjectsFromMemcache.LoadLocationsInOrderOfInfluenceSpread();
 	} else {
 		// Memcache doesn't have valid data as hashtags are not loaded in menu.
 		// Show a dialog displaying the issue.

@@ -23,6 +23,6 @@ NO_OF_HASHTAGS_TO_SHOW = 10
 LATTICE_ACCURACY = 4.0
 
 BLOCKED_HASHTAGS = ['rt', 'np', 'jagadtrack', 'nowplaying', 'followback', 'jobs',
-                    'teamfollowback', 'fb', 'job', 'tweetmyjobs', 'oomf']
+                    'teamfollowback', 'fb', 'job', 'tweetmyjobs', 'oomf', 'futown']
 
 
