@@ -28,7 +28,6 @@ var HashtagsMenu = {
 		}).change(function() {
 			SpreadPath.StopPlot();
 			GlobalSpread.Plot(this.value);
-			$('select#hashtags').hide(3000);
 		});
 	}
 }
