@@ -121,8 +121,6 @@ var HashtagsMenu = {
 					PropagationAnalysis.Charts.UpdateCurrentChart()
 				}, 750);
 			}
-
-
 			GlobalSpread.Plot(this.value, updatePropagationAnalysis);
 		});
 
@@ -148,7 +146,7 @@ var HashtagsMenu = {
 
 var GlobalSpread = {
 	Init : function() {
-		$('#tabs').tabs();
+		// $('#tabs').tabs();
 		$('#map_canvas').gmap();
 		var hashtag_id = $('select#hashtags').val();
 		if(hashtag_id != "None") {
@@ -516,14 +514,17 @@ var PropagationAnalysis = {
 				if($.inArray(ui.index, PropagationAnalysis.loaded_tabs) == -1) {
 					PropagationAnalysis.loaded_tabs.push(ui.index);
 					switch (ui.index) {
-						case 1:
+						case 2:
 							// PropagationAnalysis.loaded_tabs.push(ui.index);
 							PropagationAnalysis.SpreadPath.Init();
 							break;
-						case 0:
+						case 1:
 							// alert('loading ' + ui.index);
 							// PropagationAnalysis.loaded_tabs.push(ui.index);
 							PropagationAnalysis.Charts.Init();
+							break;
+						case 0:
+							GlobalSpread.Init();
 							break;
 						default:
 							console.log();
@@ -544,7 +545,7 @@ $(document).ready(function() {
 	HashtagsMenu.Init();
 
 	// 	Init global spread map
-	GlobalSpread.Init();
+	// GlobalSpread.Init();
 
 	// 	Init spread path map
 	PropagationAnalysis.Init();
