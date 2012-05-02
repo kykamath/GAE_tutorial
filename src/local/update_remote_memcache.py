@@ -11,19 +11,20 @@ import urllib, urllib2, cjson, time, os
 from datetime import datetime, timedelta
 from settings import INTERVAL_IN_MINUTES, \
         TOP_HASHTAGS_WINDOW_IN_MINUTES, \
-        NO_OF_HASHTAGS_TO_SHOW, BLOCKED_HASHTAGS, \
+        NO_OF_TOP_HASHTAGS, BLOCKED_HASHTAGS, \
         f_hashtags_geo_distribution, MACHINE_NAME, \
         UPDATE_FREQUENCY_IN_MINUTES, APPLICATION_URL, \
-        LATTICE_ACCURACY, UNIT_TIME_UNIT_IN_SECONDS, \
-        UNIT_LATTICE_ACCURACY, TOTAL_ANALYSIS_WINDOW_IN_MINUTES
+        UNIT_TIME_UNIT_IN_SECONDS, \
+        UNIT_LATTICE_ACCURACY, TOTAL_ANALYSIS_WINDOW_IN_MINUTES, \
+        NO_OF_EXTRA_HASHTAGS
 from library.file_io import FileIO
 from library.twitter import getDateTimeObjectFromTweetTimestamp
 from collections import defaultdict
 from operator import itemgetter
 from itertools import groupby
-import numpy as np
-from library.geo import getLattice, getLatticeLid
+from library.geo import getLatticeLid
 from library.classes import GeneralMethods
+from spatial_analysis_algorithms import SpatialAnalysisAlgorithms
 
 dummy_mf_hashtag_to_ltuo_point_and_occurrence_time = {
                                                       'ht1': [([40.245992, -114.082031], 1), ([42.032974, -99.052734], 3)],
@@ -34,51 +35,6 @@ dummy_mf_hashtag_to_ltuo_point_and_occurrence_time = {
 
 def GetOutputFile(t):
     return f_hashtags_geo_distribution % (t.year, t.month, t.day, t.hour, (int(t.minute) / INTERVAL_IN_MINUTES) * INTERVAL_IN_MINUTES)
-
-class DetermineHashtagInfluenceSpread():
-    @staticmethod
-    def _get_occurrences_stats(occurrences1, occurrences2):
-        no_of_occurrences_after_appearing_in_location, no_of_occurrences_before_appearing_in_location = 0., 0.
-        occurrences1 = sorted(occurrences1)
-        occurrences2 = sorted(occurrences2)
-        no_of_total_occurrences_between_location_pair = len(occurrences1) * len(occurrences2) * 1.
-        for occurrence1 in occurrences1:
-            for occurrence2 in occurrences2:
-                if occurrence1 < occurrence2: no_of_occurrences_after_appearing_in_location += 1
-                elif occurrence1 > occurrence2: no_of_occurrences_before_appearing_in_location += 1
-        return no_of_occurrences_after_appearing_in_location, no_of_occurrences_before_appearing_in_location, no_of_total_occurrences_between_location_pair
-    @staticmethod
-    def _weighted_aggregate_occurrence(location_occurrences, neighbor_location_occurrences):
-        (no_of_occurrences_after_appearing_in_location, \
-         no_of_occurrences_before_appearing_in_location, \
-         no_of_total_occurrences_between_location_pair) = \
-            DetermineHashtagInfluenceSpread._get_occurrences_stats(location_occurrences, neighbor_location_occurrences)
-        total_nof_occurrences = float(len(location_occurrences) + len(neighbor_location_occurrences))
-        ratio_of_occurrences_in_location = len(location_occurrences) / total_nof_occurrences
-        ratio_of_occurrences_in_neighbor_location = len(neighbor_location_occurrences) / total_nof_occurrences
-        return (
-                ratio_of_occurrences_in_location * no_of_occurrences_after_appearing_in_location \
-                - ratio_of_occurrences_in_neighbor_location * no_of_occurrences_before_appearing_in_location
-                ) / no_of_total_occurrences_between_location_pair
-    @staticmethod
-    def GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time):
-        ltuo_location_and_occurrence_time = [[getLattice(point, LATTICE_ACCURACY), occurrence_time]for point, occurrence_time in ltuo_point_and_occurrence_time]
-        ltuo_location_and_occurrence_times = [(location, sorted(zip(*ito_location_and_occurrence_time)[1]))
-                                                for location, ito_location_and_occurrence_time in
-                                                    groupby(
-                                                            sorted(ltuo_location_and_occurrence_time, key=itemgetter(0)),
-                                                            key=itemgetter(0)
-                                                    )
-                                            ] 
-        ltuo_location_and_pure_influence_score = []
-        for location, location_occurrence_times in ltuo_location_and_occurrence_times:
-            pure_influence_scores = []
-            for neighbor_location, neighbor_location_occurrence_times in ltuo_location_and_occurrence_times:
-                if location != neighbor_location:
-                    pure_influence_score = DetermineHashtagInfluenceSpread._weighted_aggregate_occurrence(neighbor_location_occurrence_times, location_occurrence_times)
-                    pure_influence_scores.append(pure_influence_score)
-            ltuo_location_and_pure_influence_score.append([location, np.mean(pure_influence_scores)])
-        return zip(*sorted(ltuo_location_and_pure_influence_score, key=itemgetter(1)))[0]
 
 class TweetStreamDataProcessing:
     @staticmethod
@@ -112,6 +68,11 @@ class TweetStreamDataProcessing:
         return tuo_hashtag_and_ltuo_occurrence_time_and_locations
     @staticmethod
     def load_mf_hashtag_to_ltuo_point_and_occurrence_time(WINDOW_IN_MINUTES):
+        def is_unicode(hashtag):
+            try:
+                hashtag.decode('ascii')
+            except Exception: return False
+            return True
         mf_hashtag_to_ltuo_point_and_occurrence_time = defaultdict(list)
         # Subtracting because stream appears to be delayed by an hour
         dt_current_time = datetime.fromtimestamp(time.mktime(time.gmtime(time.time()))) - timedelta(hours=1)
@@ -125,7 +86,7 @@ class TweetStreamDataProcessing:
                 for checkin in FileIO.iterateJsonFromFile(f_input):
                     for hashtag, point_and_occurrence_time in \
                             TweetStreamDataProcessing._ParseHashtagObjects(checkin):
-                        if hashtag not in BLOCKED_HASHTAGS:
+                        if hashtag not in BLOCKED_HASHTAGS and is_unicode(hashtag):
                             mf_hashtag_to_ltuo_point_and_occurrence_time[hashtag].append(point_and_occurrence_time)
             dt_next_time += td_interval
         return mf_hashtag_to_ltuo_point_and_occurrence_time
@@ -141,6 +102,24 @@ class TweetStreamDataProcessing:
                           )[:no_of_hashtags]
                 ]
     @staticmethod
+    def get_extra_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags, no_of_hashtags):
+        extra_hastags = []
+        hashtags = [ '%s (%s)' % (hashtag, len(ltuo_point_and_occurrence_time))
+                                                for hashtag, ltuo_point_and_occurrence_time in 
+                                                   sorted(
+                                                        mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems(), 
+                                                        key=lambda (hashtag, ltuo_point_and_occurrence_time): len(ltuo_point_and_occurrence_time),
+                                                        reverse=True
+                                                    )
+                                              ]
+        for hashtag in hashtags:
+            if len(extra_hastags) < no_of_hashtags:
+                if hashtag not in top_hashtags: extra_hastags.append(hashtag)
+            else: break
+        assert len(extra_hastags)==no_of_hashtags
+        return extra_hastags
+                
+    @staticmethod
     def get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
         return [
                 ['%s,%s' % tuple(point) for point, _ in mf_hashtag_to_ltuo_point_and_occurrence_time[top_hashtag.split()[0]]]
@@ -152,7 +131,7 @@ class TweetStreamDataProcessing:
         for top_hashtag in top_hashtags:
             ltuo_point_and_occurrence_time = mf_hashtag_to_ltuo_point_and_occurrence_time[top_hashtag.split()[0]]
             locations_in_order_of_influence_spread.append(
-                  DetermineHashtagInfluenceSpread.GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time)
+                  SpatialAnalysisAlgorithms.GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time)
             )
         return locations_in_order_of_influence_spread
 class Charts:
@@ -275,27 +254,15 @@ def update_remote_data():
             mf_hashtag_to_ltuo_point_and_occurrence_time = TweetStreamDataProcessing.load_mf_hashtag_to_ltuo_point_and_occurrence_time(TOTAL_ANALYSIS_WINDOW_IN_MINUTES)
     else: 
         mf_hashtag_to_ltuo_point_and_occurrence_time = dummy_mf_hashtag_to_ltuo_point_and_occurrence_time
-        
-        
-    ####################
-#    import matplotlib.pyplot as plt
-#    plt.hist(
-#             [len(ltuo_point_and_occurrence_time) for _, ltuo_point_and_occurrence_time in mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems()],
-#             1000
-#             )
-#    plt.show()
-    print len([1 for hashtag, ltuo_point_and_occurrence_time in mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems() if len(ltuo_point_and_occurrence_time)>50])
-    exit()
-    
-    
-    #####################
-    
-    top_hashtags = TweetStreamDataProcessing.get_top_hashtags(NO_OF_HASHTAGS_TO_SHOW)
-    locations = TweetStreamDataProcessing.get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
-    locations_in_order_of_influence_spread = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
-    charts_data = Charts.get_charts_data(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
+    top_hashtags = TweetStreamDataProcessing.get_top_hashtags(NO_OF_TOP_HASHTAGS)
+    extra_hashtags = TweetStreamDataProcessing.get_extra_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags, NO_OF_EXTRA_HASHTAGS)
+    required_hashtags = top_hashtags+extra_hashtags
+    locations = TweetStreamDataProcessing.get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
+    locations_in_order_of_influence_spread = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
+    charts_data = Charts.get_charts_data(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
     mf_memcache_key_to_value = dict([
                                  ('hashtags', top_hashtags),
+                                 ('all_hashtags', required_hashtags),
                                  ('locations', locations),
                                  ('locations_in_order_of_influence_spread', locations_in_order_of_influence_spread),
                                  ('charts_data', charts_data),
@@ -308,6 +275,6 @@ def update_remote_data():
 if __name__ == '__main__':
     while True:
         update_remote_data()
-#        exit()
+        exit()
         time.sleep(UPDATE_FREQUENCY_IN_MINUTES * 60)
         

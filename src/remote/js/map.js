@@ -80,6 +80,7 @@
 
 var ObjectsFromMemcache = {
 	locations : null,
+	// all_hashtags : null,
 	locations_in_order_of_influence_spread : null,
 	charts_data : null,
 	LoadLocations : function(callback_function, parameter) {
@@ -93,6 +94,11 @@ var ObjectsFromMemcache = {
 			ObjectsFromMemcache.locations_in_order_of_influence_spread = data;
 		});
 	},
+	// LoadAllHastags : function() {
+		// $.getJSON("/all_hashtags", {}, function(data) {
+			// ObjectsFromMemcache.all_hashtags = data;
+		// });
+	// },
 	GetLocations : function(hashtag_id) {
 		return this.locations[hashtag_id];
 	},
@@ -123,21 +129,22 @@ var HashtagsMenu = {
 	}
 }
 
-var AutoCompleteHashtag = {
-	Init : function() {
-
-		// $("#all_hashtags_combobox").combobox({
-		// maxHeight : 30,
+// var AutoCompleteHashtag = {
+	// Init : function() {
+// 
+		// // $("#all_hashtags_combobox").combobox({
+		// // maxHeight : 30,
+		// // });
+		// // ObjectsFromMemcache.LoadAllHastags(fun);
+		// // val all
+		// // var all_hashtags = ["ActionScript", "AppleScript", "Asp", "BASIC", "C", "C++", "Clojure", "COBOL", "ColdFusion", "Erlang", "Fortran", "Groovy", "Haskell", "Java", "JavaScript", "Lisp", "Perl", "PHP", "Python", "Ruby", "Scala", "Scheme"];
+		// $("#all_hashtags_autoselect").autocomplete({
+			// source : '/all_hashtags'
+		// }).click(function() {
+			// $(this).val("");
 		// });
-
-		var availableTags = ["ActionScript", "AppleScript", "Asp", "BASIC", "C", "C++", "Clojure", "COBOL", "ColdFusion", "Erlang", "Fortran", "Groovy", "Haskell", "Java", "JavaScript", "Lisp", "Perl", "PHP", "Python", "Ruby", "Scala", "Scheme"];
-		$("#all_hashtags_autoselect").autocomplete({
-			source : availableTags
-		}).click(function() {
-			$(this).val("");
-		});
-	}
-}
+	// }
+// }
 
 var GlobalSpread = {
 	Init : function() {
@@ -531,7 +538,7 @@ var PropagationAnalysis = {
 
 $(document).ready(function() {
 	//Init hashtags autocomplete
-	AutoCompleteHashtag.Init();
+	// AutoCompleteHashtag.Init();
 
 	// Init hashtags menu
 	HashtagsMenu.Init();

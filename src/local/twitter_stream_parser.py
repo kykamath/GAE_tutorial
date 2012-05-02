@@ -31,7 +31,7 @@ def GetOutputFile(t):
 def parse_stream():    
     stream = tweetstream.FilterStream(USER_NAME, PASSWORD, locations=LOCATIONS) 
     for tweet in stream:
-        try:
+#        try:
             geo = ParseGeoData(tweet)
             if geo: 
                 hashtags = ParseHashtags(tweet)
@@ -43,7 +43,7 @@ def parse_stream():
                                                  checkin_object, 
                                                  GetOutputFile(getDateTimeObjectFromTweetTimestamp(tweet['created_at']))
                                              )
-        except Exception as e: print e
+#        except Exception as e: print e
 
 if __name__ == '__main__':
     while True:
