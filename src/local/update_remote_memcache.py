@@ -10,12 +10,12 @@ location => lattice id for point based on UNIT_LATTICE_ACCURACY
 import urllib, urllib2, cjson, time, os
 from datetime import datetime, timedelta
 from settings import INTERVAL_IN_MINUTES, \
-        HASHTAG_OBSERVING_WINDOW_IN_MINUTES, \
+        TOP_HASHTAGS_WINDOW_IN_MINUTES, \
         NO_OF_HASHTAGS_TO_SHOW, BLOCKED_HASHTAGS, \
         f_hashtags_geo_distribution, MACHINE_NAME, \
         UPDATE_FREQUENCY_IN_MINUTES, APPLICATION_URL, \
         LATTICE_ACCURACY, UNIT_TIME_UNIT_IN_SECONDS, \
-        UNIT_LATTICE_ACCURACY
+        UNIT_LATTICE_ACCURACY, TOTAL_ANALYSIS_WINDOW_IN_MINUTES
 from library.file_io import FileIO
 from library.twitter import getDateTimeObjectFromTweetTimestamp
 from collections import defaultdict
@@ -111,12 +111,12 @@ class TweetStreamDataProcessing:
             tuo_hashtag_and_ltuo_occurrence_time_and_locations.append((hashtag, ltuo_occurrence_time_and_locations))
         return tuo_hashtag_and_ltuo_occurrence_time_and_locations
     @staticmethod
-    def load_mf_hashtag_to_ltuo_point_and_occurrence_time():
+    def load_mf_hashtag_to_ltuo_point_and_occurrence_time(WINDOW_IN_MINUTES):
         mf_hashtag_to_ltuo_point_and_occurrence_time = defaultdict(list)
         # Subtracting because stream appears to be delayed by an hour
         dt_current_time = datetime.fromtimestamp(time.mktime(time.gmtime(time.time()))) - timedelta(hours=1)
         td_interval = timedelta(seconds=INTERVAL_IN_MINUTES * 60)
-        td_window = timedelta(seconds=HASHTAG_OBSERVING_WINDOW_IN_MINUTES * 60)
+        td_window = timedelta(seconds= WINDOW_IN_MINUTES * 60)
         dt_next_time = dt_current_time - td_window
         while dt_next_time < dt_current_time:
             f_input = GetOutputFile(dt_next_time)
@@ -130,7 +130,8 @@ class TweetStreamDataProcessing:
             dt_next_time += td_interval
         return mf_hashtag_to_ltuo_point_and_occurrence_time
     @staticmethod
-    def get_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, no_of_hashtags):
+    def get_top_hashtags(no_of_hashtags):
+        mf_hashtag_to_ltuo_point_and_occurrence_time = TweetStreamDataProcessing.load_mf_hashtag_to_ltuo_point_and_occurrence_time(TOP_HASHTAGS_WINDOW_IN_MINUTES)
         return [ '%s (%s)' % (hashtag, len(ltuo_point_and_occurrence_time))
                     for hashtag, ltuo_point_and_occurrence_time in 
                        sorted(
@@ -157,6 +158,7 @@ class TweetStreamDataProcessing:
 class Charts:
     ID_SPREAD_VIRALITY_CHART = 'SpreadViralityChart'
     ID_TEMPORAL_DISTRIBUTION_CHART = 'TemporalDistribution'
+    ID_LOCATION_ACCUMULATION = 'LocationAccumulation'
     @staticmethod
     def getTimeTuple(t):
         t_struct = time.localtime(t - 19800)
@@ -169,17 +171,39 @@ class Charts:
             data : [[Date.UTC(1970, 9, 27), 0], [Date.UTC(1970, 10, 10), 0.6]]
         }]
         '''
+        tuo_hashtag_and_ltuo_occurrence_time_and_total_no_of_observed_locations = []
         tuo_hashtag_and_ltuo_occurrence_time_and_locations = \
             TweetStreamDataProcessing.get_tuo_hashtag_and_ltuo_occurrence_time_and_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
-        char_data = []
-        for hashtag, ltuo_occurrence_time_and_locations in tuo_hashtag_and_ltuo_occurrence_time_and_locations:
-            ltuo_occurrence_time_and_no_of_unique_locations = [(Charts.getTimeTuple(occurrence_time), len(set(locations))) for occurrence_time, locations in ltuo_occurrence_time_and_locations]
-            char_data.append({
-                                  'name': hashtag, 
-                                  'data': ltuo_occurrence_time_and_no_of_unique_locations, 
+        for hashtag, ltuo_occurrence_time_and_locations in \
+                tuo_hashtag_and_ltuo_occurrence_time_and_locations:
+            so_observed_locations = set()
+            ltuo_occurrence_time_and_total_no_of_observed_locations = []
+            for occurrence_time, locations in ltuo_occurrence_time_and_locations:
+                no_of_new_locations = len(set(locations).difference(so_observed_locations))
+                so_observed_locations = so_observed_locations.union(set(locations))
+                ltuo_occurrence_time_and_total_no_of_observed_locations.append([occurrence_time, no_of_new_locations])
+            tuo_hashtag_and_ltuo_occurrence_time_and_total_no_of_observed_locations.append([hashtag, ltuo_occurrence_time_and_total_no_of_observed_locations])
+        chart_data = []
+        for hashtag, ltuo_occurrence_time_and_total_no_of_observed_locations in \
+                tuo_hashtag_and_ltuo_occurrence_time_and_total_no_of_observed_locations:
+            chart_data.append({
+                               'name': hashtag,
+                               'data': [ (Charts.getTimeTuple(occurrence_time), total_no_of_observed_locations) 
+                                            for occurrence_time, total_no_of_observed_locations in ltuo_occurrence_time_and_total_no_of_observed_locations],
+                               'showInLegend': False
+                               })
+        return chart_data
+#        tuo_hashtag_and_ltuo_occurrence_time_and_locations = \
+#            TweetStreamDataProcessing.get_tuo_hashtag_and_ltuo_occurrence_time_and_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
+#        char_data = []
+#        for hashtag, ltuo_occurrence_time_and_locations in tuo_hashtag_and_ltuo_occurrence_time_and_locations:
+#            ltuo_occurrence_time_and_no_of_unique_locations = [(Charts.getTimeTuple(occurrence_time), len(set(locations))) for occurrence_time, locations in ltuo_occurrence_time_and_locations]
+#            char_data.append({
+#                                  'name': hashtag, 
+#                                  'data': ltuo_occurrence_time_and_no_of_unique_locations, 
 #                                  'showInLegend': False
-                              })
-        return char_data
+#                              })
+#        return char_data
     @staticmethod
     def _TemporalDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
         tuo_hashtag_and_ltuo_occurrence_time_and_no_of_occurrences = []
@@ -202,7 +226,30 @@ class Charts:
             chart_data.append({
                                'name': hashtag,
                                'data': [ (Charts.getTimeTuple(occurrence_time), no_of_occurrences) for occurrence_time, no_of_occurrences in ltuo_occurrence_time_and_no_of_occurrences],
-#                               'showInLegend': False
+                               'showInLegend': False
+                               })
+        return chart_data
+    @staticmethod
+    def _LocationAccumulation(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
+        tuo_hashtag_and_ltuo_occurrence_time_and_total_no_of_observed_locations = []
+        tuo_hashtag_and_ltuo_occurrence_time_and_locations = \
+            TweetStreamDataProcessing.get_tuo_hashtag_and_ltuo_occurrence_time_and_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
+        for hashtag, ltuo_occurrence_time_and_locations in \
+                tuo_hashtag_and_ltuo_occurrence_time_and_locations:
+            so_observed_locations = set()
+            ltuo_occurrence_time_and_total_no_of_observed_locations = []
+            for occurrence_time, locations in ltuo_occurrence_time_and_locations:
+                so_observed_locations = so_observed_locations.union(set(locations))
+                ltuo_occurrence_time_and_total_no_of_observed_locations.append([occurrence_time, len(so_observed_locations)])
+            tuo_hashtag_and_ltuo_occurrence_time_and_total_no_of_observed_locations.append([hashtag, ltuo_occurrence_time_and_total_no_of_observed_locations])
+        chart_data = []
+        for hashtag, ltuo_occurrence_time_and_total_no_of_observed_locations in \
+                tuo_hashtag_and_ltuo_occurrence_time_and_total_no_of_observed_locations:
+            chart_data.append({
+                               'name': hashtag,
+                               'data': [ (Charts.getTimeTuple(occurrence_time), total_no_of_observed_locations) 
+                                            for occurrence_time, total_no_of_observed_locations in ltuo_occurrence_time_and_total_no_of_observed_locations],
+                               'showInLegend': False
                                })
         return chart_data
     @staticmethod
@@ -210,6 +257,7 @@ class Charts:
         return {
                 Charts.ID_SPREAD_VIRALITY_CHART: Charts._SpreadViralityChart(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags),
                 Charts.ID_TEMPORAL_DISTRIBUTION_CHART: Charts._TemporalDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags),
+                Charts.ID_LOCATION_ACCUMULATION: Charts._LocationAccumulation(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags),
                 }
 def update_memcache(key, value):
     value = cjson.encode(value)
@@ -224,15 +272,17 @@ def update_remote_data():
 #            print 'Wrong remote application url: ', APPLICATION_URL
 #            print 'Remote memcache not updated. Change remote application url. Program exiting.'
 #            exit()
-            mf_hashtag_to_ltuo_point_and_occurrence_time = TweetStreamDataProcessing.load_mf_hashtag_to_ltuo_point_and_occurrence_time()
+            mf_hashtag_to_ltuo_point_and_occurrence_time = TweetStreamDataProcessing.load_mf_hashtag_to_ltuo_point_and_occurrence_time(TOTAL_ANALYSIS_WINDOW_IN_MINUTES)
     else: 
         mf_hashtag_to_ltuo_point_and_occurrence_time = dummy_mf_hashtag_to_ltuo_point_and_occurrence_time
-    hashtags = TweetStreamDataProcessing.get_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, NO_OF_HASHTAGS_TO_SHOW)
-    locations = TweetStreamDataProcessing.get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, hashtags)
-    locations_in_order_of_influence_spread = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, hashtags)
-    charts_data = Charts.get_charts_data(mf_hashtag_to_ltuo_point_and_occurrence_time, hashtags)
+    top_hashtags = TweetStreamDataProcessing.get_top_hashtags(NO_OF_HASHTAGS_TO_SHOW)
+    print top_hashtags
+#    exit()
+    locations = TweetStreamDataProcessing.get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
+    locations_in_order_of_influence_spread = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
+    charts_data = Charts.get_charts_data(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
     mf_memcache_key_to_value = dict([
-                                 ('hashtags', hashtags),
+                                 ('hashtags', top_hashtags),
                                  ('locations', locations),
                                  ('locations_in_order_of_influence_spread', locations_in_order_of_influence_spread),
                                  ('charts_data', charts_data),

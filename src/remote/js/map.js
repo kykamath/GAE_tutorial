@@ -33,6 +33,8 @@ var HashtagsMenu = {
 					PropagationAnalysis.Charts.UpdateCurrentChart()
 				}, 750);
 			}
+
+
 			GlobalSpread.Plot(this.value, updatePropagationAnalysis);
 		});
 	}
@@ -123,9 +125,9 @@ var Charts = {
 				var chart_id = $(("#radioset :radio:checked")).attr("id");
 				Charts.LoadChart(hashtag_id, chart_id);
 				// if(chart_id == 'SpreadViralityChart') {
-					// Charts.LoadChart(hashtag_id, chart_id);
+				// Charts.LoadChart(hashtag_id, chart_id);
 				// } else {
-					// Charts['SpreadViralityChart'](series1);
+				// Charts['SpreadViralityChart'](series1);
 				// }
 			});
 		},
@@ -137,7 +139,7 @@ var Charts = {
 			ltuo_occurrence_time_as_jsdateutc_and_no_of_unique_locations = [];
 			$.each(ltuo_occurrence_time_and_no_of_unique_locations, function(index, occurrence_time_and_no_of_unique_locations) {
 				occurrence_time = occurrence_time_and_no_of_unique_locations[0]
-				date_in_utc = Date.UTC(occurrence_time[0], occurrence_time[1]-1, occurrence_time[2], occurrence_time[3], occurrence_time[4], occurrence_time[5])
+				date_in_utc = Date.UTC(occurrence_time[0], occurrence_time[1] - 1, occurrence_time[2], occurrence_time[3], occurrence_time[4], occurrence_time[5])
 				ltuo_occurrence_time_as_jsdateutc_and_no_of_unique_locations.push([date_in_utc, occurrence_time_and_no_of_unique_locations[1]]);
 			});
 			hashtag_data_to_plot.data = ltuo_occurrence_time_as_jsdateutc_and_no_of_unique_locations;
@@ -168,9 +170,9 @@ var Charts = {
 			title : {
 				text : 'Spread Virality'
 			},
-			subtitle : {
-				text : 'Number of unique locations the hashtag appears in every timeunit.'
-			},
+			// subtitle : {
+				// text : 'Number of unique locations the hashtag appears in every timeunit.'
+			// },
 			xAxis : {
 				type : 'datetime',
 			},
@@ -197,9 +199,9 @@ var Charts = {
 			title : {
 				text : 'Temporal distribution'
 			},
-			subtitle : {
-				text : 'Number of occurrences of in every timeunit.'
-			},
+			// subtitle : {
+				// text : 'Number of occurrences of in every timeunit.'
+			// },
 			xAxis : {
 				type : 'datetime',
 			},
@@ -216,7 +218,36 @@ var Charts = {
 			},
 			series : chart_data,
 		});
-	}
+	},
+	LocationAccumulation : function(chart_data) {
+		chart = new Highcharts.Chart({
+			chart : {
+				renderTo : 'chart',
+				type : 'spline'
+			},
+			title : {
+				text : 'Growth of hashtag spread'
+			},
+			// subtitle : {
+				// text : 'Total no. of locations observed.'
+			// },
+			xAxis : {
+				type : 'datetime',
+			},
+			yAxis : {
+				title : {
+					text : 'Total no. of locations observed.'
+				},
+				min : 0
+			},
+			tooltip : {
+				formatter : function() {
+					return 'Hashtag was observed in total of <b>' + this.y + '</b>' + ' locations until ' + '<b>' + Highcharts.dateFormat('%e %b, %H:%M', this.x) + '</b>';
+				}
+			},
+			series : chart_data,
+		});
+	},
 }
 
 SpreadPath = {
