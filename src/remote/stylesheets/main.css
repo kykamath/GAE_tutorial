@@ -22,3 +22,27 @@ body {
 	background-color: #40B5E2;
 	margin: 1%;
 }
+
+/*#autoselect {
+	width: 200px;
+	text-align: center;
+}
+
+.ui-combobox {
+	position: relative;
+	display: inline-block;
+}
+.ui-button {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin-left: -1px;
+	padding: 0;
+	/* adjust styles for IE 6/7 */
+	*height: 1.7em;
+	*top: 0.1em;
+}
+.ui-autocomplete-input {
+	margin: 0;
+	padding: 0.3em;
+}*/

@@ -275,9 +275,22 @@ def update_remote_data():
             mf_hashtag_to_ltuo_point_and_occurrence_time = TweetStreamDataProcessing.load_mf_hashtag_to_ltuo_point_and_occurrence_time(TOTAL_ANALYSIS_WINDOW_IN_MINUTES)
     else: 
         mf_hashtag_to_ltuo_point_and_occurrence_time = dummy_mf_hashtag_to_ltuo_point_and_occurrence_time
+        
+        
+    ####################
+#    import matplotlib.pyplot as plt
+#    plt.hist(
+#             [len(ltuo_point_and_occurrence_time) for _, ltuo_point_and_occurrence_time in mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems()],
+#             1000
+#             )
+#    plt.show()
+    print len([1 for hashtag, ltuo_point_and_occurrence_time in mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems() if len(ltuo_point_and_occurrence_time)>50])
+    exit()
+    
+    
+    #####################
+    
     top_hashtags = TweetStreamDataProcessing.get_top_hashtags(NO_OF_HASHTAGS_TO_SHOW)
-    print top_hashtags
-#    exit()
     locations = TweetStreamDataProcessing.get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
     locations_in_order_of_influence_spread = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)
     charts_data = Charts.get_charts_data(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)

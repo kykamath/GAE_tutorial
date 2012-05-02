@@ -3,6 +3,7 @@
 		<title>App to analyze global social media propagation</title>
 		<link type="text/css" href="/stylesheets/jquery-ui/eggplant/jquery-ui-1.8.19.custom.css" rel="stylesheet" />
 		<link type="text/css" href="/stylesheets/main.css" rel="stylesheet" />
+		<link rel="Stylesheet" href="/stylesheets/demo.css" type="text/css" />
 		<link rel="Stylesheet" href="/stylesheets/menu/ui.selectmenu.css" type="text/css" />
 
 		<script src="http://maps.google.com/maps/api/js?sensor=true" type="text/javascript"></script>
@@ -18,17 +19,56 @@
 	</head>
 
 	<body>
-		<form action="#">
-			<select name="hashtags" id="hashtags">
-				{% if hashtags %}
-				{% for hashtag in hashtags %}
-				<option value={{ forloop.counter0 }} >{{hashtag}}</option>
-				{% endfor %}
-				{% else %}
-				<option value="None">No hashtags</option>
-				{% endif %}
-			</select>
-		</form>
+		<div class="ui-widget">
+			<form action="#">
+				
+				
+<!-- 				<div class="ui-widget"> -->
+				<label>Your preferred programming language: </label>
+				<input id="all_hashtags_autoselect" />
+				<!-- <select id="all_hashtags_combobox">
+					<option value="">Select one...</option>
+					<option value="ActionScript">ActionScript</option>
+					<option value="AppleScript">AppleScript</option>
+					<option value="Asp">Asp</option>
+					<option value="BASIC">BASIC</option>
+					<option value="C">C</option>
+					<option value="C++">C++</option>
+					<option value="Clojure">Clojure</option>
+					<option value="COBOL">COBOL</option>
+					<option value="ColdFusion">ColdFusion</option>
+					<option value="Erlang">Erlang</option>
+					<option value="Fortran">Fortran</option>
+					<option value="Groovy">Groovy</option>
+					<option value="Haskell">Haskell</option>
+					<option value="Java">Java</option>
+					<option value="JavaScript">JavaScript</option>
+					<option value="Lisp">Lisp</option>
+					<option value="Perl">Perl</option>
+					<option value="PHP">PHP</option>
+					<option value="Python">Python</option>
+					<option value="Ruby">Ruby</option>
+					<option value="Scala">Scala</option>
+					<option value="Scheme">Scheme</option>
+				</select> -->
+<!-- 			</div> -->
+				
+				
+				
+				
+				<br/>
+				<br/>
+				<select name="hashtags" id="hashtags">
+					{% if hashtags %}
+					{% for hashtag in hashtags %}
+					<option value={{ forloop.counter0 }} >{{hashtag}}</option>
+					{% endfor %}
+					{% else %}
+					<option value="None">No hashtags</option>
+					{% endif %}
+				</select>
+			</form>
+		</div>
 		<div id="tabs">
 			<ul>
 				<li>
