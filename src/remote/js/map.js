@@ -168,17 +168,17 @@ var Charts = {
 				type : 'spline'
 			},
 			title : {
-				text : 'Spread Virality'
+				text : 'Spatial Freshness'
 			},
-			// subtitle : {
-				// text : 'Number of unique locations the hashtag appears in every timeunit.'
-			// },
+			subtitle : {
+				text : 'Shows the ability of the hashtag to spread to new locations.'
+			},
 			xAxis : {
 				type : 'datetime',
 			},
 			yAxis : {
 				title : {
-					text : 'Number of unique locations'
+					text : 'Number of new locations added in the time unit'
 				},
 				min : 0
 			},
@@ -199,15 +199,15 @@ var Charts = {
 			title : {
 				text : 'Temporal distribution'
 			},
-			// subtitle : {
-				// text : 'Number of occurrences of in every timeunit.'
-			// },
+			subtitle : {
+				text : 'Shows the temporal distribution of the hashtag.'
+			},
 			xAxis : {
 				type : 'datetime',
 			},
 			yAxis : {
 				title : {
-					text : 'Number of occurrences'
+					text : 'Number of occurrences in the time unit'
 				},
 				min : 0
 			},
@@ -226,17 +226,17 @@ var Charts = {
 				type : 'spline'
 			},
 			title : {
-				text : 'Growth of hashtag spread'
+				text : 'Spatial Spread'
 			},
-			// subtitle : {
-				// text : 'Total no. of locations observed.'
-			// },
+			subtitle : {
+				text : 'Shows how the hashtag has spread until now.'
+			},
 			xAxis : {
 				type : 'datetime',
 			},
 			yAxis : {
 				title : {
-					text : 'Total no. of locations observed.'
+					text : 'Total no. of locations observed until the time unit.'
 				},
 				min : 0
 			},
