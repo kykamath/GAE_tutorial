@@ -516,13 +516,13 @@ var PropagationAnalysis = {
 				if($.inArray(ui.index, PropagationAnalysis.loaded_tabs) == -1) {
 					PropagationAnalysis.loaded_tabs.push(ui.index);
 					switch (ui.index) {
-						case 0:
-							PropagationAnalysis.loaded_tabs.push(ui.index);
+						case 1:
+							// PropagationAnalysis.loaded_tabs.push(ui.index);
 							PropagationAnalysis.SpreadPath.Init();
 							break;
-						case 1:
+						case 0:
 							// alert('loading ' + ui.index);
-							PropagationAnalysis.loaded_tabs.push(ui.index);
+							// PropagationAnalysis.loaded_tabs.push(ui.index);
 							PropagationAnalysis.Charts.Init();
 							break;
 						default:
