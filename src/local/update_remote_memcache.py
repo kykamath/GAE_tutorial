@@ -305,6 +305,6 @@ def update_remote_data():
 if __name__ == '__main__':
     while True:
         update_remote_data()
-        exit()
+#        exit()
         time.sleep(UPDATE_FREQUENCY_IN_MINUTES * 60)
         
