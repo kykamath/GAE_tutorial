@@ -115,16 +115,17 @@ var HashtagsMenu = {
 			maxHeight : 150,
 			style : 'dropdown'
 		}).change(function() {
-			function updatePropagationAnalysis() {
-				PropagationAnalysis.SpreadPath.StopPlot();
-				PropagationAnalysis.Charts.UpdateCurrentChart();
-				// setTimeout(function() {
-				// PropagationAnalysis.Charts.UpdateCurrentChart()
-				// }, 750);
-			}
+			// function updatePropagationAnalysis() {
+			// PropagationAnalysis.SpreadPath.StopPlot();
+			// PropagationAnalysis.Charts.UpdateCurrentChart();
+			// // setTimeout(function() {
+			// // PropagationAnalysis.Charts.UpdateCurrentChart()
+			// // }, 750);
+			// }
 
-
-			GlobalSpread.Plot(this.value, updatePropagationAnalysis);
+			PropagationAnalysis.GlobalSpread.Plot(this.value, function(){});
+			PropagationAnalysis.SpreadPath.StopPlot();
+			PropagationAnalysis.Charts.UpdateCurrentChart();
 		});
 
 	}
@@ -556,8 +557,8 @@ var PropagationAnalysis = {
 							PropagationAnalysis.Charts.Init();
 							break;
 						case 0:
-							GlobalSpread.Init();
-							// Added this timeout to deal with what looks like an 
+							PropagationAnalysis.GlobalSpread.Init();
+							// Added this timeout to deal with what looks like an
 							// issue with google maps.
 							setTimeout(function() {
 								$('#tabs2').tabs('select', '#tabs-2');
@@ -571,6 +572,7 @@ var PropagationAnalysis = {
 			}
 		});
 	},
+	GlobalSpread : GlobalSpread,
 	Charts : Charts,
 	SpreadPath : SpreadPath
 }
