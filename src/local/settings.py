@@ -31,7 +31,7 @@ BLOCKED_HASHTAGS = ['rt', 'np', 'jagadtrack', 'nowplaying', 'followback', 'jobs'
                     'teamfollowback', 'fb', 'job', 'tweetmyjobs', 'oomf', 'futown',
                      'coupon', 'tomorrow', 'nf', 'media', '1day', 'up', 'weather',
                      'lol', 'fail', 'wtf', 'followme', 'ff', 'followfriday', 'teamautofollow',
-                     'getalljobs', 
+                     'getalljobs', 'follow', 'internship',
                 ]
 
 
