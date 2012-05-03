@@ -149,10 +149,10 @@ var HashtagsMenu = {
 // }
 // }
 
-var GlobalSpread = {
-	MAP_OPTIONS : {
+var CENTER = new google.maps.LatLng(40.410359, -3.68866);
+var MAP_OPTIONS = {
 		zoom : 2,
-		center : new google.maps.LatLng(40.410359, -3.68866),
+		center : CENTER,
 		mapTypeId : google.maps.MapTypeId.ROADMAP,
 		disableDefaultUI : false,
 		scrollwheel : true,
@@ -161,7 +161,9 @@ var GlobalSpread = {
 		mapTypeControl : true,
 		scaleControl : true,
 		disableDoubleClickZoom : false
-	},
+};
+
+var GlobalSpread = {
 	Init : function() {
 		$('#map_canvas').gmap();
 		var hashtag_id = $('select#hashtags').val();
@@ -224,7 +226,7 @@ var GlobalSpread = {
 		ltuo_lattice_and_no_of_occurrences = ObjectsFromMemcache.GetLocations(hashtag_id);
 		heat_map_object = GlobalSpread._ConvertToHeatMapObjects(ltuo_lattice_and_no_of_occurrences);
 
-		map = new google.maps.Map(document.getElementById("map_canvas"), GlobalSpread.MAP_OPTIONS);
+		map = new google.maps.Map(document.getElementById("map_canvas"), MAP_OPTIONS);
 		heatmap = new HeatmapOverlay(map, {
 			"radius" : 15,
 			"visible" : true,
