@@ -84,18 +84,24 @@ var ObjectsFromMemcache = {
 	locations_in_order_of_influence_spread : null,
 	charts_data : null,
 	LoadLocations : function(callback_function, parameter) {
-		$.getJSON("/locations", {}, function(data) {
-			ObjectsFromMemcache.locations = data;
+		$.post("/get_from_memcache", {
+			'key' : 'locations'
+		}, function(data) {
+			ObjectsFromMemcache.locations = jQuery.parseJSON(data);
 			callback_function(parameter);
 		});
 	},
 	LoadLocationsInOrderOfInfluenceSpread : function() {
-		$.getJSON("/locations_in_order_of_influence_spread", {}, function(data) {
-			ObjectsFromMemcache.locations_in_order_of_influence_spread = data;
+		$.post("/get_from_memcache", {
+			'key' : 'locations_in_order_of_influence_spread'
+		}, function(data) {
+			// $.getJSON("/locations_in_order_of_influence_spread", {}, function(data) {
+			ObjectsFromMemcache.locations_in_order_of_influence_spread = jQuery.parseJSON(data);
 		});
 	},
 	// LoadAllHastags : function() {
-	// $.getJSON("/all_hashtags", {}, function(data) {
+	// 		$.post("/get_from_memcache", {'key': 'all_hashtags'}, function(data) {
+	//// $.getJSON("/all_hashtags", {}, function(data) {
 	// ObjectsFromMemcache.all_hashtags = data;
 	// });
 	// },
@@ -343,8 +349,10 @@ var Charts = {
 	},
 	LoadChart : function(hashtag_id, chart_id) {
 		if(ObjectsFromMemcache.charts_data == null) {
-			$.getJSON("/charts_data", {}, function(data) {
-				ObjectsFromMemcache.charts_data = data;
+			$.post("/get_from_memcache", {
+				'key' : 'charts_data'
+			}, function(data) {
+				ObjectsFromMemcache.charts_data = jQuery.parseJSON(data);
 				Charts.FillChartFromMemcache(hashtag_id, chart_id);
 			});
 		} else {

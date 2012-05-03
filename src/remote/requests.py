@@ -6,66 +6,37 @@ from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
 
 fld_templates = 'templates/'
-
 memcache_client = memcache.Client()        
 
-def GetObjectFromMemcache(key):
-    json_object = memcache_client.get(key)
-    if json_object: return json.loads(json_object)
-
 class Map(webapp.RequestHandler):
+    def _GetObjectFromMemcache(self, key):
+        json_object = memcache_client.get(key)
+        if json_object: return json.loads(json_object)
     def get(self):
         path = os.path.join(os.path.dirname(__file__), fld_templates+'map.html')
-        self.response.out.write(template.render(path, {'hashtags': GetObjectFromMemcache('hashtags')}))
+        self.response.out.write(template.render(path, {'hashtags': self._GetObjectFromMemcache('hashtags')}))
         
 class Temp(webapp.RequestHandler):
     def get(self):
         path = os.path.join(os.path.dirname(__file__), fld_templates+'temp.html')
         self.response.out.write(template.render(path, {}))
 
-
-class Locations(webapp.RequestHandler):
-    def get(self):
-        locations = memcache_client.get('locations')
-        self.response.out.write(locations)
-        
-class LocationsInOrderOfInfluenceSpread(webapp.RequestHandler):
-    def get(self):
-        locations_in_order_of_influence_spread = memcache_client.get('locations_in_order_of_influence_spread')
-        self.response.out.write(locations_in_order_of_influence_spread)
-
-class AllHashtags(webapp.RequestHandler):
-    def get(self):
-        all_hashtags = memcache_client.get('all_hashtags')
-        self.response.out.write(all_hashtags)
-
-class ChartsData(webapp.RequestHandler):
-    def get(self):
-        charts_data = memcache_client.get('charts_data')
-        self.response.out.write(charts_data)
-
 class UpdateMemcache(webapp.RequestHandler):
-#    def __init__(self):
-#        self.memcache_client = memcache.Client()
     def post(self):
         key = self.request.get('key')
         value = self.request.get('value')
         memcache_client.set(key=key, value=value, time=3600)
         
-#class GetFromMemcache(webapp.RequestHandler):
-#    def get(self):
-#        key = self.request.get('key')
-#        self.response.out.write(memcache_client.get(key))
+class GetFromMemcache(webapp.RequestHandler):
+    def post(self):
+        key = self.request.get('key')
+        self.response.out.write(memcache_client.get(key))
 
 application = webapp.WSGIApplication([
   ('/', Map),
   ('/temp', Temp),
   ('/update_memcache', UpdateMemcache),
-#  ('/get_from_memcache', GetFromMemcache),
-  ('/all_hashtags', AllHashtags),
-  ('/locations', Locations),
-  ('/locations_in_order_of_influence_spread', LocationsInOrderOfInfluenceSpread),
-  ('/charts_data', ChartsData),
+  ('/get_from_memcache', GetFromMemcache),
 ], debug=False)
 
 
