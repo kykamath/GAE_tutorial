@@ -46,7 +46,7 @@ def parse_stream():
 #        except Exception as e: print e
 
 if __name__ == '__main__':
-    while True:
-        try:
-            parse_stream()
-        except: pass
+#    while True:
+#        try:
+        parse_stream()
+#        except: pass
