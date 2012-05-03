@@ -155,12 +155,12 @@ var GlobalSpread = {
 		center : new google.maps.LatLng(40.410359, -3.68866),
 		mapTypeId : google.maps.MapTypeId.ROADMAP,
 		disableDefaultUI : false,
-		scrollwheel : false,
-		draggable : false,
+		scrollwheel : true,
+		draggable : true,
 		navigationControl : true,
 		mapTypeControl : true,
 		scaleControl : true,
-		disableDoubleClickZoom : true
+		disableDoubleClickZoom : false
 	},
 	Init : function() {
 		$('#map_canvas').gmap();
