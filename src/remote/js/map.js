@@ -122,11 +122,18 @@ var HashtagsMenu = {
 			// // PropagationAnalysis.Charts.UpdateCurrentChart()
 			// // }, 750);
 			// }
-
-			PropagationAnalysis.GlobalSpread.Plot(this.value, function() {
-			});
-			PropagationAnalysis.SpreadPath.StopPlot();
-			PropagationAnalysis.Charts.UpdateCurrentChart();
+			var selected_tab_index = $('#tabs2').tabs('option', 'selected')
+			PropagationAnalysis.Reload(this.value, selected_tab_index);
+			if(selected_tab_index == 2) {
+				PropagationAnalysis.SpreadPath.StopPlot();
+			} else {
+				PropagationAnalysis.SpreadPath.hashtag_changed = true;
+			}
+			// PropagationAnalysis.SpreadPath.StopPlot()
+			// $('#tabs2').tabs('select', '#tabs-4');
+			// PropagationAnalysis.GlobalSpread.Plot(this.value);
+			// PropagationAnalysis.SpreadPath.StopPlot();
+			// PropagationAnalysis.Charts.UpdateCurrentChart();
 		});
 
 	}
@@ -149,10 +156,11 @@ var HashtagsMenu = {
 // }
 // }
 
-var CENTER = new google.maps.LatLng(40.410359, -3.68866);
-var MAP_OPTIONS = {
+var HeatMap = {
+	mf_element_id_to_heatmap : {},
+	MAP_OPTIONS : {
 		zoom : 2,
-		center : CENTER,
+		center : new google.maps.LatLng(40.410359, -3.68866),
 		mapTypeId : google.maps.MapTypeId.ROADMAP,
 		disableDefaultUI : false,
 		scrollwheel : true,
@@ -161,11 +169,52 @@ var MAP_OPTIONS = {
 		mapTypeControl : true,
 		scaleControl : true,
 		disableDoubleClickZoom : false
-};
+	},
+	_ConvertToHeatMapObjects : function(ltuo_lattice_and_no_of_occurrences) {
+		var data = []
+		var max = -1;
+		$.each(ltuo_lattice_and_no_of_occurrences, function(index, lattice_and_no_of_occurrences) {
+			data.push({
+				'lat' : lattice_and_no_of_occurrences[0][0],
+				'lng' : lattice_and_no_of_occurrences[0][1],
+				'count' : lattice_and_no_of_occurrences[1]
+			})
+			if(max < lattice_and_no_of_occurrences[1]) {
+				max = lattice_and_no_of_occurrences[1];
+			}
+		});
+		return {
+			'max' : max,
+			'data' : data
+		};
+	},
+	Init : function(map_element_id) {
+		var map = new google.maps.Map(document.getElementById(map_element_id), HeatMap.MAP_OPTIONS);
+		var heatmap = new HeatmapOverlay(map, {
+			"radius" : 15,
+			"visible" : true,
+			"opacity" : 60
+		});
+		return [map, heatmap]
+	},
+	Plot : function(map_element_id, ltuo_lattice_and_no_of_occurrences, callback_function) {
+		var initiated_objects = HeatMap.Init(map_element_id);
+		var map = initiated_objects[0];
+		map.my_heatmap_overlay = initiated_objects[1];
+		map.my_heat_map_data_object = HeatMap._ConvertToHeatMapObjects(ltuo_lattice_and_no_of_occurrences);
+		map.my_callback_function = callback_function;
+		google.maps.event.addListenerOnce(map, "idle", function() {
+			map.my_heatmap_overlay.setDataSet(map.my_heat_map_data_object);
+			if(map.my_callback_function != null) {
+				map.my_callback_function(map);
+			}
+		});
+	}
+}
 
 var GlobalSpread = {
 	Init : function() {
-		$('#map_canvas').gmap();
+		// $('#map_canvas').gmap();
 		var hashtag_id = $('select#hashtags').val();
 		if(hashtag_id != "None") {
 			// Memcache has valid data as hashtags are loaded in menu. Now load data structures.
@@ -177,13 +226,13 @@ var GlobalSpread = {
 			// Code using heatmap
 			// map = new google.maps.Map(document.getElementById("map_canvas"), GlobalSpread.MAP_OPTIONS);
 			// heatmap = new HeatmapOverlay(map, {
-				// "radius" : 15,
-				// "visible" : true,
-				// "opacity" : 60
+			// "radius" : 15,
+			// "visible" : true,
+			// "opacity" : 60
 			// });
 			// // this is important, because if you set the data set too early, the latlng/pixel projection doesn't work
 			// google.maps.event.addListenerOnce(map, "idle", function() {
-				// heatmap.setDataSet(testData);
+			// heatmap.setDataSet(testData);
 			// });
 
 			// Load locations_in_order_of_influence_spread from memcache.
@@ -206,38 +255,13 @@ var GlobalSpread = {
 		}
 
 	},
-	_ConvertToHeatMapObjects : function(ltuo_lattice_and_no_of_occurrences) {
-		var data = []
-		var max = -1;
-		$.each(ltuo_lattice_and_no_of_occurrences, function(index, lattice_and_no_of_occurrences) {
-			data.push({
-				'lat' : lattice_and_no_of_occurrences[0][0],
-				'lng' : lattice_and_no_of_occurrences[0][1],
-				'count' : lattice_and_no_of_occurrences[1]
-			})
-			if(max<lattice_and_no_of_occurrences[1]){
-				max=lattice_and_no_of_occurrences[1];
-			}
-		});
-		return {'max':max, 'data':data};
-	},
 	Plot : function(hashtag_id, callback_function) {
 		// Code for heatmap
 		ltuo_lattice_and_no_of_occurrences = ObjectsFromMemcache.GetLocations(hashtag_id);
-		heat_map_object = GlobalSpread._ConvertToHeatMapObjects(ltuo_lattice_and_no_of_occurrences);
-
-		map = new google.maps.Map(document.getElementById("map_canvas"), MAP_OPTIONS);
-		heatmap = new HeatmapOverlay(map, {
-			"radius" : 15,
-			"visible" : true,
-			"opacity" : 60
-		});
-		// this is important, because if you set the data set too early, the latlng/pixel projection doesn't work
-		google.maps.event.addListenerOnce(map, "idle", function() {
-			heatmap.setDataSet(heat_map_object);
-		});
+		HeatMap.Plot('map_canvas', ltuo_lattice_and_no_of_occurrences);
 
 		// Code for gmap
+		//
 		// locations_for_hashtag = ObjectsFromMemcache.GetLocations(hashtag_id);
 		// $('#map_canvas').gmap('clear', 'markers');
 		// var mark_clusterter = $('#map_canvas').gmap('get', 'MarkerClusterer');
@@ -256,6 +280,7 @@ var GlobalSpread = {
 		// if(callback_function != null) {
 		// callback_function();
 		// }
+
 	}
 }
 
@@ -326,7 +351,7 @@ var Charts = {
 			Charts.FillChartFromMemcache(hashtag_id, chart_id);
 		}
 	},
-	UpdateCurrentChart : function() {
+	Reload : function() {
 		if(Charts.is_loaded) {
 			$('#radioset').trigger('change');
 		}
@@ -452,14 +477,112 @@ var Charts = {
 SpreadPath = {
 	MARKER_DROP_TIME_LAG : 1000,
 	intervals_for_marker_on_spread_path : [],
+	hashtag_changed : false,
 	Init : function() {
-		$('#map_path').gmap3({
-			action : 'init',
-			options : {
-				zoom : 3
-			},
-		});
+		HeatMap.Init('map_path');
+		// $('#map_path').gmap3({
+		// action : 'init',
+		// options : {
+		// zoom : 3
+		// },
+		// });
 		SpreadPath.Buttons.Init();
+	},
+	StartPlot : function() {
+		//Code for heatmap
+		// $('#map_path').gmap3({
+		// action : 'clear'
+		// });
+		callback_function_to_animate = function(map) {
+			var hashtag_id = $('select#hashtags').val();
+			var ltuo_lattice_and_pure_influence_score = ObjectsFromMemcache.GetLocationsInOrderOfInfluenceSpread(hashtag_id);
+			var iteration_counter = 0;
+			var spread_path_queue = $('#queue');
+			SpreadPath.intervals_for_marker_on_spread_path = [];
+			$.each(ltuo_lattice_and_pure_influence_score, function(index, lattice_and_pure_influence_score) {
+				spread_path_queue.queue(function() {
+					SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(function() {
+
+						// var lat = Math.random() * 180;
+						// var lng = Math.random() * 180;
+						// var count = Math.floor(Math.random() * 180 + 1);
+
+						lattice = lattice_and_pure_influence_score[0]
+						map.my_heatmap_overlay.addDataPoint(lattice[0], lattice[1], lattice_and_pure_influence_score[1]);
+
+					}, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
+					iteration_counter += 1
+					$(this).dequeue();
+				});
+			});
+			spread_path_queue.queue(function() {
+				SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(SpreadPath.Buttons.EndState, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
+				$(this).dequeue();
+			});
+		}
+		HeatMap.Plot('map_path', [[[-57.7, -145.8], 0]], callback_function_to_animate);
+
+		// Code for gmap
+		// $('#map_path').gmap3({
+		// action : 'clear'
+		// });
+		// SpreadPath.intervals_for_marker_on_spread_path = [];
+		// $.each(path_for_hashtag, function(index, co_ordinates) {
+		// spread_path_queue.queue(function() {
+		// SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(function() {
+		// $('#map_path').gmap3({
+		// action : 'addMarker',
+		// latLng : [co_ordinates[0], co_ordinates[1]],
+		// options : {
+		// animation : google.maps.Animation.DROP
+		// },
+		// callback : function(marker) {
+		// $('#map_path').gmap3({
+		// action : 'panTo',
+		// args : [marker.position]
+		// });
+		// },
+		// });
+		// }, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
+		// iteration_counter += 1
+		// $(this).dequeue();
+		// });
+		// });
+		// spread_path_queue.queue(function() {
+		// SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(SpreadPath.Buttons.EndState, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
+		// $(this).dequeue();
+		// });
+	},
+	ReStartPlot : function() {
+		var intervals_for_marker_on_spread_path = [];
+		$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, tuo_fn_and_interval) {
+			intervals_for_marker_on_spread_path.push(new Timeout(tuo_fn_and_interval[0], tuo_fn_and_interval[1]));
+		})
+		SpreadPath.intervals_for_marker_on_spread_path = intervals_for_marker_on_spread_path;
+	},
+	PausePlot : function() {
+		var uncleared_intervals_for_marker_on_spread_path = []
+		var no_of_cleared = 0;
+		$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
+			if(interval.cleared == false) {
+				var tuo_fn_and_interval = [interval.fn, interval.interval - (no_of_cleared * SpreadPath.MARKER_DROP_TIME_LAG)];
+				uncleared_intervals_for_marker_on_spread_path.push(tuo_fn_and_interval);
+			} else {
+				no_of_cleared += 1;
+			}
+			interval.clear();
+		});
+		SpreadPath.intervals_for_marker_on_spread_path = uncleared_intervals_for_marker_on_spread_path;
+	},
+	StopPlot : function() {
+		SpreadPath.Buttons.EndState();
+		$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
+			if($.isArray(interval) == false) {
+				interval.clear();
+			}
+		});
+		SpreadPath.intervals_for_marker_on_spread_path = []
+		HeatMap.Plot('map_path', [[[-57.7, -145.8], 0]]);
 	},
 	Buttons : {
 		TogglePlayPauseButtons : function() {
@@ -531,78 +654,11 @@ SpreadPath = {
 			$("#draw_spread_path_button").button("option", "label", 'Start');
 		}
 	},
-	StartPlot : function() {
-		var hashtag_id = $('select#hashtags').val();
-		path_for_hashtag = ObjectsFromMemcache.GetLocationsInOrderOfInfluenceSpread(hashtag_id);
-		var iteration_counter = 0;
-		var spread_path_queue = $('#queue');
-		$('#map_path').gmap3({
-			action : 'clear'
-		});
-		SpreadPath.intervals_for_marker_on_spread_path = [];
-		$.each(path_for_hashtag, function(index, co_ordinates) {
-			spread_path_queue.queue(function() {
-				SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(function() {
-					$('#map_path').gmap3({
-						action : 'addMarker',
-						latLng : [co_ordinates[0], co_ordinates[1]],
-						options : {
-							animation : google.maps.Animation.DROP
-						},
-						callback : function(marker) {
-							$('#map_path').gmap3({
-								action : 'panTo',
-								args : [marker.position]
-							});
-						},
-					});
-				}, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
-				iteration_counter += 1
-				$(this).dequeue();
-			});
-		});
-		spread_path_queue.queue(function() {
-			SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(SpreadPath.Buttons.EndState, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
-			$(this).dequeue();
-		});
-	},
-	ReStartPlot : function() {
-		var intervals_for_marker_on_spread_path = [];
-		$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, tuo_fn_and_interval) {
-			intervals_for_marker_on_spread_path.push(new Timeout(tuo_fn_and_interval[0], tuo_fn_and_interval[1]));
-		})
-		SpreadPath.intervals_for_marker_on_spread_path = intervals_for_marker_on_spread_path;
-	},
-	PausePlot : function() {
-		var uncleared_intervals_for_marker_on_spread_path = []
-		var no_of_cleared = 0;
-		$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
-			if(interval.cleared == false) {
-				var tuo_fn_and_interval = [interval.fn, interval.interval - (no_of_cleared * SpreadPath.MARKER_DROP_TIME_LAG)];
-				uncleared_intervals_for_marker_on_spread_path.push(tuo_fn_and_interval);
-			} else {
-				no_of_cleared += 1;
-			}
-			interval.clear();
-		});
-		SpreadPath.intervals_for_marker_on_spread_path = uncleared_intervals_for_marker_on_spread_path;
-	},
-	StopPlot : function() {
-		SpreadPath.Buttons.EndState();
-		$.each(SpreadPath.intervals_for_marker_on_spread_path, function(index, interval) {
-			if($.isArray(interval) == false) {
-				interval.clear();
-			}
-		});
-		SpreadPath.intervals_for_marker_on_spread_path = []
-		$('#map_path').gmap3({
-			action : 'clear'
-		});
-	},
 }
 
 var PropagationAnalysis = {
 	loaded_tabs : [],
+	current_hashtag_id : null,
 	Init : function() {
 		$('#tabs2').tabs({
 			show : function(event, ui) {
@@ -610,29 +666,51 @@ var PropagationAnalysis = {
 					PropagationAnalysis.loaded_tabs.push(ui.index);
 					switch (ui.index) {
 						case 2:
-							// PropagationAnalysis.loaded_tabs.push(ui.index);
 							PropagationAnalysis.SpreadPath.Init();
 							break;
 						case 1:
-							// alert('loading ' + ui.index);
-							// PropagationAnalysis.loaded_tabs.push(ui.index);
 							PropagationAnalysis.Charts.Init();
 							break;
 						case 0:
 							PropagationAnalysis.GlobalSpread.Init();
 							// Added this timeout to deal with what looks like an
 							// issue with google maps.
-							setTimeout(function() {
-								$('#tabs2').tabs('select', '#tabs-2');
-								$('#tabs2').tabs('select', '#tabs-4');
-							}, 1000);
+							// setTimeout(function() {
+							// $('#tabs2').tabs('select', '#tabs-2');
+							// $('#tabs2').tabs('select', '#tabs-4');
+							// }, 1000);
 							break;
 						default:
 							console.log();
 					}
+				} else {
+					var hashtag_id = $('select#hashtags').val();
+					// if(current_hashtag_id != hashtag_id) {
+					// current_hashtag_id = hashtag_id;
+					PropagationAnalysis.Reload(hashtag_id, ui.index);
+					// }
 				}
 			}
 		});
+	},
+	Reload : function(hashtag_id, current_tab_index) {
+		switch(current_tab_index) {
+			case 2:
+				// PropagationAnalysis.SpreadPath.StopPlot();
+				if(PropagationAnalysis.SpreadPath.hashtag_changed) {
+					PropagationAnalysis.SpreadPath.StopPlot();
+					PropagationAnalysis.SpreadPath.hashtag_changed = false;
+				}
+				break;
+			case 1:
+				PropagationAnalysis.Charts.Reload();
+				break;
+			case 0:
+				PropagationAnalysis.GlobalSpread.Plot(hashtag_id);
+				break;
+			default:
+				console.log();
+		}
 	},
 	GlobalSpread : GlobalSpread,
 	Charts : Charts,

@@ -65,23 +65,25 @@ class SpatialAnalysisAlgorithms():
             return []
     @staticmethod
     def GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time):
-        ltuo_location_and_occurrence_time = [[getLattice(point, LATTICE_ACCURACY), occurrence_time]for point, occurrence_time in ltuo_point_and_occurrence_time]
-        ltuo_location_and_occurrence_times = [(location, sorted(zip(*ito_location_and_occurrence_time)[1]))
+        ltuo_lattice_and_occurrence_time = [[getLattice(point, LATTICE_ACCURACY), occurrence_time]for point, occurrence_time in ltuo_point_and_occurrence_time]
+        ltuo_lattice_and_occurrence_times = [(location, sorted(zip(*ito_location_and_occurrence_time)[1]))
                                                 for location, ito_location_and_occurrence_time in
                                                     groupby(
-                                                            sorted(ltuo_location_and_occurrence_time, key=itemgetter(0)),
+                                                            sorted(ltuo_lattice_and_occurrence_time, key=itemgetter(0)),
                                                             key=itemgetter(0)
                                                     )
                                             ] 
-        ltuo_location_and_pure_influence_score = []
-        for location, location_occurrence_times in ltuo_location_and_occurrence_times:
+        ltuo_lattice_and_pure_influence_score = []
+        for lattice, lattice_occurrence_times in ltuo_lattice_and_occurrence_times:
             pure_influence_scores = []
-            for neighbor_location, neighbor_location_occurrence_times in ltuo_location_and_occurrence_times:
-                if location != neighbor_location:
-                    pure_influence_score = SpatialAnalysisAlgorithms._weighted_aggregate_occurrence(neighbor_location_occurrence_times, location_occurrence_times)
+            for neighbor_lattice, neighbor_lattice_occurrence_times in ltuo_lattice_and_occurrence_times:
+                if lattice != neighbor_lattice:
+                    pure_influence_score = SpatialAnalysisAlgorithms._weighted_aggregate_occurrence(neighbor_lattice_occurrence_times, lattice_occurrence_times)
                     pure_influence_scores.append(pure_influence_score)
-            ltuo_location_and_pure_influence_score.append([location, np.mean(pure_influence_scores)])
-        return zip(*sorted(ltuo_location_and_pure_influence_score, key=itemgetter(1)))[0]
+            ltuo_lattice_and_pure_influence_score.append([lattice, np.mean(pure_influence_scores)])
+        lattices = zip(*sorted(ltuo_lattice_and_pure_influence_score, key=itemgetter(1)))[0]
+        return [[lattice, 1] for lattice in lattices]
+#        return sorted(ltuo_lattice_and_pure_influence_score, key=itemgetter(1))
     @staticmethod
     def GetSpreadRadiusByTime(ltuo_point_and_occurrence_time):
         ltuo_point__lattice__normalized_occurrence_time = \

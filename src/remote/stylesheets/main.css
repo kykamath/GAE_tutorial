@@ -2,7 +2,7 @@ body {
 	font: 75.5% "Trebuchet MS", sans-serif;
 	margin: 1%;
 }
-#map_canvas {
+.map {
 /*	width: 100%;
 	height: 75%*/
 	position:relative;
@@ -11,12 +11,12 @@ body {
 	margin-right: auto;
 	width:1000px;
 	height:700px;
-	border:1px dashed black;
+/*	border:1px dashed black;*/
 }
-#map_path {
+/*#map_path {
 	width: 100%;
 	height: 75%
-}
+}*/
 .chart {
 	width: 50%;
 	margin-left: auto;

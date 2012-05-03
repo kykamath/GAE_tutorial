@@ -3,7 +3,8 @@ Created on Apr 29, 2012
 
 @todo: Spatial path taken
 @todo: Extra hashtags
-
+@todo: efficiency:
+    dont reload every time
 @author: kykamath
 '''
 
@@ -24,7 +25,7 @@ UPDATE_FREQUENCY_IN_MINUTES = 5
 TOTAL_ANALYSIS_WINDOW_IN_MINUTES = INTERVAL_IN_MINUTES*12*4
 TOP_HASHTAGS_WINDOW_IN_MINUTES = INTERVAL_IN_MINUTES*12*1
 NO_OF_TOP_HASHTAGS = 10 
-NO_OF_EXTRA_HASHTAGS = 200
+NO_OF_EXTRA_HASHTAGS = 1000
 LATTICE_ACCURACY = 4.0
 
 UNIT_LATTICE_ACCURACY = 0.735 #50.78 miles
