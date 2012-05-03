@@ -51,14 +51,18 @@ class SpatialAnalysisAlgorithms():
                     key=itemgetter(1)
                 )
          ]
-        valid_lattices = zip(*filter(
+        ltuo_valid_lattices_and_no_of_occurrences = filter(
                                 lambda (lattice, no_of_occurrences):no_of_occurrences>=min_occurrences,
                                 ltuo_lattice_and_no_of_occurrences
-                                ))[0]
-        return filter(
-               lambda tuo_point_and_lattice_and_normalized_occurrence_time: tuo_point_and_lattice_and_normalized_occurrence_time[1] in valid_lattices,
-               ltuo_point_and_lattice_and_normalized_occurrence_time
-               )
+                                )
+        if ltuo_valid_lattices_and_no_of_occurrences:
+            valid_lattices = zip(*ltuo_valid_lattices_and_no_of_occurrences)[0]
+            return filter(
+                   lambda tuo_point_and_lattice_and_normalized_occurrence_time: tuo_point_and_lattice_and_normalized_occurrence_time[1] in valid_lattices,
+                   ltuo_point_and_lattice_and_normalized_occurrence_time
+                   )
+        else:
+            return []
     @staticmethod
     def GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time):
         ltuo_location_and_occurrence_time = [[getLattice(point, LATTICE_ACCURACY), occurrence_time]for point, occurrence_time in ltuo_point_and_occurrence_time]
