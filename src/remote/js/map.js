@@ -584,9 +584,6 @@ $(document).ready(function() {
 	// Init hashtags menu
 	HashtagsMenu.Init();
 
-	// 	Init global spread map
-	// GlobalSpread.Init();
-
 	// 	Init spread path map
 	PropagationAnalysis.Init();
 });

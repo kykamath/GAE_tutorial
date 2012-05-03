@@ -133,6 +133,17 @@ class TweetStreamDataProcessing:
                   SpatialAnalysisAlgorithms.GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time)
             )
         return locations_in_order_of_influence_spread
+
+    @staticmethod
+    def SpatialDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
+        tuo_hashtag_and_ltuo_lattice_and_no_of_occurrences = []
+        for top_hashtag in top_hashtags:
+            ltuo_point_and_occurrence_time = mf_hashtag_to_ltuo_point_and_occurrence_time[top_hashtag.split()[0]]
+            tuo_hashtag_and_ltuo_lattice_and_no_of_occurrences.append([
+                                                                   top_hashtag,
+                                                                  SpatialAnalysisAlgorithms.GetSpatialDistribution(ltuo_point_and_occurrence_time)
+                                                                  ])
+        return tuo_hashtag_and_ltuo_lattice_and_no_of_occurrences
 class Charts:
     ID_SPREAD_VIRALITY_CHART = 'SpreadViralityChart'
     ID_TEMPORAL_DISTRIBUTION_CHART = 'TemporalDistribution'
@@ -283,7 +294,7 @@ def update_remote_data():
     mf_memcache_key_to_value = dict([
                                  ('hashtags', top_hashtags),
                                  ('all_hashtags', required_hashtags),
-                                 ('locations', locations),
+                                 ('locations', TweetStreamDataProcessing.SpatialDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)),
                                  ('locations_in_order_of_influence_spread', locations_in_order_of_influence_spread),
                                  ('charts_data', charts_data),
                                  ]) 

@@ -82,7 +82,7 @@ class SpatialAnalysisAlgorithms():
     def GetSpreadRadiusByTime(ltuo_point_and_occurrence_time):
         ltuo_point__lattice__normalized_occurrence_time = \
             SpatialAnalysisAlgorithms._get_ltuo_point_and_lattice_and_normalized_occurrence_time(ltuo_point_and_occurrence_time)
-        SpatialAnalysisAlgorithms._get_valid_occurrences(ltuo_point__lattice__normalized_occurrence_time)
+        ltuo_point__lattice__normalized_occurrence_time = SpatialAnalysisAlgorithms._get_valid_occurrences(ltuo_point__lattice__normalized_occurrence_time)
         ltuo_normalized_occurrence_time_and_points = [(normalized_occurrence_time, zip(*ito_ltuo_point__lattice__normalized_occurrence_time)[0])
             for normalized_occurrence_time, ito_ltuo_point__lattice__normalized_occurrence_time in
                 groupby(
@@ -92,5 +92,18 @@ class SpatialAnalysisAlgorithms():
         ]
         return [(normalized_occurrence_time, getRadiusOfGyration(points)) 
                     for normalized_occurrence_time, points in ltuo_normalized_occurrence_time_and_points]
+    @staticmethod
+    def GetSpatialDistribution(ltuo_point_and_occurrence_time):
+        ltuo_point__lattice__normalized_occurrence_time = \
+            SpatialAnalysisAlgorithms._get_ltuo_point_and_lattice_and_normalized_occurrence_time(ltuo_point_and_occurrence_time)
+        ltuo_point_and_lattice_and_normalized_occurrence_time = SpatialAnalysisAlgorithms._get_valid_occurrences(ltuo_point__lattice__normalized_occurrence_time)
+        ltuo_lattice_and_no_of_occurrences = [(lattice, len(list(ito_ltuo_point_and_lattice_and_normalized_occurrence_time)))
+            for lattice, ito_ltuo_point_and_lattice_and_normalized_occurrence_time in 
+                groupby(
+                    sorted(ltuo_point_and_lattice_and_normalized_occurrence_time, key=itemgetter(1)),
+                    key=itemgetter(1)
+                )
+        ]
+        return ltuo_lattice_and_no_of_occurrences
         
         
