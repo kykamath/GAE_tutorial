@@ -43,7 +43,7 @@ class SpatialAnalysisAlgorithms():
         return [(point, getLattice(point, UNIT_LATTICE_ACCURACY), GeneralMethods.approximateEpoch(occurrence_time, UNIT_TIME_UNIT_IN_SECONDS)) 
          for point, occurrence_time in ltuo_point_and_occurrence_time]
     @staticmethod
-    def _get_valid_occurrences(ltuo_point_and_lattice_and_normalized_occurrence_time):
+    def _get_valid_occurrences(ltuo_point_and_lattice_and_normalized_occurrence_time, min_occurrences = MIN_OCCURRENCES_IN_A_LOCATION):
         ltuo_lattice_and_no_of_occurrences = [(lattice, len(list(ito_ltuo_point_and_lattice_and_normalized_occurrence_time)))
             for lattice, ito_ltuo_point_and_lattice_and_normalized_occurrence_time in 
                 groupby(
@@ -52,7 +52,7 @@ class SpatialAnalysisAlgorithms():
                 )
          ]
         valid_lattices = zip(*filter(
-                                lambda (lattice, no_of_occurrences):no_of_occurrences>=MIN_OCCURRENCES_IN_A_LOCATION,
+                                lambda (lattice, no_of_occurrences):no_of_occurrences>=min_occurrences,
                                 ltuo_lattice_and_no_of_occurrences
                                 ))[0]
         return filter(
@@ -96,7 +96,7 @@ class SpatialAnalysisAlgorithms():
     def GetSpatialDistribution(ltuo_point_and_occurrence_time):
         ltuo_point__lattice__normalized_occurrence_time = \
             SpatialAnalysisAlgorithms._get_ltuo_point_and_lattice_and_normalized_occurrence_time(ltuo_point_and_occurrence_time)
-        ltuo_point_and_lattice_and_normalized_occurrence_time = SpatialAnalysisAlgorithms._get_valid_occurrences(ltuo_point__lattice__normalized_occurrence_time)
+        ltuo_point_and_lattice_and_normalized_occurrence_time = SpatialAnalysisAlgorithms._get_valid_occurrences(ltuo_point__lattice__normalized_occurrence_time, 3)
         ltuo_lattice_and_no_of_occurrences = [(lattice, len(list(ito_ltuo_point_and_lattice_and_normalized_occurrence_time)))
             for lattice, ito_ltuo_point_and_lattice_and_normalized_occurrence_time in 
                 groupby(

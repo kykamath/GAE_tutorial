@@ -151,86 +151,108 @@ var HashtagsMenu = {
 
 var GlobalSpread = {
 	MAP_OPTIONS : {
-			zoom : 2,
-			center : new google.maps.LatLng(40.410359,-3.68866),
-			mapTypeId : google.maps.MapTypeId.ROADMAP,
-			disableDefaultUI : false,
-			scrollwheel : false,
-			draggable : false,
-			navigationControl : true,
-			mapTypeControl : true,
-			scaleControl : true,
-			disableDoubleClickZoom : true
+		zoom : 2,
+		center : new google.maps.LatLng(40.410359, -3.68866),
+		mapTypeId : google.maps.MapTypeId.ROADMAP,
+		disableDefaultUI : false,
+		scrollwheel : false,
+		draggable : false,
+		navigationControl : true,
+		mapTypeControl : true,
+		scaleControl : true,
+		disableDoubleClickZoom : true
 	},
 	Init : function() {
 		$('#map_canvas').gmap();
 		var hashtag_id = $('select#hashtags').val();
 		if(hashtag_id != "None") {
-		// Memcache has valid data as hashtags are loaded in menu. Now load data structures.
-		// Load locations from memcache.
-		
-		// Code using gmap
-		// ObjectsFromMemcache.LoadLocations(GlobalSpread.Plot, hashtag_id)
-		
-		
-		// Code using heatmap
-		map = new google.maps.Map(document.getElementById("map_canvas"), GlobalSpread.MAP_OPTIONS);
-		heatmap = new HeatmapOverlay(map, {"radius":15, "visible":true, "opacity":60});
-		// this is important, because if you set the data set too early, the latlng/pixel projection doesn't work
-		google.maps.event.addListenerOnce(map, "idle", function(){
-			heatmap.setDataSet(testData);
-		});
-		
-		// Load locations_in_order_of_influence_spread from memcache.
-		ObjectsFromMemcache.LoadLocationsInOrderOfInfluenceSpread();
-		
+			// Memcache has valid data as hashtags are loaded in menu. Now load data structures.
+			// Load locations from memcache.
+
+			// Code using gmap
+			ObjectsFromMemcache.LoadLocations(GlobalSpread.Plot, hashtag_id)
+
+			// Code using heatmap
+			// map = new google.maps.Map(document.getElementById("map_canvas"), GlobalSpread.MAP_OPTIONS);
+			// heatmap = new HeatmapOverlay(map, {
+				// "radius" : 15,
+				// "visible" : true,
+				// "opacity" : 60
+			// });
+			// // this is important, because if you set the data set too early, the latlng/pixel projection doesn't work
+			// google.maps.event.addListenerOnce(map, "idle", function() {
+				// heatmap.setDataSet(testData);
+			// });
+
+			// Load locations_in_order_of_influence_spread from memcache.
+			ObjectsFromMemcache.LoadLocationsInOrderOfInfluenceSpread();
+
 		} else {
-		// Memcache doesn't have valid data as hashtags are not loaded in menu.
-		// Show a dialog displaying the issue.
-		$("#dialog:ui-dialog").dialog("destroy");
-		$("#dialog-message").css('visibility', 'visible');
-		$("#dialog-message").dialog({
-		modal : true,
-		buttons : {
-		Ok : function() {
-		$(this).dialog("close");
-		$("#dialog-message").css('visibility', 'hidden');
-		}
-		}
-		});
+			// Memcache doesn't have valid data as hashtags are not loaded in menu.
+			// Show a dialog displaying the issue.
+			$("#dialog:ui-dialog").dialog("destroy");
+			$("#dialog-message").css('visibility', 'visible');
+			$("#dialog-message").dialog({
+				modal : true,
+				buttons : {
+					Ok : function() {
+						$(this).dialog("close");
+						$("#dialog-message").css('visibility', 'hidden');
+					}
+				}
+			});
 		}
 
 	},
-	_ConvertToHeatMapObjects : function(ltuo_lattice_and_no_of_occurrences){
-		var heat_map_object = []
+	_ConvertToHeatMapObjects : function(ltuo_lattice_and_no_of_occurrences) {
+		var data = []
+		var max = -1;
 		$.each(ltuo_lattice_and_no_of_occurrences, function(index, lattice_and_no_of_occurrences) {
-			lattice, no_of_occurrences = lattice_and_no_of_occurrences[0], lattice_and_no_of_occurrences[1]
-			heat_map_object.push({'lat':lattice[0], 'lng':lattice[1], 'count': no_of_occurrences})
+			data.push({
+				'lat' : lattice_and_no_of_occurrences[0][0],
+				'lng' : lattice_and_no_of_occurrences[0][1],
+				'count' : lattice_and_no_of_occurrences[1]
+			})
+			if(max<lattice_and_no_of_occurrences[1]){
+				max=lattice_and_no_of_occurrences[1];
+			}
 		});
-		return heat_map_object;
+		return {'max':max, 'data':data};
 	},
 	Plot : function(hashtag_id, callback_function) {
+		// Code for heatmap
 		ltuo_lattice_and_no_of_occurrences = ObjectsFromMemcache.GetLocations(hashtag_id);
 		heat_map_object = GlobalSpread._ConvertToHeatMapObjects(ltuo_lattice_and_no_of_occurrences);
-		
-		
+
+		map = new google.maps.Map(document.getElementById("map_canvas"), GlobalSpread.MAP_OPTIONS);
+		heatmap = new HeatmapOverlay(map, {
+			"radius" : 15,
+			"visible" : true,
+			"opacity" : 60
+		});
+		// this is important, because if you set the data set too early, the latlng/pixel projection doesn't work
+		google.maps.event.addListenerOnce(map, "idle", function() {
+			heatmap.setDataSet(heat_map_object);
+		});
+
+		// Code for gmap
 		// locations_for_hashtag = ObjectsFromMemcache.GetLocations(hashtag_id);
 		// $('#map_canvas').gmap('clear', 'markers');
 		// var mark_clusterter = $('#map_canvas').gmap('get', 'MarkerClusterer');
 		// if(mark_clusterter != null) {
-			// mark_clusterter.clearMarkers();
+		// mark_clusterter.clearMarkers();
 		// }
 		// $.each(locations_for_hashtag, function(index, location) {
-			// $('#map_canvas').gmap('addMarker',
-			// // {'position': location, 'bounds': true, 'icon': 'http://maps.google.com/mapfiles/kml/paddle/pink-blank.png'}
-			// {
-				// 'position' : location,
-				// 'bounds' : true
-			// })
+		// $('#map_canvas').gmap('addMarker',
+		// // {'position': location, 'bounds': true, 'icon': 'http://maps.google.com/mapfiles/kml/paddle/pink-blank.png'}
+		// {
+		// 'position' : location,
+		// 'bounds' : true
+		// })
 		// });
 		// $('#map_canvas').gmap('set', 'MarkerClusterer', new MarkerClusterer($('#map_canvas').gmap('get', 'map'), $('#map_canvas').gmap('get', 'markers')));
 		// if(callback_function != null) {
-			// callback_function();
+		// callback_function();
 		// }
 	}
 }
