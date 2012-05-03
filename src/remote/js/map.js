@@ -117,9 +117,10 @@ var HashtagsMenu = {
 		}).change(function() {
 			function updatePropagationAnalysis() {
 				PropagationAnalysis.SpreadPath.StopPlot();
-				setTimeout(function() {
-					PropagationAnalysis.Charts.UpdateCurrentChart()
-				}, 750);
+				PropagationAnalysis.Charts.UpdateCurrentChart();
+				// setTimeout(function() {
+				// PropagationAnalysis.Charts.UpdateCurrentChart()
+				// }, 750);
 			}
 
 
@@ -556,6 +557,12 @@ var PropagationAnalysis = {
 							break;
 						case 0:
 							GlobalSpread.Init();
+							// Added this timeout to deal with what looks like an 
+							// issue with google maps.
+							setTimeout(function() {
+								$('#tabs2').tabs('select', '#tabs-2');
+								$('#tabs2').tabs('select', '#tabs-4');
+							}, 1000);
 							break;
 						default:
 							console.log();
