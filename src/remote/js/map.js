@@ -95,9 +95,9 @@ var ObjectsFromMemcache = {
 		});
 	},
 	// LoadAllHastags : function() {
-		// $.getJSON("/all_hashtags", {}, function(data) {
-			// ObjectsFromMemcache.all_hashtags = data;
-		// });
+	// $.getJSON("/all_hashtags", {}, function(data) {
+	// ObjectsFromMemcache.all_hashtags = data;
+	// });
 	// },
 	GetLocations : function(hashtag_id) {
 		return this.locations[hashtag_id];
@@ -121,6 +121,8 @@ var HashtagsMenu = {
 					PropagationAnalysis.Charts.UpdateCurrentChart()
 				}, 750);
 			}
+
+
 			GlobalSpread.Plot(this.value, updatePropagationAnalysis);
 		});
 
@@ -128,20 +130,20 @@ var HashtagsMenu = {
 }
 
 // var AutoCompleteHashtag = {
-	// Init : function() {
-// 
-		// // $("#all_hashtags_combobox").combobox({
-		// // maxHeight : 30,
-		// // });
-		// // ObjectsFromMemcache.LoadAllHastags(fun);
-		// // val all
-		// // var all_hashtags = ["ActionScript", "AppleScript", "Asp", "BASIC", "C", "C++", "Clojure", "COBOL", "ColdFusion", "Erlang", "Fortran", "Groovy", "Haskell", "Java", "JavaScript", "Lisp", "Perl", "PHP", "Python", "Ruby", "Scala", "Scheme"];
-		// $("#all_hashtags_autoselect").autocomplete({
-			// source : '/all_hashtags'
-		// }).click(function() {
-			// $(this).val("");
-		// });
-	// }
+// Init : function() {
+//
+// // $("#all_hashtags_combobox").combobox({
+// // maxHeight : 30,
+// // });
+// // ObjectsFromMemcache.LoadAllHastags(fun);
+// // val all
+// // var all_hashtags = ["ActionScript", "AppleScript", "Asp", "BASIC", "C", "C++", "Clojure", "COBOL", "ColdFusion", "Erlang", "Fortran", "Groovy", "Haskell", "Java", "JavaScript", "Lisp", "Perl", "PHP", "Python", "Ruby", "Scala", "Scheme"];
+// $("#all_hashtags_autoselect").autocomplete({
+// source : '/all_hashtags'
+// }).click(function() {
+// $(this).val("");
+// });
+// }
 // }
 
 var GlobalSpread = {
@@ -347,6 +349,35 @@ var Charts = {
 			tooltip : {
 				formatter : function() {
 					return 'Hashtag was observed in total of <b>' + this.y + '</b>' + ' locations until ' + '<b>' + Highcharts.dateFormat('%e %b, %H:%M', this.x) + '</b>';
+				}
+			},
+			series : chart_data,
+		});
+	},
+	Radius : function(chart_data) {
+		chart = new Highcharts.Chart({
+			chart : {
+				renderTo : 'chart',
+				type : 'spline'
+			},
+			title : {
+				text : 'Spread Radius'
+			},
+			subtitle : {
+				text : 'Shows how far the hashtag had spread at the time unit.'
+			},
+			xAxis : {
+				type : 'datetime',
+			},
+			yAxis : {
+				title : {
+					text : 'Radius in miles'
+				},
+				min : 0
+			},
+			tooltip : {
+				formatter : function() {
+					return 'Hashtag had a radius of <b>' + this.y + '</b>' + ' miles at ' + '<b>' + Highcharts.dateFormat('%e %b, %H:%M', this.x) + '</b>';
 				}
 			},
 			series : chart_data,

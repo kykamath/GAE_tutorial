@@ -116,7 +116,6 @@ class TweetStreamDataProcessing:
             if len(extra_hastags) < no_of_hashtags:
                 if hashtag not in top_hashtags: extra_hastags.append(hashtag)
             else: break
-        assert len(extra_hastags)==no_of_hashtags
         return extra_hastags
                 
     @staticmethod
@@ -138,6 +137,7 @@ class Charts:
     ID_SPREAD_VIRALITY_CHART = 'SpreadViralityChart'
     ID_TEMPORAL_DISTRIBUTION_CHART = 'TemporalDistribution'
     ID_LOCATION_ACCUMULATION = 'LocationAccumulation'
+    ID_RADIUS = 'Radius'
     @staticmethod
     def getTimeTuple(t):
         t_struct = time.localtime(t - 19800)
@@ -232,11 +232,31 @@ class Charts:
                                })
         return chart_data
     @staticmethod
+    def _Radius(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
+        tuo_hashtag_and_ltuo_normalized_occurrence_time_and_radius = []
+        for top_hashtag in top_hashtags:
+            ltuo_point_and_occurrence_time = mf_hashtag_to_ltuo_point_and_occurrence_time[top_hashtag.split()[0]]
+            tuo_hashtag_and_ltuo_normalized_occurrence_time_and_radius.append([
+                                                                               top_hashtag,
+                                                                  SpatialAnalysisAlgorithms.GetSpreadRadiusByTime(ltuo_point_and_occurrence_time)
+                                                                  ])
+        chart_data = []
+        for hashtag, ltuo_normalized_occurrence_time_and_radius in \
+                tuo_hashtag_and_ltuo_normalized_occurrence_time_and_radius:
+            chart_data.append({
+                               'name': hashtag,
+                               'data': [ (Charts.getTimeTuple(normalized_occurrence_time), radius) 
+                                            for normalized_occurrence_time, radius in ltuo_normalized_occurrence_time_and_radius],
+                               'showInLegend': False
+                               })
+        return chart_data
+    @staticmethod
     def get_charts_data(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
         return {
                 Charts.ID_SPREAD_VIRALITY_CHART: Charts._SpreadViralityChart(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags),
                 Charts.ID_TEMPORAL_DISTRIBUTION_CHART: Charts._TemporalDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags),
                 Charts.ID_LOCATION_ACCUMULATION: Charts._LocationAccumulation(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags),
+                Charts.ID_RADIUS: Charts._Radius(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags),
                 }
 def update_memcache(key, value):
     value = cjson.encode(value)
@@ -246,14 +266,14 @@ def update_memcache(key, value):
     return urllib2.urlopen(req)
 
 def update_remote_data():
-    if MACHINE_NAME == 'kykamath.cs.tamu.edu':
+#    if MACHINE_NAME == 'kykamath.cs.tamu.edu':
 #        if APPLICATION_URL=='http://localhost:8080/': 
 #            print 'Wrong remote application url: ', APPLICATION_URL
 #            print 'Remote memcache not updated. Change remote application url. Program exiting.'
 #            exit()
-            mf_hashtag_to_ltuo_point_and_occurrence_time = TweetStreamDataProcessing.load_mf_hashtag_to_ltuo_point_and_occurrence_time(TOTAL_ANALYSIS_WINDOW_IN_MINUTES)
-    else: 
-        mf_hashtag_to_ltuo_point_and_occurrence_time = dummy_mf_hashtag_to_ltuo_point_and_occurrence_time
+    mf_hashtag_to_ltuo_point_and_occurrence_time = TweetStreamDataProcessing.load_mf_hashtag_to_ltuo_point_and_occurrence_time(TOTAL_ANALYSIS_WINDOW_IN_MINUTES)
+#    else: 
+#        mf_hashtag_to_ltuo_point_and_occurrence_time = dummy_mf_hashtag_to_ltuo_point_and_occurrence_time
     top_hashtags = TweetStreamDataProcessing.get_top_hashtags(NO_OF_TOP_HASHTAGS)
     extra_hashtags = TweetStreamDataProcessing.get_extra_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags, NO_OF_EXTRA_HASHTAGS)
     required_hashtags = top_hashtags+extra_hashtags
@@ -275,6 +295,6 @@ def update_remote_data():
 if __name__ == '__main__':
     while True:
         update_remote_data()
-        exit()
+#        exit()
         time.sleep(UPDATE_FREQUENCY_IN_MINUTES * 60)
         
