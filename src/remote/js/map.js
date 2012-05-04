@@ -159,7 +159,10 @@ var HashtagsMenu = {
 	Init : function() {
 		UpdateHashtagInfo = function(element_id, offset) {
 			HashtagsMenu.SetValAndText(element_id, offset);
-			$("#title").text(HashtagsMenu.GetHashtagsText());
+			$("#title").fadeOut(1000, function() {
+				$("#title").text(HashtagsMenu.GetHashtagsText())
+				$("#title").fadeIn(1000);
+			})
 			var selected_tab_index = $('#tabs2').tabs('option', 'selected')
 			PropagationAnalysis.Reload(HashtagsMenu.GetHashtagsId(), selected_tab_index);
 			if(selected_tab_index == 2) {
@@ -174,7 +177,8 @@ var HashtagsMenu = {
 		}).change(function() {
 			UpdateHashtagInfo('select#hashtags', 0);
 		});
-		$("#combobox").combobox({ selected : function() {
+		$("#combobox").combobox({
+			selected : function() {
 				UpdateHashtagInfo('#combobox', 10);
 			}
 		});
