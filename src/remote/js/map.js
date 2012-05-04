@@ -447,7 +447,7 @@ var Charts = {
 }
 
 SpreadPath = {
-	MARKER_DROP_TIME_LAG : 1000,
+	MARKER_DROP_TIME_LAG : 250,
 	intervals_for_marker_on_spread_path : [],
 	hashtag_changed : false,
 	Init : function() {
