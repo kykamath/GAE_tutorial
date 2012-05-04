@@ -17,7 +17,7 @@ class Map(webapp.RequestHandler):
         self.response.out.write(template.render(path, 
                                                 {
                                                  'hashtags': self._GetObjectFromMemcache('hashtags'),
-                                                 'all_hashtags': self._GetObjectFromMemcache('all_hashtags')
+                                                 'all_hashtags': self._GetObjectFromMemcache('all_hashtags')[10:]
                                                  }
                                                 ))
         

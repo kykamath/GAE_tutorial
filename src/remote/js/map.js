@@ -77,12 +77,12 @@
 	});
 })(jQuery);
 
-$(function() {
-	$("#combobox").combobox();
-	// $("#toggle").click(function() {
-		// $("#combobox").toggle();
-	// });
-});
+// $(function() {
+// $("#combobox").combobox();
+// // $("#toggle").click(function() {
+// // $("#combobox").toggle();
+// // });
+// });
 
 var ObjectsFromMemcache = {
 	locations : null,
@@ -154,21 +154,49 @@ var ObjectsFromMemcache = {
 }
 
 var HashtagsMenu = {
+	selected_val : null,
+	selected_text : null,
 	Init : function() {
-		$('select#hashtags').selectmenu({
-			maxHeight : 150,
-			style : 'dropdown'
-		}).change(function() {
+		UpdateHashtagInfo = function(element_id, offset) {
+			HashtagsMenu.SetValAndText(element_id, offset);
+			$("#title").text(HashtagsMenu.GetHashtagsText());
 			var selected_tab_index = $('#tabs2').tabs('option', 'selected')
-			PropagationAnalysis.Reload(this.value, selected_tab_index);
+			PropagationAnalysis.Reload(HashtagsMenu.GetHashtagsId(), selected_tab_index);
 			if(selected_tab_index == 2) {
 				PropagationAnalysis.SpreadPath.StopPlot();
 			} else {
 				PropagationAnalysis.SpreadPath.hashtag_changed = true;
 			}
+		};
+		$('select#hashtags').selectmenu({
+			maxHeight : 150,
+			style : 'dropdown'
+		}).change(function() {
+			UpdateHashtagInfo('select#hashtags', 0);
 		});
-
+		$("#combobox").combobox({ selected : function() {
+				UpdateHashtagInfo('#combobox', 10);
+			}
+		});
+		HashtagsMenu.SetValAndText('select#hashtags', 0);
+		$("#title").text(HashtagsMenu.GetHashtagsText());
+	},
+	GetHashtagsId : function() {
+		// return $('select#hashtags').val();
+		return HashtagsMenu.selected_val;
+	},
+	GetHashtagsText : function() {
+		return HashtagsMenu.selected_text;
+	},
+	SetValAndText : function(element_id, offset) {
+		var element_text = $(element_id).val();
+		var split_result = element_text.split(':ilab:');
+		HashtagsMenu.selected_val = '' + (parseInt(split_result[0]) + offset);
+		HashtagsMenu.selected_text = split_result[1];
 	}
+	// GetHashtagsId : function() {
+	// return $('select#hashtags').val();
+	// }
 }
 
 var AutoCompleteHashtag = {
@@ -247,7 +275,7 @@ var HeatMap = {
 var GlobalSpread = {
 	Init : function() {
 		// $('#map_canvas').gmap();
-		var hashtag_id = $('select#hashtags').val();
+		var hashtag_id = HashtagsMenu.GetHashtagsId();
 		if(hashtag_id != "None") {
 			// Memcache has valid data as hashtags are loaded in menu. Now load data structures.
 			// Load locations from memcache.
@@ -306,11 +334,11 @@ var Charts = {
 	ChartButtons : {
 		Init : function() {
 			first_chart_id = 'TemporalDistribution'
-			var hashtag_id = $('select#hashtags').val();
+			var hashtag_id = HashtagsMenu.GetHashtagsId();
 			// Charts.LoadChart(hashtag_id, first_chart_id);
 			ObjectsFromMemcache.GetChartData(hashtag_id, first_chart_id, Charts.FillChartFromMemcache)
 			$("#radioset").buttonset().change(function() {
-				var hashtag_id = $('select#hashtags').val();
+				var hashtag_id = HashtagsMenu.GetHashtagsId();
 				var chart_id = $(("#radioset :radio:checked")).attr("id");
 				// Charts.LoadChart(hashtag_id, chart_id);
 				ObjectsFromMemcache.GetChartData(hashtag_id, chart_id, Charts.FillChartFromMemcache)
@@ -495,7 +523,7 @@ SpreadPath = {
 					$(this).dequeue();
 				});
 			}
-			var hashtag_id = $('select#hashtags').val();
+			var hashtag_id = HashtagsMenu.GetHashtagsId();
 			ObjectsFromMemcache.GetLocationsInOrderOfInfluenceSpread(hashtag_id, queue_lattices_for_animation);
 		}
 		HeatMap.Plot('map_path', [[[-57.7, -145.8], 0]], callback_function_to_animate);
@@ -625,7 +653,7 @@ var PropagationAnalysis = {
 							console.log();
 					}
 				} else {
-					var hashtag_id = $('select#hashtags').val();
+					var hashtag_id = HashtagsMenu.GetHashtagsId();
 					// if(current_hashtag_id != hashtag_id) {
 					// current_hashtag_id = hashtag_id;
 					PropagationAnalysis.Reload(hashtag_id, ui.index);
@@ -660,7 +688,7 @@ var PropagationAnalysis = {
 
 $(document).ready(function() {
 	//Init hashtags autocomplete
-	AutoCompleteHashtag.Init();
+	// AutoCompleteHashtag.Init();
 
 	// Init hashtags menu
 	HashtagsMenu.Init();

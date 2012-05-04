@@ -297,7 +297,7 @@ def update_remote_data():
     mf_memcache_key_to_value = dict([
                                  ('hashtags', top_hashtags),
                                  ('all_hashtags', required_hashtags),
-                                 ('locations', TweetStreamDataProcessing.SpatialDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)),
+                                 ('locations', TweetStreamDataProcessing.SpatialDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)),
                                  ('locations_in_order_of_influence_spread', locations_in_order_of_influence_spread),
                                  ]) 
     for memcache_key, value in mf_memcache_key_to_value.iteritems(): 

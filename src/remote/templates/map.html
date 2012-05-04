@@ -32,7 +32,7 @@
 				<option value="">Select one...</option>
 				{% if all_hashtags %}
 				{% for hashtag in all_hashtags %}
-				<option value={{ forloop.counter0}} >{{hashtag}}</option>
+				<option value={{ forloop.counter0}}:ilab:{{hashtag}}  >{{hashtag}}</option>
 				{% endfor %}
 				{% endif %}
 			</select>
@@ -42,13 +42,15 @@
 			<select name="hashtags" id="hashtags">
 				{% if hashtags %}
 				{% for hashtag in hashtags %}
-				<option value={{ forloop.counter0 }} >{{hashtag}}</option>
+				<option value={{ forloop.counter0 }}:ilab:{{hashtag}} >{{hashtag}}</option>
 				{% endfor %}
 				{% else %}
 				<option value="None">No hashtags</option>
 				{% endif %}
 			</select>
 		</div>
+		<br/>
+		<h2 id="title">Title</h2>
 		<br/>
 		<div id="tabs2">
 			<ul>
