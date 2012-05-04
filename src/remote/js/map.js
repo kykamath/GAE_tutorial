@@ -91,14 +91,14 @@ var ObjectsFromMemcache = {
 			callback_function(parameter);
 		});
 	},
-	LoadLocationsInOrderOfInfluenceSpread : function() {
-		$.post("/get_from_memcache", {
-			'key' : 'locations_in_order_of_influence_spread'
-		}, function(data) {
-			// $.getJSON("/locations_in_order_of_influence_spread", {}, function(data) {
-			ObjectsFromMemcache.locations_in_order_of_influence_spread = jQuery.parseJSON(data);
-		});
-	},
+	// LoadLocationsInOrderOfInfluenceSpread : function() {
+	// $.post("/get_from_memcache", {
+	// 'key' : 'locations_in_order_of_influence_spread'
+	// }, function(data) {
+	// // $.getJSON("/locations_in_order_of_influence_spread", {}, function(data) {
+	// ObjectsFromMemcache.locations_in_order_of_influence_spread = jQuery.parseJSON(data);
+	// });
+	// },
 	_GetChartDataKey : function(hashtag_id, chart_id) {
 		return chart_id + '_' + hashtag_id
 	},
@@ -128,8 +128,22 @@ var ObjectsFromMemcache = {
 	GetLocations : function(hashtag_id) {
 		return this.locations[hashtag_id];
 	},
-	GetLocationsInOrderOfInfluenceSpread : function(hashtag_id) {
-		return this.locations_in_order_of_influence_spread[hashtag_id];
+	GetLocationsInOrderOfInfluenceSpread : function(hashtag_id, callback) {
+		if(ObjectsFromMemcache.locations_in_order_of_influence_spread == null) {
+			$.post("/get_from_memcache", {
+				'key' : 'locations_in_order_of_influence_spread'
+			}, function(data) {
+				// $.getJSON("/locations_in_order_of_influence_spread", {}, function(data) {
+				ObjectsFromMemcache.locations_in_order_of_influence_spread = jQuery.parseJSON(data);
+				if(callback != null) {
+					callback(ObjectsFromMemcache.locations_in_order_of_influence_spread[hashtag_id]);
+				}
+			});
+		} else {
+			if(callback != null) {
+				callback(ObjectsFromMemcache.locations_in_order_of_influence_spread[hashtag_id]);
+			}
+		}
 	}
 }
 
@@ -233,7 +247,7 @@ var GlobalSpread = {
 			// Load locations from memcache.
 			ObjectsFromMemcache.LoadLocations(GlobalSpread.Plot, hashtag_id)
 			// Load locations_in_order_of_influence_spread from memcache.
-			ObjectsFromMemcache.LoadLocationsInOrderOfInfluenceSpread();
+			// ObjectsFromMemcache.LoadLocationsInOrderOfInfluenceSpread();
 
 		} else {
 			// Memcache doesn't have valid data as hashtags are not loaded in menu.
@@ -312,16 +326,16 @@ var Charts = {
 		Charts[chart_id]([hashtag_data_to_plot]);
 	},
 	// LoadChart : function(hashtag_id, chart_id) {
-		// if(ObjectsFromMemcache.charts_data == null) {
-			// $.post("/get_from_memcache", {
-				// 'key' : 'charts_data'
-			// }, function(data) {
-				// ObjectsFromMemcache.charts_data = jQuery.parseJSON(data);
-				// Charts.FillChartFromMemcache(hashtag_id, chart_id);
-			// });
-		// } else {
-			// Charts.FillChartFromMemcache(hashtag_id, chart_id);
-		// }
+	// if(ObjectsFromMemcache.charts_data == null) {
+	// $.post("/get_from_memcache", {
+	// 'key' : 'charts_data'
+	// }, function(data) {
+	// ObjectsFromMemcache.charts_data = jQuery.parseJSON(data);
+	// Charts.FillChartFromMemcache(hashtag_id, chart_id);
+	// });
+	// } else {
+	// Charts.FillChartFromMemcache(hashtag_id, chart_id);
+	// }
 	// },
 	Reload : function() {
 		if(Charts.is_loaded) {
@@ -456,25 +470,27 @@ SpreadPath = {
 	},
 	StartPlot : function() {
 		callback_function_to_animate = function(map) {
-			var hashtag_id = $('select#hashtags').val();
-			var ltuo_lattice_and_pure_influence_score = ObjectsFromMemcache.GetLocationsInOrderOfInfluenceSpread(hashtag_id);
-			var iteration_counter = 0;
-			var spread_path_queue = $('#queue');
-			SpreadPath.intervals_for_marker_on_spread_path = [];
-			$.each(ltuo_lattice_and_pure_influence_score, function(index, lattice_and_pure_influence_score) {
+			queue_lattices_for_animation = function(ltuo_lattice_and_pure_influence_score) {
+				var iteration_counter = 0;
+				var spread_path_queue = $('#queue');
+				SpreadPath.intervals_for_marker_on_spread_path = [];
+				$.each(ltuo_lattice_and_pure_influence_score, function(index, lattice_and_pure_influence_score) {
+					spread_path_queue.queue(function() {
+						SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(function() {
+							lattice = lattice_and_pure_influence_score[0]
+							map.my_heatmap_overlay.addDataPoint(lattice[0], lattice[1], lattice_and_pure_influence_score[1]);
+						}, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
+						iteration_counter += 1
+						$(this).dequeue();
+					});
+				});
 				spread_path_queue.queue(function() {
-					SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(function() {
-						lattice = lattice_and_pure_influence_score[0]
-						map.my_heatmap_overlay.addDataPoint(lattice[0], lattice[1], lattice_and_pure_influence_score[1]);
-					}, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
-					iteration_counter += 1
+					SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(SpreadPath.Buttons.EndState, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
 					$(this).dequeue();
 				});
-			});
-			spread_path_queue.queue(function() {
-				SpreadPath.intervals_for_marker_on_spread_path.push(new Timeout(SpreadPath.Buttons.EndState, iteration_counter * SpreadPath.MARKER_DROP_TIME_LAG));
-				$(this).dequeue();
-			});
+			}
+			var hashtag_id = $('select#hashtags').val();
+			ObjectsFromMemcache.GetLocationsInOrderOfInfluenceSpread(hashtag_id, queue_lattices_for_animation);
 		}
 		HeatMap.Plot('map_path', [[[-57.7, -145.8], 0]], callback_function_to_animate);
 	},
