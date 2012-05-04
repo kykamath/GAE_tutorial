@@ -97,7 +97,7 @@ class SpatialAnalysisAlgorithms():
             ltuo_lattice_and_pure_influence_score.append([lattice, np.mean(pure_influence_scores)])
         ltuo_lattice_and_range_shifted_score = \
             [(lattice, _shift_range(pure_influence_score))for lattice, pure_influence_score in ltuo_lattice_and_pure_influence_score]
-        return filter(lambda (lattice, range_shifted_score): range_shifted_score!=float('NaN'), ltuo_lattice_and_range_shifted_score)
+        return filter(lambda (lattice, range_shifted_score): str(range_shifted_score)!='nan', ltuo_lattice_and_range_shifted_score)
 #        lattices = zip(*sorted(ltuo_lattice_and_pure_influence_score, key=itemgetter(1)))[0]
 #        return [[lattice, 1] for lattice in lattices]
 #        return sorted(ltuo_lattice_and_pure_influence_score, key=itemgetter(1))
