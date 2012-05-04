@@ -14,21 +14,29 @@
 					</div>
 					<div class='toptoolbar'>
 						<ul>
-							<li>
-								<a class='selected' href='/'>Home</a>
+							{% for detail in details %}
+							<!-- <li>
+								<a class='' href={{tuo_url_and_title_and_is_selected[1]}}>{{tuo_url_and_title_and_is_selected[2]}}</a>
+							</li> -->							
+							
+							{{details}}
+							
+							
+							{% endfor %}
+
+
+							<!-- <li>
+							<a class='' href='/maps'>Social Trails</a>
 							</li>
 							<li>
-								<a class='' href='/maps'>Social Trails</a>
+							<a class='' href='/about'>About</a>
 							</li>
 							<li>
-								<a class='' href='/about'>About</a>
+							<a class='' href='/research'>Research</a>
 							</li>
 							<li>
-								<a class='' href='/research'>Research</a>
-							</li>
-							<li>
-								<a class='' href='/contact'>Contact</a>
-							</li>
+							<a class='' href='/contact'>Contact</a>
+							</li> -->
 						</ul>
 					</div>
 					<hr/>

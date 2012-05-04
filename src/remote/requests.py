@@ -6,9 +6,25 @@ from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
 
 fld_templates = 'templates/'
-memcache_client = memcache.Client()       
+memcache_client = memcache.Client()
 
-class Map(webapp.RequestHandler):
+URL_TEMP = '/temp'
+
+
+ltuo_url_and_title = [(URL_TEMP, 'Home'), ('/social_trails', 'Social Trails')]   
+
+
+class ViewRequestObject(webapp.RequestHandler):
+    def render(self, selected_url, path, parameters):
+        ltuo_url_and_title_and_is_selected = []
+        for url, title in ltuo_url_and_title: 
+            is_selected = False
+            if url==selected_url: is_selected = True
+            ltuo_url_and_title_and_is_selected.append([url, title, is_selected])
+            parameters['details'] = ltuo_url_and_title_and_is_selected
+        self.response.out.write(template.render(path, parameters))
+
+class SocialTrails(webapp.RequestHandler):
     def _GetObjectFromMemcache(self, key):
         json_object = memcache_client.get(key)
         if json_object: return json.loads(json_object)
@@ -22,11 +38,10 @@ class Map(webapp.RequestHandler):
                                                  'all_hashtags': all_hashtags
                                                  }
                                                 ))
-        
-class Temp(webapp.RequestHandler):
+class Temp(ViewRequestObject):
     def get(self):
         path = os.path.join(os.path.dirname(__file__), fld_templates+'temp.html')
-        self.response.out.write(template.render(path, {}))
+        self.render(URL_TEMP, path, {})
 
 class UpdateMemcache(webapp.RequestHandler):
     def post(self):
@@ -45,8 +60,8 @@ class AllHashtags(webapp.RequestHandler):
         self.response.out.write(all_hashtags)
 
 application = webapp.WSGIApplication([
-  ('/', Map),
-  ('/temp', Temp),
+  ('/social_trails', SocialTrails),
+  (URL_TEMP, Temp),
   ('/update_memcache', UpdateMemcache),
   ('/get_from_memcache', GetFromMemcache),
   ('/all_hashtags', AllHashtags),
