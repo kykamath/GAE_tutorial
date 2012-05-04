@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<meta charset='UTF-8' />
+		<title> App name - {% block title %} {% endblock %}</title>
+		<link rel='stylesheet' href='/stylesheets/base_style.css' />
+	</head>
+	<body>
+		<div class='wrapall'>
+			<div class='container'>
+				<!-- 				<div class='topstrip'> -->
+				<div class='logobox'>
+					<a href='/'> <img alt='' id="logo" src='/images/logo.png' title='' /> </a>
+				</div>
+				<div class='toptoolbar'>
+					<ul>
+						<li>
+							<a class='selected' href='/'>Home</a>
+						</li>
+						<li>
+							<a class='' href='/maps'>Social Trails</a>
+						</li>
+						<li>
+							<a class='' href='/about'>About</a>
+						</li>
+						<li>
+							<a class='' href='/research'>Research</a>
+						</li>
+						<li>
+							<a class='' href='/contact'>Contact</a>
+						</li>
+					</ul>
+				</div>
+				<div class='topstrip'></div>
+				<!-- <div class='socialbar'>
+				<div class='twicon'>
+				<a href='https://twitter.com/#!/infolabtamu' target='_blank'> <img alt='' src='/images/tw-icon.gif' title='' /> </a>
+				</div>
+				</div> -->
+				<!-- 				</div> -->
+
+				<div id="content" class="row">
+					{% block content %}{% endblock %}
+				</div>
+
+				<div class='row'>
+					<div class='col8' id='footer'>
+						<div id='footer-logo'>
+							<!--               <img src='/images/footer.png' /> -->
+						</div>
+						<div id='copyright'>
+							<span style='font-family: arial;'> &copy; </span>
+							2012, Social Trails &nbsp;
+							<a class='shadow' href='http://mcom.cs.cmu.edu/'>Infolab,</a>
+							<a class='shadow' href='http://www.cmu.edu'>Texas A&M University.</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

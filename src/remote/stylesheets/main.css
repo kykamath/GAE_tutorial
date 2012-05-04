@@ -1,8 +1,3 @@
-/*body {
- font: 75.5% "Trebuchet MS", sans-serif;
- margin: 1%;
- }*/
-
 body {
 	background: #ffffff;
 	color: #000000;
@@ -19,6 +14,7 @@ body {
 	width: 1000px;
 	height: 700px;
 }
+
 .chart {
 	width: 75%;
 	margin-left: auto;

@@ -6,7 +6,7 @@ from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
 
 fld_templates = 'templates/'
-memcache_client = memcache.Client()        
+memcache_client = memcache.Client()       
 
 class Map(webapp.RequestHandler):
     def _GetObjectFromMemcache(self, key):
