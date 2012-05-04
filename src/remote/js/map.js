@@ -159,9 +159,9 @@ var HashtagsMenu = {
 	Init : function() {
 		UpdateHashtagInfo = function(element_id, offset) {
 			HashtagsMenu.SetValAndText(element_id, offset);
-			$("#title").fadeOut(1000, function() {
-				$("#title").text(HashtagsMenu.GetHashtagsText())
-				$("#title").fadeIn(1000);
+			$("#title").fadeOut(500, function() {
+				$("#title").text("Showing information for #" + HashtagsMenu.GetHashtagsText())
+				$("#title").fadeIn(500);
 			})
 			var selected_tab_index = $('#tabs2').tabs('option', 'selected')
 			PropagationAnalysis.Reload(HashtagsMenu.GetHashtagsId(), selected_tab_index);
@@ -183,7 +183,7 @@ var HashtagsMenu = {
 			}
 		});
 		HashtagsMenu.SetValAndText('select#hashtags', 0);
-		$("#title").text(HashtagsMenu.GetHashtagsText());
+		$("#title").text("Showing information for #" + HashtagsMenu.GetHashtagsText());
 	},
 	GetHashtagsId : function() {
 		// return $('select#hashtags').val();
