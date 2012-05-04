@@ -66,7 +66,7 @@ class SpatialAnalysisAlgorithms():
     @staticmethod
     def GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time):
         def _shift_range(score):
-            if score==-1: score=-0.99999999999
+            if score==-1: score=-0.99
             return 1./(score+1)
 #        ltuo_lattice_and_occurrence_time = [[getLattice(point, LATTICE_ACCURACY), occurrence_time]for point, occurrence_time in ltuo_point_and_occurrence_time]
         ltuo_point__lattice__normalized_occurrence_time = \
