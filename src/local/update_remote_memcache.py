@@ -291,7 +291,7 @@ def update_remote_data():
     top_hashtags = TweetStreamDataProcessing.get_top_hashtags(NO_OF_TOP_HASHTAGS)
     extra_hashtags = TweetStreamDataProcessing.get_extra_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags, NO_OF_EXTRA_HASHTAGS)
     required_hashtags = top_hashtags+extra_hashtags
-    locations = TweetStreamDataProcessing.get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
+#    locations = TweetStreamDataProcessing.get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
     locations_in_order_of_influence_spread = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
     charts_data = Charts.get_charts_data(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
     mf_memcache_key_to_value = dict([
