@@ -280,7 +280,7 @@ var GlobalSpread = {
 	Init : function() {
 		// $('#map_canvas').gmap();
 		var hashtag_id = HashtagsMenu.GetHashtagsId();
-		if(hashtag_id != "None") {
+		if(hashtag_id != "NaN") {
 			// Memcache has valid data as hashtags are loaded in menu. Now load data structures.
 			// Load locations from memcache.
 			ObjectsFromMemcache.LoadLocations(GlobalSpread.Plot, hashtag_id)

@@ -4,7 +4,7 @@
 <pydev_project>
 <pydev_variables_property name="org.python.pydev.PROJECT_VARIABLE_SUBSTITUTION">
 <key>GOOGLE_APP_ENGINE</key>
-<value>/Users/kykamath/SkyDrive/external_apps/google_appengine</value>
+<value>/Users/krishnakamath/SkyDrive/external_apps/google_appengine</value>
 </pydev_variables_property>
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/GAE_tutorial/src</path>

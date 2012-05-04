@@ -14,10 +14,12 @@ class Map(webapp.RequestHandler):
         if json_object: return json.loads(json_object)
     def get(self):
         path = os.path.join(os.path.dirname(__file__), fld_templates+'map.html')
+        all_hashtags = self._GetObjectFromMemcache('all_hashtags')
+        if all_hashtags: all_hashtags=all_hashtags[10:]
         self.response.out.write(template.render(path, 
                                                 {
                                                  'hashtags': self._GetObjectFromMemcache('hashtags'),
-                                                 'all_hashtags': self._GetObjectFromMemcache('all_hashtags')[10:]
+                                                 'all_hashtags': all_hashtags
                                                  }
                                                 ))
         
