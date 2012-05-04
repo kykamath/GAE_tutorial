@@ -18,11 +18,11 @@ f_hashtags_geo_distribution = '/data/chevron/kykamath/data/geo/hashtags_geo_dist
 
 
 # Remote update settings
-APPLICATION_URL = 'http://localhost:8080/'
+#APPLICATION_URL = 'http://localhost:8080/'
 #APPLICATION_URL = 'http://kykamath-hw.appspot.com/'
-#APPLICATION_URL = 'http://social-media-spread.appspot.com/'
+APPLICATION_URL = 'http://social-media-spread.appspot.com/'
 UPDATE_FREQUENCY_IN_MINUTES = 10
-TOTAL_ANALYSIS_WINDOW_IN_MINUTES = INTERVAL_IN_MINUTES*12*4
+TOTAL_ANALYSIS_WINDOW_IN_MINUTES = INTERVAL_IN_MINUTES*12*24
 TOP_HASHTAGS_WINDOW_IN_MINUTES = INTERVAL_IN_MINUTES*12*1
 NO_OF_TOP_HASHTAGS = 10 
 NO_OF_EXTRA_HASHTAGS = 20
