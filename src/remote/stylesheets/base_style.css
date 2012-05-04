@@ -83,7 +83,7 @@ a.shadow {
 .topstrip {
 	border-bottom: 1px solid #cccccc;
 	width: 880px;
-	float: center;
+	float: left;
 	padding-bottom: 10px
 }
 .hpnoborder {
@@ -95,7 +95,7 @@ a.shadow {
 }
 .toptoolbar {
 	padding-top: 45px;
-/*	width: 460px;*/
+	/*	width: 460px;*/
 	float: right;
 	font-size: 15px;
 	padding-left: 105px
@@ -106,7 +106,7 @@ a.shadow {
 }
 .socialbar {
 	width: 50px;
-/*	float: right;*/
+	/*	float: right;*/
 }
 .toptoolbar li a.selected {
 	color: #DB59FF
@@ -146,16 +146,16 @@ h1 {
 	color: #8f138b;
 	text-align: center;
 	/*border-bottom: 2px solid #ccc;
-	padding-top: 25px;
-	padding-top: 5px;*/
+	 padding-top: 25px;
+	 padding-top: 5px;*/
 }
 
 img#logo {
-   /* border: 2px solid #ccc;
-    float: right;
-    margin: 0 0 10px 10px;*/    
-    width: 375px;
-/*    height: 200px;*/
-/*    width: 1.87in;*/
-/*    height: 2.53in;*/
+	/* border: 2px solid #ccc;
+	 float: right;
+	 margin: 0 0 10px 10px;*/
+	width: 375px;
+	/*    height: 200px;*/
+	/*    width: 1.87in;*/
+	/*    height: 2.53in;*/
 }

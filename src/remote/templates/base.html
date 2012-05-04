@@ -8,36 +8,36 @@
 	<body>
 		<div class='wrapall'>
 			<div class='container'>
-				<!-- 				<div class='topstrip'> -->
-				<div class='logobox'>
-					<a href='/'> <img alt='' id="logo" src='/images/logo.png' title='' /> </a>
+				<div class='topstrip'>
+					<div class='logobox'>
+						<a href='/'> <img alt='' id="logo" src='/images/logo.png' title='' /> </a>
+					</div>
+					<div class='toptoolbar'>
+						<ul>
+							<li>
+								<a class='selected' href='/'>Home</a>
+							</li>
+							<li>
+								<a class='' href='/maps'>Social Trails</a>
+							</li>
+							<li>
+								<a class='' href='/about'>About</a>
+							</li>
+							<li>
+								<a class='' href='/research'>Research</a>
+							</li>
+							<li>
+								<a class='' href='/contact'>Contact</a>
+							</li>
+						</ul>
+					</div>
+					<hr/>
+					<!-- <div class='socialbar'>
+					<div class='twicon'>
+					<a href='https://twitter.com/#!/infolabtamu' target='_blank'> <img alt='' src='/images/tw-icon.gif' title='' /> </a>
+					</div>
+					</div> -->
 				</div>
-				<div class='toptoolbar'>
-					<ul>
-						<li>
-							<a class='selected' href='/'>Home</a>
-						</li>
-						<li>
-							<a class='' href='/maps'>Social Trails</a>
-						</li>
-						<li>
-							<a class='' href='/about'>About</a>
-						</li>
-						<li>
-							<a class='' href='/research'>Research</a>
-						</li>
-						<li>
-							<a class='' href='/contact'>Contact</a>
-						</li>
-					</ul>
-				</div>
-				<div class='topstrip'></div>
-				<!-- <div class='socialbar'>
-				<div class='twicon'>
-				<a href='https://twitter.com/#!/infolabtamu' target='_blank'> <img alt='' src='/images/tw-icon.gif' title='' /> </a>
-				</div>
-				</div> -->
-				<!-- 				</div> -->
 
 				<div id="content" class="row">
 					{% block content %}{% endblock %}
