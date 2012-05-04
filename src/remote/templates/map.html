@@ -17,39 +17,39 @@
 		<script type="text/javascript" src="/js/jquery-gmap3-4.1/gmap3.min.js"></script>
 		<script src="/js/highcharts/highcharts.js"></script>
 		<script src="/js/map.js"></script>
-		<!-- 		<script src="/js/charts.js"></script> -->
 	</head>
 
 	<body>
+
+		<!-- 		<div class="demo"> -->
+
+		<!-- 			<div class="ui-widget"> -->
+		<!-- 			</div> -->
+
 		<div class="ui-widget">
-			<form action="#">
-				<!-- <label>Your preferred programming language: </label>
-				<input id="all_hashtags_autoselect" /> -->
-				<!-- <br/>
-				<br/> -->
-				<select name="hashtags" id="hashtags">
-					{% if hashtags %}
-					{% for hashtag in hashtags %}
-					<option value={{ forloop.counter0 }} >{{hashtag}}</option>
-					{% endfor %}
-					{% else %}
-					<option value="None">No hashtags</option>
-					{% endif %}
-				</select>
-			</form>
-		</div>
-		<!-- <div id="tabs">
-			<ul>
-				<li>
-					<a href="#tabs-1">Global Spread</a>
-				</li>
-			</ul>
-			<div id="tabs-1">
-				<div id="map_canvas"></div>
-			</div>
+			<label>Pick a hastag popular in the last 24 hours: </label><br/><br/>
+			<select id="combobox">
+				<option value="">Select one...</option>
+				{% if all_hashtags %}
+				{% for hashtag in all_hashtags %}
+				<option value={{ forloop.counter0}} >{{hashtag}}</option>
+				{% endfor %}
+				{% endif %}
+			</select>
+			<br/>
+			<br/>
+			<label>Pick a hastag popular in the last hour: </label><br/><br/>
+			<select name="hashtags" id="hashtags">
+				{% if hashtags %}
+				{% for hashtag in hashtags %}
+				<option value={{ forloop.counter0 }} >{{hashtag}}</option>
+				{% endfor %}
+				{% else %}
+				<option value="None">No hashtags</option>
+				{% endif %}
+			</select>
 		</div>
 		<br/>
-		<br/> -->
 		<div id="tabs2">
 			<ul>
 				<li>

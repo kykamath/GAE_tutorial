@@ -23,4 +23,4 @@
 .ui-selectmenu-menu .ui-selectmenu-group .ui-selectmenu-group-label { line-height: 1.4em; display:block; padding:.6em .5em 0; font-weight: bold; }
 .ui-selectmenu-menu .ui-selectmenu-group ul { margin: 0; padding: 0; }
 /*Sets the width. Move this to a separate place if more than one dropdown used*/
-select { width: 50%; }
+select { width: 40%; }

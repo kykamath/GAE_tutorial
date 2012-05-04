@@ -14,7 +14,12 @@ class Map(webapp.RequestHandler):
         if json_object: return json.loads(json_object)
     def get(self):
         path = os.path.join(os.path.dirname(__file__), fld_templates+'map.html')
-        self.response.out.write(template.render(path, {'hashtags': self._GetObjectFromMemcache('hashtags')}))
+        self.response.out.write(template.render(path, 
+                                                {
+                                                 'hashtags': self._GetObjectFromMemcache('hashtags'),
+                                                 'all_hashtags': self._GetObjectFromMemcache('all_hashtags')
+                                                 }
+                                                ))
         
 class Temp(webapp.RequestHandler):
     def get(self):
@@ -31,12 +36,18 @@ class GetFromMemcache(webapp.RequestHandler):
     def post(self):
         key = self.request.get('key')
         self.response.out.write(memcache_client.get(key))
+        
+class AllHashtags(webapp.RequestHandler):
+    def get(self):
+        all_hashtags = memcache_client.get('all_hashtags')
+        self.response.out.write(all_hashtags)
 
 application = webapp.WSGIApplication([
   ('/', Map),
   ('/temp', Temp),
   ('/update_memcache', UpdateMemcache),
   ('/get_from_memcache', GetFromMemcache),
+  ('/all_hashtags', AllHashtags),
 ], debug=False)
 
 
