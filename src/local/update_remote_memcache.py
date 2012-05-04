@@ -7,7 +7,7 @@ Created on Apr 29, 2012
 location => lattice id for point based on UNIT_LATTICE_ACCURACY
 
 '''
-import urllib, urllib2, cjson, time, os
+import urllib, urllib2, cjson, time, os, json
 from datetime import datetime, timedelta
 from settings import INTERVAL_IN_MINUTES, \
         TOP_HASHTAGS_WINDOW_IN_MINUTES, \
@@ -35,6 +35,9 @@ dummy_mf_hashtag_to_ltuo_point_and_occurrence_time = {
 
 def GetOutputFile(t):
     return f_hashtags_geo_distribution % (t.year, t.month, t.day, t.hour, (int(t.minute) / INTERVAL_IN_MINUTES) * INTERVAL_IN_MINUTES)
+
+def get_chart_data_key(chart_id, hashtag_id):
+    return '%s_%s'%(chart_id, hashtag_id)
 
 class TweetStreamDataProcessing:
     @staticmethod
@@ -269,7 +272,8 @@ class Charts:
                 Charts.ID_RADIUS: Charts._Radius(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags),
                 }
 def update_memcache(key, value):
-    value = cjson.encode(value)
+#    value = cjson.encode(value)
+    value = json.dumps(value, separators=(',',':'))
     url = APPLICATION_URL + 'update_memcache'
     req = urllib2.Request(url)
     req.add_data(urllib.urlencode({'key': key, 'value': value}))
@@ -295,17 +299,18 @@ def update_remote_data():
                                  ('all_hashtags', required_hashtags),
                                  ('locations', TweetStreamDataProcessing.SpatialDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags)),
                                  ('locations_in_order_of_influence_spread', locations_in_order_of_influence_spread),
-                                 ('charts_data', charts_data),
                                  ]) 
-    for memcache_key, value in \
-            mf_memcache_key_to_value.iteritems():
-        print memcache_key
+    for memcache_key, value in mf_memcache_key_to_value.iteritems(): 
+        print 'Updating: ', memcache_key
         update_memcache(key=memcache_key, value=value)
+    for chart_id, data in charts_data.iteritems():
+        print 'Updating: ', chart_id
+        for hashtag_id, item in enumerate(data): update_memcache(key=get_chart_data_key(chart_id, hashtag_id), value=item)
     print '%s Updated remote cache at %s from %s' % (datetime.fromtimestamp(time.time()), APPLICATION_URL, MACHINE_NAME)
     
 if __name__ == '__main__':
     while True:
         update_remote_data()
-        exit()
+#        exit()
         time.sleep(UPDATE_FREQUENCY_IN_MINUTES * 60)
         
