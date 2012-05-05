@@ -96,7 +96,7 @@ img#logo {
 	color: #DB59FF
 }
 
-#content{
+#content {
 	padding-top: 30px;
 }
 
@@ -110,6 +110,9 @@ img#logo {
 }
 #footer-logo {
 	float: left
+}
+#flogo {
+	width: 20px;
 }
 #copyright {
 	float: right;
