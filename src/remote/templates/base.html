@@ -2,8 +2,9 @@
 <html lang='en'>
 	<head>
 		<meta charset='UTF-8' />
-		<title> App name - {% block title %} {% endblock %}</title>
+		<title> Social Trails - {{title}}</title>
 		<link rel='stylesheet' href='/stylesheets/base_style.css' />
+		 {% block header %} {% endblock %}
 	</head>
 	<body>
 		<div class='wrapall'>
@@ -14,43 +15,18 @@
 					</div>
 					<div class='toptoolbar'>
 						<ul>
-							{% for detail in details %}
-							<!-- <li>
-								<a class='' href={{tuo_url_and_title_and_is_selected[1]}}>{{tuo_url_and_title_and_is_selected[2]}}</a>
-							</li> -->							
-							
-							{{details}}
-							
-							
+							{% for tuo_url_and_title_and_is_selected in ltuo_url_and_title_and_is_selected %}
+							<li>
+								<a class="{{tuo_url_and_title_and_is_selected.2}}" href="{{tuo_url_and_title_and_is_selected.0}}"> {{tuo_url_and_title_and_is_selected.1}}</a>
+							</li>
 							{% endfor %}
-
-
-							<!-- <li>
-							<a class='' href='/maps'>Social Trails</a>
-							</li>
-							<li>
-							<a class='' href='/about'>About</a>
-							</li>
-							<li>
-							<a class='' href='/research'>Research</a>
-							</li>
-							<li>
-							<a class='' href='/contact'>Contact</a>
-							</li> -->
 						</ul>
 					</div>
 					<hr/>
-					<!-- <div class='socialbar'>
-					<div class='twicon'>
-					<a href='https://twitter.com/#!/infolabtamu' target='_blank'> <img alt='' src='/images/tw-icon.gif' title='' /> </a>
-					</div>
-					</div> -->
 				</div>
-
 				<div id="content" class="row">
 					{% block content %}{% endblock %}
 				</div>
-
 				<div class='row'>
 					<div class='col8' id='footer'>
 						<div id='footer-logo'>

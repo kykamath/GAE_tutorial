@@ -22,22 +22,6 @@ blockquote:before, blockquote:after, q:before, q:after {
 	content: '';
 	content: none
 }
-:focus {
-	outline: 0
-}
-ins {
-	text-decoration: none
-}
-del {
-	text-decoration: line-through
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0
-}
-a img {
-	border: none
-}
 body {
 	font-family: 'Gudea', sans-serif;
 	font-weight: 400;
@@ -57,14 +41,14 @@ a.shadow {
 	text-shadow: 0px 0px 1px #878787
 }
 .container {
-	width: 880px;
+	width: 1050px;
 	height: 100%;
 	margin-left: auto;
 	margin-right: auto;
 	padding-top: 20px;
 }
 .row {
-	width: 880px;
+	width: 1050px;
 	padding: 0;
 	margin: 10px 0 10px 0;
 	padding: 14px 0 0 0;
@@ -75,14 +59,14 @@ a.shadow {
 	border-top: 7px solid #000000
 }
 .wrap {
-	width: 880px;
+	width: 1050px;
 	margin-left: auto;
 	margin-right: auto;
 	padding-top: 30px;
 }
 .topstrip {
 	border-bottom: 1px solid #cccccc;
-	width: 880px;
+	width: 1050px;
 	float: left;
 	padding-bottom: 10px
 }
@@ -93,9 +77,13 @@ a.shadow {
 	width: 270px;
 	float: left;
 }
+img#logo {
+	width: 375px;
+	float: left;
+}
 .toptoolbar {
 	padding-top: 45px;
-	/*	width: 460px;*/
+	width: 580px;
 	float: right;
 	font-size: 15px;
 	padding-left: 105px
@@ -104,25 +92,14 @@ a.shadow {
 	float: left;
 	padding-right: 25px
 }
-.socialbar {
-	width: 50px;
-	/*	float: right;*/
-}
 .toptoolbar li a.selected {
 	color: #DB59FF
 }
-.twicon {
-	padding-right: 10px;
-	float: right
+
+#content{
+	padding-top: 30px;
 }
-.socialbar a {
-	margin: 0;
-	padding: 0
-}
-.socialbar img {
-	margin: 0;
-	padding: 0
-}
+
 #footer {
 	margin-top: 15px;
 	border-top: 1px solid #cccccc;
@@ -138,24 +115,4 @@ a.shadow {
 	float: right;
 	font-size: 10px;
 	padding-top: 9px
-}
-.morepad {
-	padding-top: 40px
-}
-h1 {
-	color: #8f138b;
-	text-align: center;
-	/*border-bottom: 2px solid #ccc;
-	 padding-top: 25px;
-	 padding-top: 5px;*/
-}
-
-img#logo {
-	/* border: 2px solid #ccc;
-	 float: right;
-	 margin: 0 0 10px 10px;*/
-	width: 375px;
-	/*    height: 200px;*/
-	/*    width: 1.87in;*/
-	/*    height: 2.53in;*/
 }

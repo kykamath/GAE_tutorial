@@ -1,5 +1,6 @@
 # application: kykamath-hw
-application: social-media-spread
+# application: social-media-spread
+application: social-trails
 version: 1
 runtime: python
 api_version: 1
