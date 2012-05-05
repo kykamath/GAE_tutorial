@@ -1,4 +1,4 @@
- (function($) {
+(function($) {
 	$.widget("ui.combobox", {
 		_create : function() {
 			var input, self = this, select = this.element.hide(), selected = select.children(":selected"), value = selected.val() ? selected.text() : "", wrapper = $("<span>").addClass("ui-combobox").insertAfter(select);
@@ -160,7 +160,7 @@ var HashtagsMenu = {
 		UpdateHashtagInfo = function(element_id, offset) {
 			HashtagsMenu.SetValAndText(element_id, offset);
 			$("#title").fadeOut(500, function() {
-				$("#title").text("Showing information for #" + HashtagsMenu.GetHashtagsText())
+				$("#title").text("#" + HashtagsMenu.GetHashtagsText())
 				$("#title").fadeIn(500);
 			})
 			var selected_tab_index = $('#tabs2').tabs('option', 'selected')
@@ -172,24 +172,24 @@ var HashtagsMenu = {
 			}
 		};
 		// $('select#hashtags').selectmenu({
-			// maxHeight : 150,
-			// style : 'dropdown'
+		// maxHeight : 150,
+		// style : 'dropdown'
 		// }).change(function() {
-			// UpdateHashtagInfo('select#hashtags', 0);
+		// UpdateHashtagInfo('select#hashtags', 0);
 		// });
 		$('select#hashtags').combobox({
 			selected : function() {
 				UpdateHashtagInfo('select#hashtags', 0);
 			}
 		});
-		
+
 		$("#combobox").combobox({
 			selected : function() {
 				UpdateHashtagInfo('#combobox', 10);
 			}
 		});
 		HashtagsMenu.SetValAndText('select#hashtags', 0);
-		$("#title").text("Showing information for #" + HashtagsMenu.GetHashtagsText());
+		$("#title").text("#" + HashtagsMenu.GetHashtagsText());
 	},
 	GetHashtagsId : function() {
 		// return $('select#hashtags').val();
@@ -230,8 +230,9 @@ var HeatMap = {
 	mf_element_id_to_heatmap : {},
 	MAP_OPTIONS : {
 		zoom : 2,
-		center : new google.maps.LatLng(40.410359, -3.68866),
-		mapTypeId : google.maps.MapTypeId.HYBRID,
+		// center : new google.maps.LatLng(40.410359, -3.68866),
+		center : new google.maps.LatLng(20,8),
+		mapTypeId : google.maps.MapTypeId.ROADMAP,
 		disableDefaultUI : false,
 		scrollwheel : false,
 		draggable : false,
@@ -239,7 +240,7 @@ var HeatMap = {
 		mapTypeControl : false,
 		scaleControl : false,
 		disableDoubleClickZoom : true,
-		streetViewControl: false
+		streetViewControl : false
 	},
 	_ConvertToHeatMapObjects : function(ltuo_lattice_and_no_of_occurrences) {
 		var data = []
@@ -298,17 +299,18 @@ var GlobalSpread = {
 		} else {
 			// Memcache doesn't have valid data as hashtags are not loaded in menu.
 			// Show a dialog displaying the issue.
-			$("#dialog:ui-dialog").dialog("destroy");
-			$("#dialog-message").css('visibility', 'visible');
-			$("#dialog-message").dialog({
-				modal : true,
-				buttons : {
-					Ok : function() {
-						$(this).dialog("close");
-						$("#dialog-message").css('visibility', 'hidden');
-					}
-				}
-			});
+			alert('Looks like app is down. Please Try again in a few minutes.');
+			// $("#dialog:ui-dialog").dialog("destroy");
+			// $("#dialog-message").css('visibility', 'visible');
+			// $("#dialog-message").dialog({
+				// modal : true,
+				// buttons : {
+					// Ok : function() {
+						// $(this).dialog("close");
+						// $("#dialog-message").css('visibility', 'hidden');
+					// }
+				// }
+			// });
 		}
 	},
 	Plot : function(hashtag_id, callback_function) {
@@ -688,9 +690,9 @@ var PropagationAnalysis = {
 				PropagationAnalysis.Charts.Reload();
 				break;
 			case 0:
-                if(GlobalSpread.current_hashtag_id!=hashtag_id){
-                    PropagationAnalysis.GlobalSpread.Plot(hashtag_id);
-                }
+				if(GlobalSpread.current_hashtag_id != hashtag_id) {
+					PropagationAnalysis.GlobalSpread.Plot(hashtag_id);
+				}
 				break;
 			default:
 				console.log();

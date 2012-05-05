@@ -41,14 +41,14 @@ a.shadow {
 	text-shadow: 0px 0px 1px #878787
 }
 .container {
-	width: 880px;
+	width: 1020px;
 	height: 100%;
 	margin-left: auto;
 	margin-right: auto;
-	padding-top: 20px;
+	padding-top: 2px;
 }
 .row {
-	width: 880px;
+	width: 1020px;
 	padding: 0;
 	margin: 10px 0 10px 0;
 	padding: 14px 0 0 0;
@@ -59,16 +59,16 @@ a.shadow {
 	border-top: 7px solid #000000
 }
 .wrap {
-	width: 880px;
+	width: 1020px;
 	margin-left: auto;
 	margin-right: auto;
 	padding-top: 30px;
 }
 .topstrip {
 	border-bottom: 1px solid #cccccc;
-	width: 880px;
+	width: 1020px;
 	float: left;
-	padding-bottom: 10px
+	padding-bottom: 2px
 }
 .hpnoborder {
 	border-bottom: 0px
@@ -83,7 +83,7 @@ img#logo {
 }
 .toptoolbar {
 	padding-top: 45px;
-	width: 400px;
+	width: 560px;
 	float: right;
 	font-size: 15px;
 	padding-left: 105px

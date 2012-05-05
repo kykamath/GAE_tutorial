@@ -64,7 +64,7 @@ class SpatialAnalysisAlgorithms():
         else:
             return []
     @staticmethod
-    def GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time):
+    def GetLocationsInOrderOfInfluenceSpread1(ltuo_point_and_occurrence_time):
         def _shift_range(score):
             if score==-1: score=-0.99
             return 1./(score+1)
@@ -101,6 +101,46 @@ class SpatialAnalysisAlgorithms():
 #        lattices = zip(*sorted(ltuo_lattice_and_pure_influence_score, key=itemgetter(1)))[0]
 #        return [[lattice, 1] for lattice in lattices]
 #        return sorted(ltuo_lattice_and_pure_influence_score, key=itemgetter(1))
+    @staticmethod
+    def GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time):
+        def _shift_range(score):
+            if score==-1: score=-0.99
+            return 1./(score+1)
+#        ltuo_lattice_and_occurrence_time = [[getLattice(point, LATTICE_ACCURACY), occurrence_time]for point, occurrence_time in ltuo_point_and_occurrence_time]
+        ltuo_point__lattice__normalized_occurrence_time = \
+            SpatialAnalysisAlgorithms._get_ltuo_point_and_lattice_and_normalized_occurrence_time(ltuo_point_and_occurrence_time)
+        ltuo_point_and_lattice_and_normalized_occurrence_time = SpatialAnalysisAlgorithms._get_valid_occurrences(ltuo_point__lattice__normalized_occurrence_time)
+        ltuo_lattice_and_ltuo_point_and_lattice_and_normalized_occurrence_time =\
+                                            [(lattice, sorted(ito_ltuo_point_and_lattice_and_normalized_occurrence_time, key=itemgetter(2)))
+                                                for lattice, ito_ltuo_point_and_lattice_and_normalized_occurrence_time in
+                                                    groupby(
+                                                            sorted(ltuo_point_and_lattice_and_normalized_occurrence_time, key=itemgetter(1)),
+                                                            key=itemgetter(1)
+                                                    )
+                                            ]
+        ltuo_lattice_and_points = []
+        ltuo_lattice_and_min_normalized_occurrence_times_and_no_of_occurrences = []
+        for lattice, ltuo_point_and_lattice_and_normalized_occurrence_time in \
+                ltuo_lattice_and_ltuo_point_and_lattice_and_normalized_occurrence_time:
+            points, _, normalized_occurrence_times = zip(*ltuo_point_and_lattice_and_normalized_occurrence_time)
+            ltuo_lattice_and_points.append([lattice, points])
+            ltuo_lattice_and_min_normalized_occurrence_times_and_no_of_occurrences.append([lattice, min(normalized_occurrence_times), len(normalized_occurrence_times)])
+        ltuo_lattice_sorted_by_occurrence_time_and_no_of_occurrences \
+            = [(lattice, no_of_occurrences) for lattice, _, no_of_occurrences in 
+                sorted(ltuo_lattice_and_min_normalized_occurrence_times_and_no_of_occurrences, key=itemgetter(1))]
+        return ltuo_lattice_sorted_by_occurrence_time_and_no_of_occurrences
+            
+#        for lattice, lattice_occurrence_times in ltuo_lattice_and_normalized_occurrence_times:
+#            pure_influence_scores = []
+#            for neighbor_lattice, neighbor_lattice_occurrence_times in ltuo_lattice_and_normalized_occurrence_times:
+#                if lattice != neighbor_lattice:
+#                    pure_influence_score = SpatialAnalysisAlgorithms._weighted_aggregate_occurrence(neighbor_lattice_occurrence_times, lattice_occurrence_times)
+#                    pure_influence_scores.append(pure_influence_score)
+#            ltuo_lattice_and_pure_influence_score.append([lattice, np.mean(pure_influence_scores)])
+#        ltuo_lattice_and_range_shifted_score = \
+#            [(lattice, _shift_range(pure_influence_score))for lattice, pure_influence_score in ltuo_lattice_and_pure_influence_score]
+#        return filter(lambda (lattice, range_shifted_score): str(range_shifted_score)!='nan', ltuo_lattice_and_range_shifted_score)
+    
     @staticmethod
     def GetSpreadRadiusByTime(ltuo_point_and_occurrence_time):
         ltuo_point__lattice__normalized_occurrence_time = \

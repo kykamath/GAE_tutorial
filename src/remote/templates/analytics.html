@@ -1,107 +1,30 @@
 {% extends "base.html" %}
 
 {% block header %}
-<link type="text/css" href="/stylesheets/jquery-ui/dark-hive/jquery-ui-1.8.20.custom.css" rel="stylesheet" />
 <link type="text/css" href="/stylesheets/analytics.css" rel="stylesheet" />
-<link rel="Stylesheet" href="/stylesheets/menu/ui.selectmenu.css" type="text/css" />
-<script src="http://maps.google.com/maps/api/js?sensor=true" type="text/javascript"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
-<script type="text/javascript" src="/js/heatmap/heatmap.js"></script>
-<script type="text/javascript" src="/js/heatmap/heatmap-gmaps.js"></script>
-<script type="text/javascript" src="/js/menu/ui.selectmenu.js"></script>
-<script src="/js/highcharts/highcharts.js"></script>
-<script src="/js/analytics.js"></script>
 {% endblock %}
-
 {% block content %}
-<div class="ui-widget">
-	<label>Pick a hastag popular in the last 24 hours: </label>
-	<!-- <br/>
-	<br/> -->
-	<select id="combobox">
-<!-- 		<option value="">Select one...</option> -->
-		{% if all_hashtags %}
-		{% for hashtag in all_hashtags %}
-		<option value={{ forloop.counter0}}:ilab:{{hashtag}}  >{{hashtag}}</option>
-		{% endfor %}
-		{% else %}
-		<option value="None">No hashtags</option>
-		{% endif %}
-	</select>
-	<br/>
-	<label>OR </label>
-	<br/>
-	<label>Pick a hastag popular in the last hour: </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	<!-- <br/>
-	<br/> -->
-	<select name="hashtags" id="hashtags">
-		{% if hashtags %}
-		{% for hashtag in hashtags %}
-		<option value={{ forloop.counter0 }}:ilab:{{hashtag}} >{{hashtag}}</option>
-		{% endfor %}
-		{% else %}
-		<option value="None">No hashtags</option>
-		{% endif %}
-	</select>
-</div>
-<br/>
-<br/>
-<h2 id="title">Title</h2>
-<br/>
-<div id="tabs2">
-	<ul>
-		<li>
-			<a href="#tabs-4">Spatial Distribution</a>
-		</li>
-		<li>
-			<a href="#tabs-3">Statistics</a>
-		</li>
-		<li>
-			<a href="#tabs-2">Estimated Information Spread</a>
-		</li>
-	</ul>
-	<div id="tabs-4">
-		<br/>
-		<div id="map_canvas" class="map"></div>
-	</div>
-	<div id="tabs-2">
-		<br/>
-		<div>
-			<button  id="draw_spread_path_button">
-				Start
-			</button>
-			<button  id="pause_spread_path_button">
-				Pause
-			</button>
-			<button  id="stop_spread_path_button">
-				Stop
-			</button>
-		</div>
-		<br/>
-		<div id="map_path" class="map"></div>
-	</div>
-	<div id="tabs-3">
-		<br/>
-		<span id="radioset">
-			<input type="radio" id="TemporalDistribution" name="chart" checked="checked"/>
-			<label for="TemporalDistribution">Temporal Distribution</label>
-			<input type="radio" id="LocationAccumulation" name="chart" />
-			<label for="LocationAccumulation">Spatial Spread</label>
-			<input type="radio" id="SpreadViralityChart" name="chart" />
-			<label for="SpreadViralityChart">Spatial Freshness</label>
-			<input type="radio" id="Radius" name="chart" />
-			<label for="Radius">Radius</label> </span>
-		<br/>
-		<br/>
-		<div id="chart" class='chart'></div>
-	</div>
-</div>
-<div id="dialog-message" title="App Down!!" style="visibility:hidden;">
-	<p>
-		<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 50px 0;"></span>
-		Looks like app is down. Please Try again in a few minutes.
-	</p>
-</div>
-<div id="queue" style="visibility:hidden;"></div>
+<p>
+	We do the following analytics:
+</p>
+<ul id="analytics_list">
+
+	{% for tuo_url_title_description in ltuo_url_title_description %}
+
+	<li>
+		<a href="{{tuo_url_title_description.0}}">{{tuo_url_title_description.1}}</a>
+		<blockquote>
+			{{tuo_url_title_description.2}}
+		</blockquote>
+	</li>
+
+	{% endfor %}
+
+	<!-- <li>
+		<a href="/analytics_real_time">Real-time analytics</a>
+		<blockquote>
+			Here is a long quotation here is a long quotation here is a long quotation here is a long quotation here is a long quotation here is a long quotation here is a long quotation here is a long quotation here is a long quotation.
+		</blockquote>
+	</li> -->
+</ul>
 {% endblock %}

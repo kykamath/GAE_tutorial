@@ -1,42 +1,31 @@
-.map {
-	position: relative;
-	margin-left: auto;
-	margin-right: auto;
-	width: 800px;
-	height: 600px;
+#analytics_list li {
+	padding-top: 13px;
 }
 
-.chart {
+#analytics_list blockquote {
+	padding-top: 5px;
+	padding-left: 25px;
 	width: 75%;
+}
+
+/*
+ * Analytics base specific.
+ */
+.analytics-toolbar {
 	margin-left: auto;
 	margin-right: auto;
+	font-size: 15px;
+border-bottom: 1px solid #cccccc;
+	width: 1020px;
+	height: 22px;
 }
-
-h2 {
-	text-align: center;
-	font-size: 20pt;
+.analytics-toolbar li {
+	float: left;
+	padding-right: 25px
 }
-
-.tabdiv {
-	background-color: #40B5E2;
-	margin: 1%;
+.analytics-toolbar li a.selected {
+	color: #4860E8
 }
-
-.ui-combobox {
-	position: relative;
-	display: inline-block;
-}
-#combo-button {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	margin-left: -1px;
-	padding: 0;
-	/* adjust styles for IE 6/7 */
-	*height: 1.7em;
-	*top: 0.1em;
-}
-.ui-autocomplete-input {
-	margin: 0;
-	padding: 0.3em;
+#analytics-content {
+	padding-top: 10px;
 }

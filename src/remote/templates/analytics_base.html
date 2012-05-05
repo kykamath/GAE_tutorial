@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block header %}
+<link type="text/css" href="/stylesheets/analytics.css" rel="stylesheet" />
+{% block analytics-header %}{% endblock %}
+<style type="text/css" media="screen">
+	/*Overriding content padding*/
+	#content {
+		padding-top: 0px;
+	}
+</style>
+{% endblock %}
+{% block content %}
+<div class='analytics-toolbar'>
+<!-- 	<div> -->
+		<ul>
+			{% for tuo_url_and_title_and_is_selected in analytics_ltuo_url_and_title_and_is_selected %}
+			<li>
+				<a class="{{tuo_url_and_title_and_is_selected.2}}" href="{{tuo_url_and_title_and_is_selected.0}}"> {{tuo_url_and_title_and_is_selected.1}}</a>
+			</li>
+			{% endfor %}
+		</ul>
+		<!-- <ul>
+			<li>
+				<a class="selected" href="#">dsfds</a>
+			</li>
+			<li>
+				<a href="#">dsfds</a>
+			</li>
+			<li>
+				<a href="#">dsfds</a>
+			</li>
+		</ul> -->
+	<!-- 	</div> -->
+</div>
+<div id="analytics-content" class="row">
+	{% block analytics-content %}{% endblock %}
+</div>
+{% endblock %}
