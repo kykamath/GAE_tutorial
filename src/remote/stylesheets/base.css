@@ -35,7 +35,7 @@ a {
 	text-decoration: none
 }
 a:hover {
-	color: #FFCC00
+	color: #697FFF
 }
 a.shadow {
 	text-shadow: 0px 0px 1px #878787
@@ -93,7 +93,7 @@ img#logo {
 	padding-right: 25px
 }
 .toptoolbar li a.selected {
-	color: #FFCC00
+	color: #697FFF
 }
 
 #content {
