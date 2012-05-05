@@ -225,14 +225,15 @@ var HeatMap = {
 	MAP_OPTIONS : {
 		zoom : 2,
 		center : new google.maps.LatLng(40.410359, -3.68866),
-		mapTypeId : google.maps.MapTypeId.ROADMAP,
+		mapTypeId : google.maps.MapTypeId.HYBRID,
 		disableDefaultUI : false,
-		scrollwheel : true,
-		draggable : true,
-		navigationControl : true,
-		mapTypeControl : true,
-		scaleControl : true,
-		disableDoubleClickZoom : false
+		scrollwheel : false,
+		draggable : false,
+		navigationControl : false,
+		mapTypeControl : false,
+		scaleControl : false,
+		disableDoubleClickZoom : true,
+		streetViewControl: false
 	},
 	_ConvertToHeatMapObjects : function(ltuo_lattice_and_no_of_occurrences) {
 		var data = []
