@@ -8,12 +8,14 @@ from google.appengine.api import memcache
 # CONFIG
 fld_templates = 'templates/'
 PAGE_ID_HOME = 0
-PAGE_ID_ANALYTICS = 1
-#PAGE_ID_ABOUT = 1
+PAGE_ID_ABOUT = 1
+PAGE_ID_ANALYTICS = 2
+PAGE_ID_CONTACT = 4
 CONFIG = {
             PAGE_ID_HOME : dict(url='/', title='Home', template='index.html'),
-#            dict(url='/about', title='About', template='about.html'),   
+            PAGE_ID_ABOUT : dict(url='/about', title='About', template='about.html'),
             PAGE_ID_ANALYTICS : dict(url='/analytics', title='Analytics', template='analytics.html'),
+            PAGE_ID_CONTACT : dict(url='/contact', title='Contact', template='contact.html'),
         }
 
 # Common variables
@@ -35,6 +37,17 @@ class Home(ViewRequestObject):
     def get(self):
         path = os.path.join(os.path.dirname(__file__), fld_templates+CONFIG[PAGE_ID_HOME]['template'])
         self.render(CONFIG[PAGE_ID_HOME]['url'], CONFIG[PAGE_ID_HOME]['title'], path, {})
+
+class About(ViewRequestObject):
+    def get(self):
+        path = os.path.join(os.path.dirname(__file__), fld_templates+CONFIG[PAGE_ID_HOME]['template'])
+        self.render(CONFIG[PAGE_ID_ABOUT]['url'], CONFIG[PAGE_ID_ABOUT]['title'], path, {})
+
+class Contact(ViewRequestObject):
+    def get(self):
+        path = os.path.join(os.path.dirname(__file__), fld_templates+CONFIG[PAGE_ID_HOME]['template'])
+        self.render(CONFIG[PAGE_ID_CONTACT]['url'], CONFIG[PAGE_ID_CONTACT]['title'], path, {})
+
 
 class Analytics(ViewRequestObject):
     def _GetObjectFromMemcache(self, key):
@@ -76,7 +89,9 @@ class AllHashtags(webapp.RequestHandler):
 
 application = webapp.WSGIApplication([
   (CONFIG[PAGE_ID_HOME]['url'], Home),
+  (CONFIG[PAGE_ID_ABOUT]['url'], About),
   (CONFIG[PAGE_ID_ANALYTICS]['url'], Analytics),
+  (CONFIG[PAGE_ID_CONTACT]['url'], Contact),
   ('/update_memcache', UpdateMemcache),
   ('/get_from_memcache', GetFromMemcache),
   ('/all_hashtags', AllHashtags),
