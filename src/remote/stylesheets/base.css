@@ -35,20 +35,20 @@ a {
 	text-decoration: none
 }
 a:hover {
-	color: #697FFF
+	color: #4860E8
 }
 a.shadow {
 	text-shadow: 0px 0px 1px #878787
 }
 .container {
-	width: 1050px;
+	width: 880px;
 	height: 100%;
 	margin-left: auto;
 	margin-right: auto;
 	padding-top: 20px;
 }
 .row {
-	width: 1050px;
+	width: 880px;
 	padding: 0;
 	margin: 10px 0 10px 0;
 	padding: 14px 0 0 0;
@@ -59,14 +59,14 @@ a.shadow {
 	border-top: 7px solid #000000
 }
 .wrap {
-	width: 1050px;
+	width: 880px;
 	margin-left: auto;
 	margin-right: auto;
 	padding-top: 30px;
 }
 .topstrip {
 	border-bottom: 1px solid #cccccc;
-	width: 1050px;
+	width: 880px;
 	float: left;
 	padding-bottom: 10px
 }
@@ -83,7 +83,7 @@ img#logo {
 }
 .toptoolbar {
 	padding-top: 45px;
-	width: 580px;
+	width: 400px;
 	float: right;
 	font-size: 15px;
 	padding-left: 105px
@@ -93,11 +93,11 @@ img#logo {
 	padding-right: 25px
 }
 .toptoolbar li a.selected {
-	color: #697FFF
+	color: #4860E8
 }
 
 #content {
-	padding-top: 30px;
+	padding-top: 10px;
 }
 
 #footer {

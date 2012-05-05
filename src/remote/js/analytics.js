@@ -1,4 +1,4 @@
-(function($) {
+ (function($) {
 	$.widget("ui.combobox", {
 		_create : function() {
 			var input, self = this, select = this.element.hide(), selected = select.children(":selected"), value = selected.val() ? selected.text() : "", wrapper = $("<span>").addClass("ui-combobox").insertAfter(select);
@@ -171,12 +171,18 @@ var HashtagsMenu = {
 				PropagationAnalysis.SpreadPath.hashtag_changed = true;
 			}
 		};
-		$('select#hashtags').selectmenu({
-			maxHeight : 150,
-			style : 'dropdown'
-		}).change(function() {
-			UpdateHashtagInfo('select#hashtags', 0);
+		// $('select#hashtags').selectmenu({
+			// maxHeight : 150,
+			// style : 'dropdown'
+		// }).change(function() {
+			// UpdateHashtagInfo('select#hashtags', 0);
+		// });
+		$('select#hashtags').combobox({
+			selected : function() {
+				UpdateHashtagInfo('select#hashtags', 0);
+			}
 		});
+		
 		$("#combobox").combobox({
 			selected : function() {
 				UpdateHashtagInfo('#combobox', 10);
@@ -278,6 +284,7 @@ var HeatMap = {
 }
 
 var GlobalSpread = {
+	current_hashtag_id : null,
 	Init : function() {
 		// $('#map_canvas').gmap();
 		var hashtag_id = HashtagsMenu.GetHashtagsId();
@@ -305,6 +312,7 @@ var GlobalSpread = {
 		}
 	},
 	Plot : function(hashtag_id, callback_function) {
+		GlobalSpread.current_hashtag_id = hashtag_id;
 		ltuo_lattice_and_no_of_occurrences = ObjectsFromMemcache.GetLocations(hashtag_id);
 		HeatMap.Plot('map_canvas', ltuo_lattice_and_no_of_occurrences);
 	}
@@ -680,7 +688,9 @@ var PropagationAnalysis = {
 				PropagationAnalysis.Charts.Reload();
 				break;
 			case 0:
-				PropagationAnalysis.GlobalSpread.Plot(hashtag_id);
+                if(GlobalSpread.current_hashtag_id!=hashtag_id){
+                    PropagationAnalysis.GlobalSpread.Plot(hashtag_id);
+                }
 				break;
 			default:
 				console.log();

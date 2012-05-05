@@ -17,21 +17,24 @@
 {% block content %}
 <div class="ui-widget">
 	<label>Pick a hastag popular in the last 24 hours: </label>
-	<br/>
-	<br/>
+	<!-- <br/>
+	<br/> -->
 	<select id="combobox">
-		<option value="">Select one...</option>
+<!-- 		<option value="">Select one...</option> -->
 		{% if all_hashtags %}
 		{% for hashtag in all_hashtags %}
 		<option value={{ forloop.counter0}}:ilab:{{hashtag}}  >{{hashtag}}</option>
 		{% endfor %}
+		{% else %}
+		<option value="None">No hashtags</option>
 		{% endif %}
 	</select>
 	<br/>
+	<label>OR </label>
 	<br/>
-	<label>Pick a hastag popular in the last hour: </label>
-	<br/>
-	<br/>
+	<label>Pick a hastag popular in the last hour: </label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<!-- <br/>
+	<br/> -->
 	<select name="hashtags" id="hashtags">
 		{% if hashtags %}
 		{% for hashtag in hashtags %}
@@ -42,6 +45,7 @@
 		{% endif %}
 	</select>
 </div>
+<br/>
 <br/>
 <h2 id="title">Title</h2>
 <br/>
