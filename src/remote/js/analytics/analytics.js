@@ -240,10 +240,12 @@ function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_sco
 	this.MARKER_DROP_TIME_LAG = 250;
 	this.intervals_for_marker_on_spread_path = [];
 	this.hashtag_changed = false;
+	this.has_been_loaded_once = false; //Check to deal with issues related to reload before first start.
 	HeatMap.Init(this.map_id);
 	this.buttons = new Buttons(this);
 	var self = this;
 	this.StartPlot = function() {
+		this.has_been_loaded_once = true;
 		callback_function_to_animate = function(map) {
 			cbf_in_ltuo_lattice_and_pure_influence_score = function(ltuo_lattice_and_pure_influence_score) {
 				var iteration_counter = 0;
@@ -300,7 +302,9 @@ function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_sco
 		HeatMap.Plot(this.map_id, [[[-57.7, -145.8], 0]]);
 	};
 	this.Reload = function() {
-		this.StopPlot();
+		if(this.has_been_loaded_once) {
+			this.StopPlot();
+		}
 		this.hashtag_changed = false;
 		// PropagationAnalysis.SpreadPath.StopPlot();
 		// PropagationAnalysis.SpreadPath.hashtag_changed = false;

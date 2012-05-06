@@ -5,7 +5,7 @@ $(document).ready(function() {
 		animated_heat_map : null,
 		current_hashtag_id : null,
 		Init : function(current_hashtag_id){
-			$('#'+FirstOccurrenceModel.id).hide();
+			$('#'+FirstOccurrenceModel.id).hide()
 			FirstOccurrenceModel.current_hashtag_id = current_hashtag_id;
 			FirstOccurrenceModel.animated_heat_map = new AnimatedHeatMap(FirstOccurrenceModel.id, FirstOccurrenceModel.function_to_get_ltuo_lattice_and_pure_influence_score_and_animate);
 		},
