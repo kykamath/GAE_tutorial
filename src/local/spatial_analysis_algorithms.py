@@ -151,17 +151,17 @@ class SpatialAnalysisAlgorithms():
         ltuo_point__lattice__normalized_occurrence_time = \
             SpatialAnalysisAlgorithms._get_ltuo_point_and_lattice_and_normalized_occurrence_time(ltuo_point_and_occurrence_time)
         ltuo_point_and_lattice_and_normalized_occurrence_time = SpatialAnalysisAlgorithms._get_valid_occurrences(ltuo_point__lattice__normalized_occurrence_time)
-        ltuo_lattice_and_ltuo_point_and_lattice_and_normalized_occurrence_time =\
-                                            [(lattice, sorted(ito_ltuo_point_and_lattice_and_normalized_occurrence_time, key=itemgetter(2)))
-                                                for lattice, ito_ltuo_point_and_lattice_and_normalized_occurrence_time in
-                                                    groupby(
-                                                            sorted(ltuo_point_and_lattice_and_normalized_occurrence_time, key=itemgetter(1)),
-                                                            key=itemgetter(1)
-                                                    )
-                                            ]
+#        ltuo_lattice_and_ltuo_point_and_lattice_and_normalized_occurrence_time =\
+#                                            [(lattice, sorted(ito_ltuo_point_and_lattice_and_normalized_occurrence_time, key=itemgetter(2)))
+#                                                for lattice, ito_ltuo_point_and_lattice_and_normalized_occurrence_time in
+#                                                    groupby(
+#                                                            sorted(ltuo_point_and_lattice_and_normalized_occurrence_time, key=itemgetter(1)),
+#                                                            key=itemgetter(1)
+#                                                    )
+#                                            ]
         return [(lattice, 1)
-         for lattice, _, _ in  
-         sorted(ltuo_lattice_and_ltuo_point_and_lattice_and_normalized_occurrence_time, key=itemgetter(2))
+         for _, lattice, _ in  
+         sorted(ltuo_point_and_lattice_and_normalized_occurrence_time, key=itemgetter(2))
          ]
 #        ltuo_lattice_and_points = []
 #        ltuo_lattice_and_min_normalized_occurrence_times_and_no_of_occurrences = []
