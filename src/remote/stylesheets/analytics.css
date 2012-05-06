@@ -32,6 +32,7 @@
 .animated-map {
 	width: 1020px;
 	height: 538px;
+	margin: 10px;
 	border: 1px solid #cccccc;
 	-moz-border-radius: 15px;
 	border-radius: 15px;

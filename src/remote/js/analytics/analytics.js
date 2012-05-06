@@ -85,22 +85,6 @@ AnimatedHeatMap = {
 	MARKER_DROP_TIME_LAG : 250,
 	intervals_for_marker_on_spread_path : [],
 	hashtag_changed : false,
-	// Init : function(map_id, queue_id, play_button_id, pause_button_id, stop_button_id, animate_function) {
-		// args = [map_id, queue_id, play_button_id, pause_button_id, stop_button_id, animate_function]
-		// $.each(args, function(index, arg) {
-			// if(arg == null) {
-				// alert('Required argument not given for AnimatedHeatMap');
-			// }
-		// });
-		// AnimatedHeatMap.map_id = map_id;
-		// AnimatedHeatMap.queue_id = queue_id;
-		// AnimatedHeatMap.play_button_id = play_button_id;
-		// AnimatedHeatMap.pause_button_id = pause_button_id;
-		// AnimatedHeatMap.stop_button_id = stop_button_id;
-		// AnimatedHeatMap.animate_function = animate_function;
-		// HeatMap.Init(AnimatedHeatMap.map_id);
-		// AnimatedHeatMap.Buttons.Init();
-	// },
 	Init : function(id, function_to_get_ltuo_lattice_and_pure_influence_score_and_animate) {
 		args = [id, function_to_get_ltuo_lattice_and_pure_influence_score_and_animate]
 		$.each(args, function(index, arg) {
@@ -121,7 +105,7 @@ AnimatedHeatMap = {
 		callback_function_to_animate = function(map) {
 			cbf_in_ltuo_lattice_and_pure_influence_score = function(ltuo_lattice_and_pure_influence_score) {
 				var iteration_counter = 0;
-				var spread_path_queue = $('#first_occurrence_model_queue');
+				var spread_path_queue = $('#'+AnimatedHeatMap.queue_id);
 				AnimatedHeatMap.intervals_for_marker_on_spread_path = [];
 				$.each(ltuo_lattice_and_pure_influence_score, function(index, lattice_and_pure_influence_score) {
 					spread_path_queue.queue(function() {
@@ -138,8 +122,6 @@ AnimatedHeatMap = {
 					$(this).dequeue();
 				});
 			}
-			// var hashtag_id = HashtagsMenu.GetHashtagsId();
-			// ObjectsFromMemcache.GetLocationsInOrderOfInfluenceSpread(hashtag_id, function_to_queue_lattices_for_animation);
 			AnimatedHeatMap.function_to_get_ltuo_lattice_and_pure_influence_score_and_animate(cbf_in_ltuo_lattice_and_pure_influence_score)
 		}
 		HeatMap.Plot(AnimatedHeatMap.map_id, [[[-57.7, -145.8], 0]], callback_function_to_animate);

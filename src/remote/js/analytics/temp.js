@@ -11,6 +11,18 @@ $(document).ready(function() {
 		}
 	}
 	
-	FirstOccurrenceModel.Init()
+	WeightedAggregateModel = {
+		id : 'weighted_aggregate_model',
+		Init : function(id){
+			AnimatedHeatMap.Init(WeightedAggregateModel.id, WeightedAggregateModel.function_to_get_ltuo_lattice_and_pure_influence_score_and_animate)
+		},
+		function_to_get_ltuo_lattice_and_pure_influence_score_and_animate : function(cbf_in_ltuo_lattice_and_pure_influence_score){
+			var ltuo_lattice_and_pure_influence_score = [[[24.20689, 18.28125], 1]];
+			cbf_in_ltuo_lattice_and_pure_influence_score(ltuo_lattice_and_pure_influence_score);
+		}
+	}
+	
+	FirstOccurrenceModel.Init();
+	WeightedAggregateModel.Init();
 });
 
