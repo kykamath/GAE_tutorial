@@ -297,10 +297,11 @@ var GlobalSpread = {
 			// Load locations_in_order_of_influence_spread from memcache.
 			// ObjectsFromMemcache.LoadLocationsInOrderOfInfluenceSpread();
 
-		} else {
+		} 
+		// else {
 			// Memcache doesn't have valid data as hashtags are not loaded in menu.
 			// Show a dialog displaying the issue.
-			alert('Looks like app is down. Please Try again in a few minutes.');
+			// alert('Looks like app is down. Please Try again in a few minutes.');
 			// $("#dialog:ui-dialog").dialog("destroy");
 			// $("#dialog-message").css('visibility', 'visible');
 			// $("#dialog-message").dialog({
@@ -312,7 +313,7 @@ var GlobalSpread = {
 					// }
 				// }
 			// });
-		}
+		// }
 	},
 	Plot : function(hashtag_id, callback_function) {
 		GlobalSpread.current_hashtag_id = hashtag_id;
@@ -713,7 +714,7 @@ $(document).ready(function() {
 	// AutoCompleteHashtag.Init();
 
 	// Init hashtags menu
-	HashtagsMenu.Init();
+	// HashtagsMenu.Init();
 
 	// 	Init spread path map
 	PropagationAnalysis.Init();
