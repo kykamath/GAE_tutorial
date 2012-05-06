@@ -29,7 +29,7 @@ $(document).ready(function() {
 			$('#' + FirstOccurrenceModel.id).hide()
 			FirstOccurrenceModel.current_hashtag_id = current_hashtag_id;
 			FirstOccurrenceModel.animated_heat_map = new AnimatedHeatMap(FirstOccurrenceModel.id, FirstOccurrenceModel.function_to_get_ltuo_lattice_and_pure_influence_score_and_animate);
-			FirstOccurrenceModel.animated_heat_map.point_add_time_lag = 20;
+			FirstOccurrenceModel.animated_heat_map.point_add_time_lag = 5;
 		},
 		function_to_get_ltuo_lattice_and_pure_influence_score_and_animate : function(cbf_in_ltuo_lattice_and_pure_influence_score) {
 			var ltuo_lattice_and_pure_influence_score = LocationsInOrderOfSpread.Get(FirstOccurrenceModel.id, FirstOccurrenceModel.current_hashtag_id);
