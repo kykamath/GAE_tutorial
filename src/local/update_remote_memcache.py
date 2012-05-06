@@ -24,7 +24,8 @@ from operator import itemgetter
 from itertools import groupby
 from library.geo import getLatticeLid
 from library.classes import GeneralMethods
-from spatial_analysis_algorithms import SpatialAnalysisAlgorithms
+from spatial_analysis_algorithms import SpatialAnalysisAlgorithms, \
+    LOCATIONS_ORDER_FIRST_OCCURRENCE_MODEL, LOCATIONS_ORDER_WEIGHTED_AVERAGE_MODEL
 
 dummy_mf_hashtag_to_ltuo_point_and_occurrence_time = {
                                                       'ht1': [([40.245992, -114.082031], 1), ([42.032974, -99.052734], 3)],
@@ -128,12 +129,12 @@ class TweetStreamDataProcessing:
                 for top_hashtag in top_hashtags
                 ]
     @staticmethod
-    def get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
+    def get_locations_in_order_of_influence_spread(model_id, mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags):
         locations_in_order_of_influence_spread = []
         for top_hashtag in top_hashtags:
             ltuo_point_and_occurrence_time = mf_hashtag_to_ltuo_point_and_occurrence_time[top_hashtag.split()[0]]
             locations_in_order_of_influence_spread.append(
-                  SpatialAnalysisAlgorithms.GetLocationsInOrderOfInfluenceSpread(ltuo_point_and_occurrence_time)
+                  SpatialAnalysisAlgorithms.GetLocationsInOrderOfInfluenceSpread(model_id, ltuo_point_and_occurrence_time)
             )
         return locations_in_order_of_influence_spread
 
@@ -292,14 +293,18 @@ def update_remote_data():
     extra_hashtags = TweetStreamDataProcessing.get_extra_hashtags(mf_hashtag_to_ltuo_point_and_occurrence_time, top_hashtags, NO_OF_EXTRA_HASHTAGS)
     required_hashtags = top_hashtags+extra_hashtags
 #    locations = TweetStreamDataProcessing.get_locations(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
-    locations_in_order_of_influence_spread = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
+#    locations_in_order_of_influence_spread = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
     charts_data = Charts.get_charts_data(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
     mf_memcache_key_to_value = dict([
                                  ('hashtags', top_hashtags),
                                  ('all_hashtags', required_hashtags),
                                  ('locations', TweetStreamDataProcessing.SpatialDistribution(mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)),
-                                 ('locations_in_order_of_influence_spread', locations_in_order_of_influence_spread),
+#                                 ('locations_in_order_of_influence_spread', locations_in_order_of_influence_spread),
                                  ]) 
+    for model_id in \
+            [LOCATIONS_ORDER_FIRST_OCCURRENCE_MODEL, LOCATIONS_ORDER_WEIGHTED_AVERAGE_MODEL]:
+        mf_memcache_key_to_value[model_id] \
+            = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(model_id, mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
     for memcache_key, value in mf_memcache_key_to_value.iteritems(): 
         print 'Updating: ', memcache_key
         update_memcache(key=memcache_key, value=value)
@@ -310,10 +315,10 @@ def update_remote_data():
     
 if __name__ == '__main__':
     while True:
-        try:
+#        try:
             update_remote_data()
-#            exit()
+            exit()
             time.sleep(UPDATE_FREQUENCY_IN_MINUTES * 60)
-        except Exception as e: 
-            print e
-            pass
+#        except Exception as e: 
+#            print e
+#            pass
