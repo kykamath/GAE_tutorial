@@ -14,8 +14,9 @@ PAGE_ID_CONTACT = 4
 
 #ANALYTICS_URL = '/analytics'
 PAGE_ID_REAL_TIME_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 0)
-PAGE_ID_HISTORICAL_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 1)
-PAGE_ID_TEMP_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 2)
+PAGE_ID_SPREAD_PATTERN_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 1)
+PAGE_ID_HISTORICAL_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 2)
+PAGE_ID_TEMP_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 3)
 
 NAVIGATION = {
             PAGE_ID_HOME : dict(url='/', title='Home', template='index.html'),
@@ -23,15 +24,20 @@ NAVIGATION = {
             PAGE_ID_ANALYTICS : dict(url='/analytics', title='Analytics', template='analytics.html'),
             PAGE_ID_CONTACT : dict(url='/contact', title='Contact', template='contact.html'),
             
-            PAGE_ID_REAL_TIME_ANALYTICS : dict(url='/analytics_real_time', title='Realtime Analytics', template='analytics_real_time.html'),
+            PAGE_ID_REAL_TIME_ANALYTICS : dict(url='/analytics_real_time', title='Real-time Information', template='analytics_real_time.html'),
+            PAGE_ID_SPREAD_PATTERN_ANALYTICS : dict(url='/spread_pattern_analytics', title='Estimated Spread Patterns', template='analytics_spread_pattern.html'),
             PAGE_ID_HISTORICAL_ANALYTICS : dict(url='/historical_analytics', title='Historical Analytics', template='analytics_historical.html'),
-            PAGE_ID_TEMP_ANALYTICS : dict(url='/temp_analytics', title='Temp', template='temp.html'),
+            PAGE_ID_TEMP_ANALYTICS : dict(url='/temp_analytics', title='Scratch Pad', template='temp.html'),
         }
 
 ANALYTICS_DESCRIPTION = {
                      PAGE_ID_REAL_TIME_ANALYTICS : 'Here is a real time quotation here is a long quotation here is a long quotation here is a \
                                                      long quotation here is a long quotation here is a long quotation here is a long quotation \
                                                      here is a long quotation here is a long quotation.',
+                     PAGE_ID_SPREAD_PATTERN_ANALYTICS : 'Here is a spread pattern quotation here is a long quotation here is a long quotation here is a \
+                                                     long quotation here is a long quotation here is a long quotation here is a long quotation \
+                                                     here is a long quotation here is a long quotation.',
+
                      PAGE_ID_HISTORICAL_ANALYTICS : 'Here is a historical quotation here is a long quotation here is a long quotation here is a \
                                                      long quotation here is a long quotation here is a long quotation here is a long quotation \
                                                      here is a long quotation here is a long quotation.',
@@ -83,11 +89,6 @@ class AnalyticsViewRequestObject(ViewRequestObject):
         all_hashtags = self._GetObjectFromMemcache('all_hashtags')
         if all_hashtags: all_hashtags=all_hashtags[10:]
         parameters['all_hashtags'] = all_hashtags
-#        self.render(PAGE_ID_REAL_TIME_ANALYTICS,
-#                    {
-#                         'hashtags': self._GetObjectFromMemcache('hashtags'),
-#                         'all_hashtags': all_hashtags
-#                     })
         analytics_ltuo_url_and_title_and_is_selected = []
         for page_id in ito_of_analytics_page_ids():
             url, title = NAVIGATION[page_id]['url'], NAVIGATION[page_id]['title'] 
@@ -121,14 +122,11 @@ class Analytics(ViewRequestObject):
         
 class AnalyticsRealTime(AnalyticsViewRequestObject):
     def get(self):
-#        all_hashtags = self._GetObjectFromMemcache('all_hashtags')
-#        if all_hashtags: all_hashtags=all_hashtags[10:]
-#        self.render(PAGE_ID_REAL_TIME_ANALYTICS,
-#                    {
-#                         'hashtags': self._GetObjectFromMemcache('hashtags'),
-#                         'all_hashtags': all_hashtags
-#                     })
         self.render(PAGE_ID_REAL_TIME_ANALYTICS)
+
+class AnalyticsSpreadPattern(AnalyticsViewRequestObject):
+    def get(self):
+        self.render(PAGE_ID_SPREAD_PATTERN_ANALYTICS)
 
 class AnalyticsHistorical(AnalyticsViewRequestObject):
     def get(self):
@@ -161,6 +159,7 @@ application = webapp.WSGIApplication([
   (NAVIGATION[PAGE_ID_ANALYTICS]['url'], Analytics),
   (NAVIGATION[PAGE_ID_CONTACT]['url'], Contact),
   (NAVIGATION[PAGE_ID_REAL_TIME_ANALYTICS]['url'], AnalyticsRealTime),
+  (NAVIGATION[PAGE_ID_SPREAD_PATTERN_ANALYTICS]['url'], AnalyticsSpreadPattern),
   (NAVIGATION[PAGE_ID_HISTORICAL_ANALYTICS]['url'], AnalyticsHistorical),
   (NAVIGATION[PAGE_ID_TEMP_ANALYTICS]['url'], AnalyticsTemp),
   ('/update_memcache', UpdateMemcache),
