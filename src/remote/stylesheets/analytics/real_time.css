@@ -22,7 +22,7 @@ h3 {
 	margin: 1%;
 }
 
-.ui-combobox {
+/*.ui-combobox {
 	position: relative;
 	display: inline-block;
 }
@@ -32,11 +32,10 @@ h3 {
 	bottom: 0;
 	margin-left: -1px;
 	padding: 0;
-	/* adjust styles for IE 6/7 */
 	*height: 1.7em;
 	*top: 0.1em;
 }
 .ui-autocomplete-input {
 	margin: 0;
 	padding: 0.3em;
-}
+}*/

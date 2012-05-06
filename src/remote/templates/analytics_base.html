@@ -18,26 +18,36 @@
 {% endblock %}
 {% block content %}
 <div class='analytics-toolbar'>
-<!-- 	<div> -->
-		<ul>
-			{% for tuo_url_and_title_and_is_selected in analytics_ltuo_url_and_title_and_is_selected %}
-			<li>
-				<a class="{{tuo_url_and_title_and_is_selected.2}}" href="{{tuo_url_and_title_and_is_selected.0}}"> {{tuo_url_and_title_and_is_selected.1}}</a>
-			</li>
-			{% endfor %}
-		</ul>
-		<!-- <ul>
-			<li>
-				<a class="selected" href="#">dsfds</a>
-			</li>
-			<li>
-				<a href="#">dsfds</a>
-			</li>
-			<li>
-				<a href="#">dsfds</a>
-			</li>
-		</ul> -->
-	<!-- 	</div> -->
+	<ul>
+		{% for tuo_url_and_title_and_is_selected in analytics_ltuo_url_and_title_and_is_selected %}
+		<li>
+			<a class="{{tuo_url_and_title_and_is_selected.2}}" href="{{tuo_url_and_title_and_is_selected.0}}"> {{tuo_url_and_title_and_is_selected.1}}</a>
+		</li>
+		{% endfor %}
+	</ul>
+</div>
+<div class="ui-widget hashtag-selector">
+	<label>Pick a hastag popular in the last <b>24 hours</b>: </label>&nbsp;
+	<select id="combobox">
+		{{hashtags}}
+		{% if all_hashtags %}
+		{% for hashtag in all_hashtags %}
+		<option value={{ forloop.counter0}}:ilab:{{hashtag}}  >{{hashtag}}</option>
+		{% endfor %}
+		{% else %}
+		<option value="None">No hashtags</option>
+		{% endif %}
+	</select>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>OR last <b>hour</b>: </label>&nbsp;
+	<select name="hashtags" id="hashtags">
+		{% if hashtags %}
+		{% for hashtag in hashtags %}
+		<option value={{ forloop.counter0 }}:ilab:{{hashtag}} >{{hashtag}}</option>
+		{% endfor %}
+		{% else %}
+		<option value="None">No hashtags</option>
+		{% endif %}
+	</select>
 </div>
 <div id="analytics-content" class="row">
 	{% block analytics-content %}{% endblock %}

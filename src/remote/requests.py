@@ -73,8 +73,21 @@ class ViewRequestObject(webapp.RequestHandler):
         self.response.out.write(template.render(path, parameters))
         
 class AnalyticsViewRequestObject(ViewRequestObject):
+    def _GetObjectFromMemcache(self, key):
+        json_object = memcache_client.get(key)
+        if json_object: return json.loads(json_object)
     def render(self, page_id_to_show, parameters = {}):
         page_to_render = NAVIGATION[page_id_to_show]
+        
+        parameters['hashtags'] = self._GetObjectFromMemcache('hashtags')
+        all_hashtags = self._GetObjectFromMemcache('all_hashtags')
+        if all_hashtags: all_hashtags=all_hashtags[10:]
+        parameters['all_hashtags'] = all_hashtags
+#        self.render(PAGE_ID_REAL_TIME_ANALYTICS,
+#                    {
+#                         'hashtags': self._GetObjectFromMemcache('hashtags'),
+#                         'all_hashtags': all_hashtags
+#                     })
         analytics_ltuo_url_and_title_and_is_selected = []
         for page_id in ito_of_analytics_page_ids():
             url, title = NAVIGATION[page_id]['url'], NAVIGATION[page_id]['title'] 
@@ -107,17 +120,15 @@ class Analytics(ViewRequestObject):
         self.render(PAGE_ID_ANALYTICS, parameters)
         
 class AnalyticsRealTime(AnalyticsViewRequestObject):
-    def _GetObjectFromMemcache(self, key):
-        json_object = memcache_client.get(key)
-        if json_object: return json.loads(json_object)
     def get(self):
-        all_hashtags = self._GetObjectFromMemcache('all_hashtags')
-        if all_hashtags: all_hashtags=all_hashtags[10:]
-        self.render(PAGE_ID_REAL_TIME_ANALYTICS,
-                    {
-                         'hashtags': self._GetObjectFromMemcache('hashtags'),
-                         'all_hashtags': all_hashtags
-                     })
+#        all_hashtags = self._GetObjectFromMemcache('all_hashtags')
+#        if all_hashtags: all_hashtags=all_hashtags[10:]
+#        self.render(PAGE_ID_REAL_TIME_ANALYTICS,
+#                    {
+#                         'hashtags': self._GetObjectFromMemcache('hashtags'),
+#                         'all_hashtags': all_hashtags
+#                     })
+        self.render(PAGE_ID_REAL_TIME_ANALYTICS)
 
 class AnalyticsHistorical(AnalyticsViewRequestObject):
     def get(self):

@@ -2,17 +2,16 @@
 
 {% block analytics-header %}
 <link type="text/css" href="/stylesheets/analytics/real_time.css" rel="stylesheet" />
-<link rel="Stylesheet" href="/stylesheets/menu/ui.selectmenu.css" type="text/css" />
-<script type="text/javascript" src="/js/menu/ui.selectmenu.js"></script>
+<!-- <link rel="Stylesheet" href="/stylesheets/menu/ui.selectmenu.css" type="text/css" /> -->
+<!-- <script type="text/javascript" src="/js/menu/ui.selectmenu.js"></script> -->
 <script src="/js/highcharts/highcharts.js"></script>
 <script src="/js/analytics/real_time.js"></script>
 {% endblock %}
 
 {% block analytics-content %}
-<div class="ui-widget">
+<!-- <div class="ui-widget">
 	<label>Pick a hastag popular in the last <b>24 hours</b>: </label>&nbsp;
 	<select id="combobox">
-<!-- 		<option value="">Select one...</option> -->
 		{% if all_hashtags %}
 		{% for hashtag in all_hashtags %}
 		<option value={{ forloop.counter0}}:ilab:{{hashtag}}  >{{hashtag}}</option>
@@ -21,7 +20,7 @@
 		<option value="None">No hashtags</option>
 		{% endif %}
 	</select>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>OR last <b>hour</b>: </label>&nbsp;
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>OR last <b>hour</b>: </label>&nbsp;
 	<select name="hashtags" id="hashtags">
 		{% if hashtags %}
 		{% for hashtag in hashtags %}
@@ -31,8 +30,8 @@
 		<option value="None">No hashtags</option>
 		{% endif %}
 	</select>
-</div>
-<br/>
+</div> -->
+<!-- <br/> -->
 <h3 id="title">Title</h3>
 <br/>
 <div id="tabs2">
@@ -52,7 +51,7 @@
 		<div id="map_canvas" class="map"></div>
 	</div>
 	<div id="tabs-2">
-<!-- 		<br/> -->
+		<!-- 		<br/> -->
 		<div>
 			<button  id="draw_spread_path_button">
 				Start
@@ -64,11 +63,11 @@
 				Stop
 			</button>
 		</div>
-<!-- 		<br/> -->
+		<!-- 		<br/> -->
 		<div id="map_path" class="map"></div>
 	</div>
 	<div id="tabs-3">
-<!-- 		<br/> -->
+		<!-- 		<br/> -->
 		<span id="radioset">
 			<input type="radio" id="TemporalDistribution" name="chart" checked="checked"/>
 			<label for="TemporalDistribution">Temporal Distribution</label>

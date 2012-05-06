@@ -1,81 +1,81 @@
-(function($) {
-	$.widget("ui.combobox", {
-		_create : function() {
-			var input, self = this, select = this.element.hide(), selected = select.children(":selected"), value = selected.val() ? selected.text() : "", wrapper = $("<span>").addClass("ui-combobox").insertAfter(select);
-
-			input = $("<input>").appendTo(wrapper).val(value).addClass("ui-state-default").autocomplete({
-				delay : 0,
-				minLength : 0,
-				source : function(request, response) {
-					var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
-					response(select.children("option").map(function() {
-						var text = $(this).text();
-						if(this.value && (!request.term || matcher.test(text) ))
-							return {
-								label : text.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + $.ui.autocomplete.escapeRegex(request.term) + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>"),
-								value : text,
-								option : this
-							};
-					}));
-				},
-				select : function(event, ui) {
-					ui.item.option.selected = true;
-					self._trigger("selected", event, {
-						item : ui.item.option
-					});
-				},
-				change : function(event, ui) {
-					if(!ui.item) {
-						var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex($(this).val()) + "$", "i"), valid = false;
-						select.children("option").each(function() {
-							if($(this).text().match(matcher)) {
-								this.selected = valid = true;
-								return false;
-							}
-						});
-						if(!valid) {
-							// remove invalid value, as it didn't match anything
-							$(this).val("");
-							select.val("");
-							input.data("autocomplete").term = "";
-							return false;
-						}
-					}
-				}
-			}).addClass("ui-widget ui-widget-content ui-corner-left");
-
-			input.data("autocomplete")._renderItem = function(ul, item) {
-				return $("<li></li>").data("item.autocomplete", item).append("<a>" + item.label + "</a>").appendTo(ul);
-			};
-
-			$("<a>").attr("tabIndex", -1).attr("title", "Show All Items").attr("id", "combo-button").appendTo(wrapper).button({
-				icons : {
-					primary : "ui-icon-triangle-1-s"
-				},
-				text : false
-			}).removeClass("ui-corner-all").addClass("ui-corner-right ui-button-icon").click(function() {
-				// close if already visible
-				if(input.autocomplete("widget").is(":visible")) {
-					input.autocomplete("close");
-					return;
-				}
-
-				// work around a bug (likely same cause as #5265)
-				$(this).blur();
-
-				// pass empty string as value to search for, displaying all results
-				input.autocomplete("search", "");
-				input.focus();
-			});
-		},
-
-		destroy : function() {
-			this.wrapper.remove();
-			this.element.show();
-			$.Widget.prototype.destroy.call(this);
-		}
-	});
-})(jQuery);
+// (function($) {
+	// $.widget("ui.combobox", {
+		// _create : function() {
+			// var input, self = this, select = this.element.hide(), selected = select.children(":selected"), value = selected.val() ? selected.text() : "", wrapper = $("<span>").addClass("ui-combobox").insertAfter(select);
+// 
+			// input = $("<input>").appendTo(wrapper).val(value).addClass("ui-state-default").autocomplete({
+				// delay : 0,
+				// minLength : 0,
+				// source : function(request, response) {
+					// var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
+					// response(select.children("option").map(function() {
+						// var text = $(this).text();
+						// if(this.value && (!request.term || matcher.test(text) ))
+							// return {
+								// label : text.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + $.ui.autocomplete.escapeRegex(request.term) + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>"),
+								// value : text,
+								// option : this
+							// };
+					// }));
+				// },
+				// select : function(event, ui) {
+					// ui.item.option.selected = true;
+					// self._trigger("selected", event, {
+						// item : ui.item.option
+					// });
+				// },
+				// change : function(event, ui) {
+					// if(!ui.item) {
+						// var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex($(this).val()) + "$", "i"), valid = false;
+						// select.children("option").each(function() {
+							// if($(this).text().match(matcher)) {
+								// this.selected = valid = true;
+								// return false;
+							// }
+						// });
+						// if(!valid) {
+							// // remove invalid value, as it didn't match anything
+							// $(this).val("");
+							// select.val("");
+							// input.data("autocomplete").term = "";
+							// return false;
+						// }
+					// }
+				// }
+			// }).addClass("ui-widget ui-widget-content ui-corner-left");
+// 
+			// input.data("autocomplete")._renderItem = function(ul, item) {
+				// return $("<li></li>").data("item.autocomplete", item).append("<a>" + item.label + "</a>").appendTo(ul);
+			// };
+// 
+			// $("<a>").attr("tabIndex", -1).attr("title", "Show All Items").attr("id", "combo-button").appendTo(wrapper).button({
+				// icons : {
+					// primary : "ui-icon-triangle-1-s"
+				// },
+				// text : false
+			// }).removeClass("ui-corner-all").addClass("ui-corner-right ui-button-icon").click(function() {
+				// // close if already visible
+				// if(input.autocomplete("widget").is(":visible")) {
+					// input.autocomplete("close");
+					// return;
+				// }
+// 
+				// // work around a bug (likely same cause as #5265)
+				// $(this).blur();
+// 
+				// // pass empty string as value to search for, displaying all results
+				// input.autocomplete("search", "");
+				// input.focus();
+			// });
+		// },
+// 
+		// destroy : function() {
+			// this.wrapper.remove();
+			// this.element.show();
+			// $.Widget.prototype.destroy.call(this);
+		// }
+	// });
+// })(jQuery);
 
 // $(function() {
 // $("#combobox").combobox();
@@ -153,62 +153,62 @@ var ObjectsFromMemcache = {
 	}
 }
 
-var HashtagsMenu = {
-	selected_val : null,
-	selected_text : null,
-	Init : function() {
-		UpdateHashtagInfo = function(element_id, offset) {
-			HashtagsMenu.SetValAndText(element_id, offset);
-			$("#title").text("#" + HashtagsMenu.GetHashtagsText());
-			// $("#title").fadeOut(500, function() {
-				// $("#title").text("#" + HashtagsMenu.GetHashtagsText())
-				// $("#title").fadeIn(500);
-			// })
-			var selected_tab_index = $('#tabs2').tabs('option', 'selected')
-			PropagationAnalysis.Reload(HashtagsMenu.GetHashtagsId(), selected_tab_index);
-			if(selected_tab_index == 2) {
-				PropagationAnalysis.SpreadPath.StopPlot();
-			} else {
-				PropagationAnalysis.SpreadPath.hashtag_changed = true;
-			}
-		};
-		// $('select#hashtags').selectmenu({
-		// maxHeight : 150,
-		// style : 'dropdown'
-		// }).change(function() {
-		// UpdateHashtagInfo('select#hashtags', 0);
+// var HashtagsMenu = {
+	// selected_val : null,
+	// selected_text : null,
+	// Init : function() {
+		// UpdateHashtagInfo = function(element_id, offset) {
+			// HashtagsMenu.SetValAndText(element_id, offset);
+			// $("#title").text("#" + HashtagsMenu.GetHashtagsText());
+			// // $("#title").fadeOut(500, function() {
+				// // $("#title").text("#" + HashtagsMenu.GetHashtagsText())
+				// // $("#title").fadeIn(500);
+			// // })
+			// var selected_tab_index = $('#tabs2').tabs('option', 'selected')
+			// PropagationAnalysis.Reload(HashtagsMenu.GetHashtagsId(), selected_tab_index);
+			// if(selected_tab_index == 2) {
+				// PropagationAnalysis.SpreadPath.StopPlot();
+			// } else {
+				// PropagationAnalysis.SpreadPath.hashtag_changed = true;
+			// }
+		// };
+		// // $('select#hashtags').selectmenu({
+		// // maxHeight : 150,
+		// // style : 'dropdown'
+		// // }).change(function() {
+		// // UpdateHashtagInfo('select#hashtags', 0);
+		// // });
+		// $('select#hashtags').combobox({
+			// selected : function() {
+				// UpdateHashtagInfo('select#hashtags', 0);
+			// }
 		// });
-		$('select#hashtags').combobox({
-			selected : function() {
-				UpdateHashtagInfo('select#hashtags', 0);
-			}
-		});
-
-		$("#combobox").combobox({
-			selected : function() {
-				UpdateHashtagInfo('#combobox', 10);
-			}
-		});
-		HashtagsMenu.SetValAndText('select#hashtags', 0);
-		$("#title").text("#" + HashtagsMenu.GetHashtagsText());
-	},
-	GetHashtagsId : function() {
-		// return $('select#hashtags').val();
-		return HashtagsMenu.selected_val;
-	},
-	GetHashtagsText : function() {
-		return HashtagsMenu.selected_text;
-	},
-	SetValAndText : function(element_id, offset) {
-		var element_text = $(element_id).val();
-		var split_result = element_text.split(':ilab:');
-		HashtagsMenu.selected_val = '' + (parseInt(split_result[0]) + offset);
-		HashtagsMenu.selected_text = split_result[1];
-	}
+// 
+		// $("#combobox").combobox({
+			// selected : function() {
+				// UpdateHashtagInfo('#combobox', 10);
+			// }
+		// });
+		// HashtagsMenu.SetValAndText('select#hashtags', 0);
+		// $("#title").text("#" + HashtagsMenu.GetHashtagsText());
+	// },
 	// GetHashtagsId : function() {
-	// return $('select#hashtags').val();
+		// // return $('select#hashtags').val();
+		// return HashtagsMenu.selected_val;
+	// },
+	// GetHashtagsText : function() {
+		// return HashtagsMenu.selected_text;
+	// },
+	// SetValAndText : function(element_id, offset) {
+		// var element_text = $(element_id).val();
+		// var split_result = element_text.split(':ilab:');
+		// HashtagsMenu.selected_val = '' + (parseInt(split_result[0]) + offset);
+		// HashtagsMenu.selected_text = split_result[1];
 	// }
-}
+	// // GetHashtagsId : function() {
+	// // return $('select#hashtags').val();
+	// // }
+// }
 
 var AutoCompleteHashtag = {
 	Init : function() {
