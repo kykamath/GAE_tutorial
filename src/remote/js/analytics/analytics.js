@@ -304,10 +304,14 @@ function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_sco
 var HashtagsMenu = {
 	selected_val : null,
 	selected_text : null,
+	functions_to_call_on_change : [],
 	Init : function() {
 		UpdateHashtagInfo = function(element_id, offset) {
 			HashtagsMenu.SetValAndText(element_id, offset);
 			// $("#title").text("#" + HashtagsMenu.GetHashtagsText());
+			$.each(HashtagsMenu.functions_to_call_on_change, function(index, fn) {
+			  fn(HashtagsMenu.GetHashtagsId(), HashtagsMenu.GetHashtagsText());
+			});
 			// var selected_tab_index = $('#tabs2').tabs('option', 'selected')
 			// PropagationAnalysis.Reload(HashtagsMenu.GetHashtagsId(), selected_tab_index);
 			// if(selected_tab_index == 2) {
@@ -331,7 +335,8 @@ var HashtagsMenu = {
 		if(HashtagsMenu.GetHashtagsText() == null) {
 			alert('Looks like app is down. Please Try again in a few minutes.');
 		}
-		// $("#title").text("#" + HashtagsMenu.GetHashtagsText());
+		$("#title").text("#" + HashtagsMenu.GetHashtagsText());
+		HashtagsMenu.AddFunctionToChangeChain(HashtagsMenu.SetCurrentHashtag);
 	},
 	GetHashtagsId : function() {
 		return HashtagsMenu.selected_val;
@@ -344,6 +349,12 @@ var HashtagsMenu = {
 		var split_result = element_text.split(':ilab:');
 		HashtagsMenu.selected_val = '' + (parseInt(split_result[0]) + offset);
 		HashtagsMenu.selected_text = split_result[1];
+	},
+	AddFunctionToChangeChain : function(fn){
+		HashtagsMenu.functions_to_call_on_change.push(fn);
+	},
+	SetCurrentHashtag : function(hashtag_id, hashtag_text){
+		$("#title").text("#" + hashtag_text);
 	}
 }
 

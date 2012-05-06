@@ -75,6 +75,10 @@
 	margin-top: 12px;
 }
 
+h3 {
+	font-size: 12pt;
+}
+
 .ui-combobox {
 	position: relative;
 	display: inline-block;
