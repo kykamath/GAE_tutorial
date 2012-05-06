@@ -24,8 +24,8 @@ NAVIGATION = {
             PAGE_ID_ANALYTICS : dict(url='/analytics', title='Analytics', template='analytics.html'),
             PAGE_ID_CONTACT : dict(url='/contact', title='Contact', template='contact.html'),
             
-            PAGE_ID_REAL_TIME_ANALYTICS : dict(url='/analytics_real_time', title='Real-time Information', template='analytics_real_time.html'),
-            PAGE_ID_SPREAD_PATTERN_ANALYTICS : dict(url='/spread_pattern_analytics', title='Estimated Spread Patterns', template='analytics_spread_pattern.html'),
+            PAGE_ID_REAL_TIME_ANALYTICS : dict(url='/analytics_real_time', title='Spread Stats', template='analytics_real_time.html'),
+            PAGE_ID_SPREAD_PATTERN_ANALYTICS : dict(url='/spread_pattern_analytics', title='Spread Dynamics', template='analytics_spread_pattern.html'),
             PAGE_ID_HISTORICAL_ANALYTICS : dict(url='/historical_analytics', title='Historical Analytics', template='analytics_historical.html'),
             PAGE_ID_TEMP_ANALYTICS : dict(url='/temp_analytics', title='Scratch Pad', template='temp.html'),
         }

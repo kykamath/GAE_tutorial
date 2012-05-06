@@ -226,8 +226,29 @@ function Buttons(animated_heat_map) {
 	this.stop_button_id = animated_heat_map.stop_button_id;
 	this.animated_heat_map = animated_heat_map;
 	this.Init();
-
 };
+
+function ProgressBar(animated_heat_map) {
+	var self = this;
+	self.progress_bar_id = animated_heat_map.id + '_pb';
+	self.max_val = null;
+	self.current_val = 0.0;
+	$("#" + self.progress_bar_id).progressbar({
+		value : 0
+	});
+	self.UpdateValue = function(value) {
+		$("#" + self.progress_bar_id).progressbar("value", value);
+	}
+	self.Increment = function() {
+		self.current_val += 1
+		self.UpdateValue(Math.floor((self.current_val / self.max_val) * 100))
+	};
+	self.Reset = function() {
+		self.max_val = null;
+		self.current_val = 0.0;
+		self.UpdateValue(0);
+	};
+}
 
 function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_score_and_animate) {
 	this.id = id;
@@ -240,22 +261,27 @@ function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_sco
 	this.point_add_time_lag = 250;
 	this.intervals_for_marker_on_spread_path = [];
 	this.hashtag_changed = false;
-	this.has_been_loaded_once = false; //Check to deal with issues related to reload before first start.
+	this.has_been_loaded_once = false;
+	//Check to deal with issues related to reload before first start.
 	HeatMap.Init(this.map_id);
 	this.buttons = new Buttons(this);
+	this.progressBar = new ProgressBar(this);
 	var self = this;
 	this.StartPlot = function() {
 		this.has_been_loaded_once = true;
+		this.progressBar.Reset();
 		callback_function_to_animate = function(map) {
 			cbf_in_ltuo_lattice_and_pure_influence_score = function(ltuo_lattice_and_pure_influence_score) {
 				var iteration_counter = 0;
 				var spread_path_queue = $('#' + self.queue_id);
+				self.progressBar.max_val = ltuo_lattice_and_pure_influence_score.length;
 				self.intervals_for_marker_on_spread_path = [];
 				$.each(ltuo_lattice_and_pure_influence_score, function(index, lattice_and_pure_influence_score) {
 					spread_path_queue.queue(function() {
 						self.intervals_for_marker_on_spread_path.push(new Timeout(function() {
 							lattice = lattice_and_pure_influence_score[0]
 							map.my_heatmap_overlay.addDataPoint(lattice[0], lattice[1], lattice_and_pure_influence_score[1]);
+							self.progressBar.Increment()
 						}, iteration_counter * self.point_add_time_lag));
 						iteration_counter += 1
 						$(this).dequeue();
@@ -293,6 +319,7 @@ function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_sco
 	};
 	this.StopPlot = function() {
 		this.buttons.EndState();
+		this.progressBar.Reset();
 		$.each(this.intervals_for_marker_on_spread_path, function(index, interval) {
 			if($.isArray(interval) == false) {
 				interval.clear();

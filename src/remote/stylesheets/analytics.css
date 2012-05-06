@@ -47,6 +47,13 @@
 	height: 43px;
 	padding-left: 21px;
 	padding-top: 10px;
+	width: 320px;
+	float: left;
+}
+.diffusion-models .progress-bar {
+	margin-top: 14px;
+	float: left;
+	width: 653px;
 }
 .animated-map .heatmap {
 	position: relative;

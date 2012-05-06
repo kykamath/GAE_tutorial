@@ -8,7 +8,7 @@
 <p>Select a type of spread pattern:</p>
 <br/>
 <ul class="diffusion-models">
-	<li> <a id="first_occurrence_model_link"> First Occurrence </a>
+	<li> <a id="first_occurrence_model_link"> Occurrences </a>
 		<div id="first_occurrence_model" class='animated-map'>
 			<div class="buttons">
 				<button  id="first_occurrence_model_play">
@@ -21,11 +21,12 @@
 					Stop
 				</button>
 			</div>
+			<div id="first_occurrence_model_pb" class="progress-bar"></div>
 			<div id="first_occurrence_model_map" class="heatmap"></div>
 			<span id="first_occurrence_model_queue" style="visibility:hidden;"></span>
 		</div>
 	</li>
-	<li> <a id="weighted_aggregate_model_link"> Aggregated Occurrence </a>
+	<li> <a id="weighted_aggregate_model_link"> Estimated information flow </a>
 		<div id="weighted_aggregate_model" class='animated-map'>
 			<div class="buttons">
 				<button  id="weighted_aggregate_model_play">
@@ -38,6 +39,7 @@
 					Stop
 				</button>
 			</div>
+			<div id="weighted_aggregate_model_pb" class="progress-bar"></div>
 			<div id="weighted_aggregate_model_map" class="heatmap"></div>
 			<span id="weighted_aggregate_model_queue" style="visibility:hidden;"></span>
 		</div>
