@@ -237,7 +237,7 @@ function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_sco
 	this.pause_button_id = this.id + '_pause';
 	this.stop_button_id = this.id + '_stop';
 	this.function_to_get_ltuo_lattice_and_pure_influence_score_and_animate = function_to_get_ltuo_lattice_and_pure_influence_score_and_animate;
-	this.MARKER_DROP_TIME_LAG = 250;
+	this.point_add_time_lag = 250;
 	this.intervals_for_marker_on_spread_path = [];
 	this.hashtag_changed = false;
 	this.has_been_loaded_once = false; //Check to deal with issues related to reload before first start.
@@ -256,13 +256,13 @@ function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_sco
 						self.intervals_for_marker_on_spread_path.push(new Timeout(function() {
 							lattice = lattice_and_pure_influence_score[0]
 							map.my_heatmap_overlay.addDataPoint(lattice[0], lattice[1], lattice_and_pure_influence_score[1]);
-						}, iteration_counter * self.MARKER_DROP_TIME_LAG));
+						}, iteration_counter * self.point_add_time_lag));
 						iteration_counter += 1
 						$(this).dequeue();
 					});
 				});
 				spread_path_queue.queue(function() {
-					self.intervals_for_marker_on_spread_path.push(new Timeout(self.buttons.EndState, iteration_counter * self.MARKER_DROP_TIME_LAG));
+					self.intervals_for_marker_on_spread_path.push(new Timeout(self.buttons.EndState, iteration_counter * self.point_add_time_lag));
 					$(this).dequeue();
 				});
 			}
@@ -282,7 +282,7 @@ function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_sco
 		var no_of_cleared = 0;
 		$.each(this.intervals_for_marker_on_spread_path, function(index, interval) {
 			if(interval.cleared == false) {
-				var tuo_fn_and_interval = [interval.fn, interval.interval - (no_of_cleared * this.MARKER_DROP_TIME_LAG)];
+				var tuo_fn_and_interval = [interval.fn, interval.interval - (no_of_cleared * this.point_add_time_lag)];
 				uncleared_intervals_for_marker_on_spread_path.push(tuo_fn_and_interval);
 			} else {
 				no_of_cleared += 1;

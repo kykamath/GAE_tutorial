@@ -1,20 +1,21 @@
 LocationsInOrderOfSpread = {
-	mf_model_id_to_mf_hashtag_id_to_ltuo_lattice_and_pure_influence_score : {},
+	mf_model_id_hashtag_id_to_ltuo_lattice_and_pure_influence_score : {},
 	Get : function(model_id, hashtag_id) {
-		if(LocationsInOrderOfSpread.mf_model_id_to_mf_hashtag_id_to_ltuo_lattice_and_pure_influence_score[model_id] == null) {
+		model_id_hashtag_id  = model_id+':ilab:'+hashtag_id;
+		if(LocationsInOrderOfSpread.mf_model_id_hashtag_id_to_ltuo_lattice_and_pure_influence_score[model_id] == null) {
 			//Load from memcache;
 			$.ajax({
 				type : 'POST',
 				url : '/get_from_memcache',
 				dataType : 'json',
 				success : function(data) {
-					LocationsInOrderOfSpread.mf_model_id_to_mf_hashtag_id_to_ltuo_lattice_and_pure_influence_score[model_id] = data;
+					LocationsInOrderOfSpread.mf_model_id_hashtag_id_to_ltuo_lattice_and_pure_influence_score[model_id_hashtag_id] = data;
 				},
-				data : {'key' : model_id},
+				data : {'key' : model_id_hashtag_id},
 				async : false
 			});
 		}
-		return LocationsInOrderOfSpread.mf_model_id_to_mf_hashtag_id_to_ltuo_lattice_and_pure_influence_score[model_id][hashtag_id];
+		return LocationsInOrderOfSpread.mf_model_id_hashtag_id_to_ltuo_lattice_and_pure_influence_score[model_id_hashtag_id];
 	}
 } 
 
@@ -28,6 +29,7 @@ $(document).ready(function() {
 			$('#' + FirstOccurrenceModel.id).hide()
 			FirstOccurrenceModel.current_hashtag_id = current_hashtag_id;
 			FirstOccurrenceModel.animated_heat_map = new AnimatedHeatMap(FirstOccurrenceModel.id, FirstOccurrenceModel.function_to_get_ltuo_lattice_and_pure_influence_score_and_animate);
+			FirstOccurrenceModel.animated_heat_map.point_add_time_lag = 20;
 		},
 		function_to_get_ltuo_lattice_and_pure_influence_score_and_animate : function(cbf_in_ltuo_lattice_and_pure_influence_score) {
 			var ltuo_lattice_and_pure_influence_score = LocationsInOrderOfSpread.Get(FirstOccurrenceModel.id, FirstOccurrenceModel.current_hashtag_id);

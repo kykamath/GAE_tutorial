@@ -303,8 +303,13 @@ def update_remote_data():
                                  ]) 
     for model_id in \
             [LOCATIONS_ORDER_FIRST_OCCURRENCE_MODEL, LOCATIONS_ORDER_WEIGHTED_AVERAGE_MODEL]:
-        mf_memcache_key_to_value[model_id] \
+#        mf_memcache_key_to_value[model_id] \
+        model_data \
             = TweetStreamDataProcessing.get_locations_in_order_of_influence_spread(model_id, mf_hashtag_to_ltuo_point_and_occurrence_time, required_hashtags)
+        print model_id
+        for hashtag_id, data in enumerate(model_data):
+#            mf_memcache_key_to_value['%s:ilab:%s'%(model_id, hashtag_id)] = data
+            update_memcache(key='%s:ilab:%s'%(model_id, hashtag_id), value=data)
     for memcache_key, value in mf_memcache_key_to_value.iteritems(): 
         print 'Updating: ', memcache_key
         update_memcache(key=memcache_key, value=value)
