@@ -151,7 +151,6 @@ function Buttons(animated_heat_map) {
 };
 
 function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_score_and_animate) {
-
 	this.id = id;
 	this.map_id = this.id + '_map';
 	this.queue_id = this.id + '_queue';

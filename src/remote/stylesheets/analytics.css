@@ -2,6 +2,11 @@
 	padding-top: 13px;
 }
 
+#analytics_list li a {
+	color: #87C7FF;
+	text-decoration:underline;
+}
+
 #analytics_list blockquote {
 	padding-top: 5px;
 	padding-left: 25px;
@@ -51,3 +56,29 @@
 	height: 470px;
 	border: 1px solid #000000;
 }
+
+.diffusion-models li {
+	padding-top: 20px;
+}
+
+
+.diffusion-models li a {
+	color: #87C7FF;
+	text-decoration:underline;
+}
+
+
+.diffusion-models li a img {
+	height :18px;
+	width : 18px;
+}
+
+
+
+/*.diffusion-models li div {
+	visibility: hidden;
+}*/
+
+/*.diffusion-models li a {
+	color : #
+}*/
