@@ -167,7 +167,7 @@ class SpatialAnalysisAlgorithms():
             ltuo_lattice_and_points.append([lattice, points])
             ltuo_lattice_and_min_normalized_occurrence_times_and_no_of_occurrences.append([lattice, min(normalized_occurrence_times), len(normalized_occurrence_times)])
         ltuo_lattice_sorted_by_occurrence_time_and_no_of_occurrences \
-            = [(lattice, no_of_occurrences) for lattice, _, no_of_occurrences in 
+            = [(lattice, np.log(no_of_occurrences)) for lattice, _, no_of_occurrences in 
                 sorted(ltuo_lattice_and_min_normalized_occurrence_times_and_no_of_occurrences, key=itemgetter(1))]
         return ltuo_lattice_sorted_by_occurrence_time_and_no_of_occurrences    
     @staticmethod
