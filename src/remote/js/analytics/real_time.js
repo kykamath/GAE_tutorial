@@ -159,10 +159,11 @@ var HashtagsMenu = {
 	Init : function() {
 		UpdateHashtagInfo = function(element_id, offset) {
 			HashtagsMenu.SetValAndText(element_id, offset);
-			$("#title").fadeOut(500, function() {
-				$("#title").text("#" + HashtagsMenu.GetHashtagsText())
-				$("#title").fadeIn(500);
-			})
+			$("#title").text("#" + HashtagsMenu.GetHashtagsText());
+			// $("#title").fadeOut(500, function() {
+				// $("#title").text("#" + HashtagsMenu.GetHashtagsText())
+				// $("#title").fadeIn(500);
+			// })
 			var selected_tab_index = $('#tabs2').tabs('option', 'selected')
 			PropagationAnalysis.Reload(HashtagsMenu.GetHashtagsId(), selected_tab_index);
 			if(selected_tab_index == 2) {
