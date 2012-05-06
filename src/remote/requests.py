@@ -15,6 +15,7 @@ PAGE_ID_CONTACT = 4
 #ANALYTICS_URL = '/analytics'
 PAGE_ID_REAL_TIME_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 0)
 PAGE_ID_HISTORICAL_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 1)
+PAGE_ID_TEMP_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 2)
 
 NAVIGATION = {
             PAGE_ID_HOME : dict(url='/', title='Home', template='index.html'),
@@ -24,6 +25,7 @@ NAVIGATION = {
             
             PAGE_ID_REAL_TIME_ANALYTICS : dict(url='/analytics_real_time', title='Realtime Analytics', template='analytics_real_time.html'),
             PAGE_ID_HISTORICAL_ANALYTICS : dict(url='/historical_analytics', title='Historical Analytics', template='analytics_historical.html'),
+            PAGE_ID_TEMP_ANALYTICS : dict(url='/temp_analytics', title='Temp', template='temp.html'),
         }
 
 ANALYTICS_DESCRIPTION = {
@@ -31,6 +33,9 @@ ANALYTICS_DESCRIPTION = {
                                                      long quotation here is a long quotation here is a long quotation here is a long quotation \
                                                      here is a long quotation here is a long quotation.',
                      PAGE_ID_HISTORICAL_ANALYTICS : 'Here is a historical quotation here is a long quotation here is a long quotation here is a \
+                                                     long quotation here is a long quotation here is a long quotation here is a long quotation \
+                                                     here is a long quotation here is a long quotation.',
+                     PAGE_ID_TEMP_ANALYTICS : 'Here is a historical quotation here is a long quotation here is a long quotation here is a \
                                                      long quotation here is a long quotation here is a long quotation here is a long quotation \
                                                      here is a long quotation here is a long quotation.',
                      }
@@ -117,7 +122,12 @@ class AnalyticsRealTime(AnalyticsViewRequestObject):
 class AnalyticsHistorical(AnalyticsViewRequestObject):
     def get(self):
         self.render(PAGE_ID_HISTORICAL_ANALYTICS)
+
+class AnalyticsTemp(AnalyticsViewRequestObject):
+    def get(self):
+        self.render(PAGE_ID_TEMP_ANALYTICS)
         
+
 class UpdateMemcache(webapp.RequestHandler):
     def post(self):
         key = self.request.get('key')
@@ -141,6 +151,7 @@ application = webapp.WSGIApplication([
   (NAVIGATION[PAGE_ID_CONTACT]['url'], Contact),
   (NAVIGATION[PAGE_ID_REAL_TIME_ANALYTICS]['url'], AnalyticsRealTime),
   (NAVIGATION[PAGE_ID_HISTORICAL_ANALYTICS]['url'], AnalyticsHistorical),
+  (NAVIGATION[PAGE_ID_TEMP_ANALYTICS]['url'], AnalyticsTemp),
   ('/update_memcache', UpdateMemcache),
   ('/get_from_memcache', GetFromMemcache),
   ('/all_hashtags', AllHashtags),

@@ -396,7 +396,8 @@ var Charts = {
 		chart = new Highcharts.Chart({
 			chart : {
 				renderTo : 'chart',
-				type : 'spline'
+				type : 'spline',
+				height: 370
 			},
 			title : {
 				text : 'Spatial Freshness'
@@ -425,7 +426,8 @@ var Charts = {
 		chart = new Highcharts.Chart({
 			chart : {
 				renderTo : 'chart',
-				type : 'spline'
+				type : 'spline',
+				height: 370
 			},
 			title : {
 				text : 'Temporal distribution'
@@ -454,7 +456,8 @@ var Charts = {
 		chart = new Highcharts.Chart({
 			chart : {
 				renderTo : 'chart',
-				type : 'spline'
+				type : 'spline',
+				height: 370
 			},
 			title : {
 				text : 'Spatial Spread'
@@ -483,7 +486,8 @@ var Charts = {
 		chart = new Highcharts.Chart({
 			chart : {
 				renderTo : 'chart',
-				type : 'spline'
+				type : 'spline',
+				height: 370
 			},
 			title : {
 				text : 'Spread Radius'

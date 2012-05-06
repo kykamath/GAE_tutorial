@@ -15,7 +15,7 @@
 	margin-left: auto;
 	margin-right: auto;
 	font-size: 15px;
-border-bottom: 1px solid #cccccc;
+	border-bottom: 1px solid #cccccc;
 	width: 1020px;
 	height: 22px;
 }
@@ -28,4 +28,25 @@ border-bottom: 1px solid #cccccc;
 }
 #analytics-content {
 	padding-top: 10px;
+}
+.animated-map {
+	width: 1020px;
+	height: 538px;
+	border: 1px solid #cccccc;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	background-color: #EBEBEB;
+}
+.animated-map .buttons {
+	height: 43px;
+	padding-left: 21px;
+	padding-top: 10px;
+}
+.animated-map .heatmap {
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	width: 970px;
+	height: 470px;
+	border: 1px solid #000000;
 }
