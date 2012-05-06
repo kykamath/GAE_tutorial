@@ -299,6 +299,13 @@ function AnimatedHeatMap(id, function_to_get_ltuo_lattice_and_pure_influence_sco
 		this.intervals_for_marker_on_spread_path = []
 		HeatMap.Plot(this.map_id, [[[-57.7, -145.8], 0]]);
 	};
+	this.Reload = function() {
+		this.StopPlot();
+		this.hashtag_changed = false;
+		// PropagationAnalysis.SpreadPath.StopPlot();
+		// PropagationAnalysis.SpreadPath.hashtag_changed = false;
+
+	};
 }
 
 var HashtagsMenu = {
@@ -310,7 +317,7 @@ var HashtagsMenu = {
 			HashtagsMenu.SetValAndText(element_id, offset);
 			// $("#title").text("#" + HashtagsMenu.GetHashtagsText());
 			$.each(HashtagsMenu.functions_to_call_on_change, function(index, fn) {
-			  fn(HashtagsMenu.GetHashtagsId(), HashtagsMenu.GetHashtagsText());
+				fn(HashtagsMenu.GetHashtagsId(), HashtagsMenu.GetHashtagsText());
 			});
 			// var selected_tab_index = $('#tabs2').tabs('option', 'selected')
 			// PropagationAnalysis.Reload(HashtagsMenu.GetHashtagsId(), selected_tab_index);
@@ -350,10 +357,10 @@ var HashtagsMenu = {
 		HashtagsMenu.selected_val = '' + (parseInt(split_result[0]) + offset);
 		HashtagsMenu.selected_text = split_result[1];
 	},
-	AddFunctionToChangeChain : function(fn){
+	AddFunctionToChangeChain : function(fn) {
 		HashtagsMenu.functions_to_call_on_change.push(fn);
 	},
-	SetCurrentHashtag : function(hashtag_id, hashtag_text){
+	SetCurrentHashtag : function(hashtag_id, hashtag_text) {
 		$("#title").text("#" + hashtag_text);
 	}
 }
