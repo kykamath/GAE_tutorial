@@ -93,7 +93,18 @@ class TweetStreamDataProcessing:
                         if hashtag not in BLOCKED_HASHTAGS and is_unicode(hashtag):
                             mf_hashtag_to_ltuo_point_and_occurrence_time[hashtag].append(point_and_occurrence_time)
             dt_next_time += td_interval
-        return mf_hashtag_to_ltuo_point_and_occurrence_time
+#        return mf_hashtag_to_ltuo_point_and_occurrence_time
+        # Modifying this code to normalize lattice and time for all analysis
+        mf_hashtag_to_normalized_ltuo_point_and_occurrence_time = {}
+        for hashtag, ltuo_point_and_occurrence_time in \
+                mf_hashtag_to_ltuo_point_and_occurrence_time.iteritems():
+            ltuo_point__lattice__normalized_occurrence_time = \
+                SpatialAnalysisAlgorithms._get_ltuo_point_and_lattice_and_normalized_occurrence_time(ltuo_point_and_occurrence_time)
+            ltuo_point__lattice__normalized_occurrence_time = SpatialAnalysisAlgorithms._get_valid_occurrences(ltuo_point__lattice__normalized_occurrence_time)
+            
+            mf_hashtag_to_normalized_ltuo_point_and_occurrence_time[hashtag] \
+                = [(lattice, normalized_occurrence_time) for _, lattice, normalized_occurrence_time in ltuo_point__lattice__normalized_occurrence_time]
+        return mf_hashtag_to_normalized_ltuo_point_and_occurrence_time
     @staticmethod
     def get_top_hashtags(no_of_hashtags):
         mf_hashtag_to_ltuo_point_and_occurrence_time = TweetStreamDataProcessing.load_mf_hashtag_to_ltuo_point_and_occurrence_time(TOP_HASHTAGS_WINDOW_IN_MINUTES)
