@@ -1,0 +1,2 @@
+./stop_crawler_and_memcache_updater.sh
+./start_crawler_and_memcache_updater.sh
