@@ -13,13 +13,13 @@ import socket
 MACHINE_NAME = socket.gethostname()
 INTERVAL_IN_MINUTES = 5
 
-#f_hashtags_geo_distribution = '/mnt/chevron/kykamath/data/geo/hashtags_geo_distribution/%s/%s/%s/%s_%s'
-f_hashtags_geo_distribution = '/data/chevron/kykamath/data/geo/hashtags_geo_distribution/%s/%s/%s/%s_%s'
+f_hashtags_geo_distribution = '/mnt/chevron/kykamath/data/geo/hashtags_geo_distribution/%s/%s/%s/%s_%s'
+#f_hashtags_geo_distribution = '/data/chevron/kykamath/data/geo/hashtags_geo_distribution/%s/%s/%s/%s_%s'
 
 
 # Remote update settings
-APPLICATION_URL = 'http://localhost:8080/'
-#APPLICATION_URL = 'http://social-trails.appspot.com/'
+#APPLICATION_URL = 'http://localhost:8080/'
+APPLICATION_URL = 'http://social-trails.appspot.com/'
 UPDATE_FREQUENCY_IN_MINUTES = 10
 TOTAL_ANALYSIS_WINDOW_IN_MINUTES = INTERVAL_IN_MINUTES*12*24
 TOP_HASHTAGS_WINDOW_IN_MINUTES = INTERVAL_IN_MINUTES*12*1
