@@ -24,7 +24,13 @@ def ParseHashtags(tweet):
     for h in tweet['entities']['hashtags']: hashtags.append(h['text'])
     return hashtags
 def GetCheckinObject(data):
-    checkin = {'user': {'id': data['user']['id'], 'l': data['user']['location']}, 'id': data['id'], 't': data['created_at'], 'h': [], 'tx': data['text']}
+    checkin = {
+               'user': {'id': data['user']['id'], 'l': data['user']['location']}, 
+               'id': data['id'], 
+               't': data['created_at'], 
+               'h': [], 
+               'tx': data['text']
+            }
     return checkin
 def GetOutputFile(t):
     return f_hashtags_geo_distribution%(t.year, t.month, t.day, t.hour, (int(t.minute)/INTERVAL_IN_MINUTES)*INTERVAL_IN_MINUTES)
