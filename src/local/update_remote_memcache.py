@@ -79,7 +79,8 @@ class TweetStreamDataProcessing:
             return True
         mf_hashtag_to_ltuo_point_and_occurrence_time = defaultdict(list)
         # Subtracting because stream appears to be delayed by an hour
-        dt_current_time = datetime.fromtimestamp(time.mktime(time.gmtime(time.time()))) - timedelta(hours=1)
+#        dt_current_time = datetime.fromtimestamp(time.mktime(time.gmtime(time.time()))) - timedelta(hours=1)
+        dt_current_time = datetime.fromtimestamp(time.mktime(time.gmtime(time.time())))
         td_interval = timedelta(seconds=INTERVAL_IN_MINUTES * 60)
         td_window = timedelta(seconds= WINDOW_IN_MINUTES * 60)
         dt_next_time = dt_current_time - td_window
