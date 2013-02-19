@@ -15,8 +15,8 @@ PAGE_ID_CONTACT = 4
 #ANALYTICS_URL = '/analytics'
 PAGE_ID_REAL_TIME_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 0)
 PAGE_ID_SPREAD_PATTERN_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 1)
-PAGE_ID_HISTORICAL_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 2)
-PAGE_ID_TEMP_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 3)
+#PAGE_ID_HISTORICAL_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 2)
+#PAGE_ID_TEMP_ANALYTICS = '%s_%s'%(PAGE_ID_ANALYTICS, 3)
 
 NAVIGATION = {
             PAGE_ID_HOME : dict(url='/', title='Home', template='index.html'),
@@ -26,8 +26,8 @@ NAVIGATION = {
             
             PAGE_ID_REAL_TIME_ANALYTICS : dict(url='/analytics_real_time', title='Spread Stats', template='analytics_real_time.html'),
             PAGE_ID_SPREAD_PATTERN_ANALYTICS : dict(url='/spread_pattern_analytics', title='Spread Dynamics', template='analytics_spread_pattern.html'),
-            PAGE_ID_HISTORICAL_ANALYTICS : dict(url='/historical_analytics', title='Historical Analytics', template='analytics_historical.html'),
-            PAGE_ID_TEMP_ANALYTICS : dict(url='/temp_analytics', title='Scratch Pad', template='temp.html'),
+#            PAGE_ID_HISTORICAL_ANALYTICS : dict(url='/historical_analytics', title='Historical Analytics', template='analytics_historical.html'),
+#            PAGE_ID_TEMP_ANALYTICS : dict(url='/temp_analytics', title='Scratch Pad', template='temp.html'),
         }
 
 ANALYTICS_DESCRIPTION = {
@@ -38,12 +38,12 @@ ANALYTICS_DESCRIPTION = {
                                                      long quotation here is a long quotation here is a long quotation here is a long quotation \
                                                      here is a long quotation here is a long quotation.',
 
-                     PAGE_ID_HISTORICAL_ANALYTICS : 'Here is a historical quotation here is a long quotation here is a long quotation here is a \
-                                                     long quotation here is a long quotation here is a long quotation here is a long quotation \
-                                                     here is a long quotation here is a long quotation.',
-                     PAGE_ID_TEMP_ANALYTICS : 'Here is a historical quotation here is a long quotation here is a long quotation here is a \
-                                                     long quotation here is a long quotation here is a long quotation here is a long quotation \
-                                                     here is a long quotation here is a long quotation.',
+#                     PAGE_ID_HISTORICAL_ANALYTICS : 'Here is a historical quotation here is a long quotation here is a long quotation here is a \
+#                                                     long quotation here is a long quotation here is a long quotation here is a long quotation \
+#                                                     here is a long quotation here is a long quotation.',
+#                     PAGE_ID_TEMP_ANALYTICS : 'Here is a historical quotation here is a long quotation here is a long quotation here is a \
+#                                                     long quotation here is a long quotation here is a long quotation here is a long quotation \
+#                                                     here is a long quotation here is a long quotation.',
                      }
 
 # Common variables
@@ -128,13 +128,13 @@ class AnalyticsSpreadPattern(AnalyticsViewRequestObject):
     def get(self):
         self.render(PAGE_ID_SPREAD_PATTERN_ANALYTICS)
 
-class AnalyticsHistorical(AnalyticsViewRequestObject):
-    def get(self):
-        self.render(PAGE_ID_HISTORICAL_ANALYTICS)
-
-class AnalyticsTemp(AnalyticsViewRequestObject):
-    def get(self):
-        self.render(PAGE_ID_TEMP_ANALYTICS)
+#class AnalyticsHistorical(AnalyticsViewRequestObject):
+#    def get(self):
+#        self.render(PAGE_ID_HISTORICAL_ANALYTICS)
+#
+#class AnalyticsTemp(AnalyticsViewRequestObject):
+#    def get(self):
+#        self.render(PAGE_ID_TEMP_ANALYTICS)
         
 
 class UpdateMemcache(webapp.RequestHandler):
@@ -160,8 +160,8 @@ application = webapp.WSGIApplication([
   (NAVIGATION[PAGE_ID_CONTACT]['url'], Contact),
   (NAVIGATION[PAGE_ID_REAL_TIME_ANALYTICS]['url'], AnalyticsRealTime),
   (NAVIGATION[PAGE_ID_SPREAD_PATTERN_ANALYTICS]['url'], AnalyticsSpreadPattern),
-  (NAVIGATION[PAGE_ID_HISTORICAL_ANALYTICS]['url'], AnalyticsHistorical),
-  (NAVIGATION[PAGE_ID_TEMP_ANALYTICS]['url'], AnalyticsTemp),
+#  (NAVIGATION[PAGE_ID_HISTORICAL_ANALYTICS]['url'], AnalyticsHistorical),
+#  (NAVIGATION[PAGE_ID_TEMP_ANALYTICS]['url'], AnalyticsTemp),
   ('/update_memcache', UpdateMemcache),
   ('/get_from_memcache', GetFromMemcache),
   ('/all_hashtags', AllHashtags),
